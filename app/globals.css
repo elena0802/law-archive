@@ -66,6 +66,7 @@ a {
   color: var(--ink);
   font-size: 1.0625rem;
   line-height: 1.85;
+  overflow-wrap: break-word;
   word-break: keep-all;
 }
 
@@ -92,12 +93,28 @@ a {
   line-height: 1.16;
 }
 
+.archive-prose h3 {
+  font-size: clamp(1.55rem, 3vw, 2rem);
+  line-height: 1.22;
+}
+
+.archive-prose h2,
+.archive-prose h3 {
+  margin-top: 2.1em;
+}
+
+.archive-prose h2 + p,
+.archive-prose h3 + p {
+  margin-top: 0.9em;
+}
+
 .archive-prose p {
   margin-top: 1.35em;
 }
 
 .archive-prose ul,
 .archive-prose ol {
+  margin-top: 1.1em;
   padding-left: 1.35rem;
 }
 
@@ -139,6 +156,19 @@ a {
 .archive-prose blockquote {
   border-left: 1px solid var(--line);
   color: var(--ink-muted);
+  line-height: 1.8;
   margin-left: 0;
   padding-left: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .archive-prose {
+    font-size: 1rem;
+    line-height: 1.82;
+  }
+
+  .archive-prose h2,
+  .archive-prose h3 {
+    margin-top: 1.8em;
+  }
 }

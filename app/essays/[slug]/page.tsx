@@ -30,8 +30,19 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${essay.title} | Criminal Law Archive`,
+    title: essay.title,
     description: essay.description,
+    alternates: {
+      canonical: `/essays/${essay.slug}`,
+    },
+    openGraph: {
+      title: essay.title,
+      description: essay.description,
+      url: `/essays/${essay.slug}`,
+      type: "article",
+      publishedTime: essay.date,
+      section: essay.category,
+    },
   };
 }
 

@@ -1,6 +1,21 @@
+import type { Metadata } from "next";
 import { ArticleCard } from "@/components/article-card";
 import { Section } from "@/components/section";
 import { formatEssayDate, getAllEssays } from "@/lib/essays";
+
+export const metadata: Metadata = {
+  title: "Essays",
+  description: "형사법과 인간, 책임과 사회에 관한 에세이를 최신순으로 모았습니다.",
+  alternates: {
+    canonical: "/essays",
+  },
+  openGraph: {
+    title: "Essays",
+    description:
+      "형사법과 인간, 책임과 사회에 관한 에세이를 최신순으로 모았습니다.",
+    url: "/essays",
+  },
+};
 
 export default async function EssaysPage() {
   const essays = await getAllEssays();
@@ -22,16 +37,23 @@ export default async function EssaysPage() {
 
       <Section size="wide" className="border-t border-line">
         <div className="mx-auto max-w-reading">
-          {essays.map((essay) => (
-            <ArticleCard
-              key={essay.slug}
-              eyebrow={`${formatEssayDate(essay.date)} · ${essay.category}`}
-              title={essay.title}
-              description={essay.description}
-              meta={`연재: ${essay.series}`}
-              href={`/essays/${essay.slug}`}
-            />
-          ))}
+          {essays.length > 0 ? (
+            essays.map((essay) => (
+              <ArticleCard
+                key={essay.slug}
+                eyebrow={`${formatEssayDate(essay.date)} · ${essay.category}`}
+                title={essay.title}
+                description={essay.description}
+                meta={`연재: ${essay.series}`}
+                href={`/essays/${essay.slug}`}
+              />
+            ))
+          ) : (
+            <p className="border-t border-line py-8 text-base leading-8 text-ink-muted">
+              아직 공개된 에세이가 없습니다. 새 글의 draft 값을 false로 바꾸면
+              이 목록에 표시됩니다.
+            </p>
+          )}
         </div>
       </Section>
     </>

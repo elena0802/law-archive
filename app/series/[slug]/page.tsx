@@ -35,8 +35,16 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${series.title} | Criminal Law Archive`,
+    title: series.title,
     description: series.description,
+    alternates: {
+      canonical: `/series/${series.slug}`,
+    },
+    openGraph: {
+      title: series.title,
+      description: series.description,
+      url: `/series/${series.slug}`,
+    },
   };
 }
 
@@ -75,16 +83,22 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
 
       <Section size="wide" className="border-t border-line">
         <div className="mx-auto max-w-reading">
-          {essays.map((essay) => (
-            <ArticleCard
-              key={essay.slug}
-              eyebrow={`${formatEssayDate(essay.date)} · ${essay.category}`}
-              title={essay.title}
-              description={essay.description}
-              meta={`연재: ${essay.series}`}
-              href={`/essays/${essay.slug}`}
-            />
-          ))}
+          {essays.length > 0 ? (
+            essays.map((essay) => (
+              <ArticleCard
+                key={essay.slug}
+                eyebrow={`${formatEssayDate(essay.date)} · ${essay.category}`}
+                title={essay.title}
+                description={essay.description}
+                meta={`연재: ${essay.series}`}
+                href={`/essays/${essay.slug}`}
+              />
+            ))
+          ) : (
+            <p className="border-t border-line py-8 text-base leading-8 text-ink-muted">
+              이 시리즈에 공개된 글이 아직 없습니다.
+            </p>
+          )}
         </div>
       </Section>
     </>

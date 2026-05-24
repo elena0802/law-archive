@@ -1,4 +1,18 @@
+import type { Metadata } from "next";
 import { Section } from "@/components/section";
+
+export const metadata: Metadata = {
+  title: "About",
+  description: "디지털 서재의 목적과 글을 추가하는 방법을 안내합니다.",
+  alternates: {
+    canonical: "/about",
+  },
+  openGraph: {
+    title: "About",
+    description: "디지털 서재의 목적과 글을 추가하는 방법을 안내합니다.",
+    url: "/about",
+  },
+};
 
 export default function AboutPage() {
   return (

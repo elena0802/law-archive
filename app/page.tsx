@@ -82,16 +82,23 @@ export default async function Home() {
             </p>
           </div>
           <div>
-            {latestEssays.map((essay) => (
-              <ArticleCard
-                key={essay.slug}
-                eyebrow={`${formatEssayDate(essay.date)} · ${essay.category}`}
-                title={essay.title}
-                description={essay.description}
-                meta={essay.series}
-                href={`/essays/${essay.slug}`}
-              />
-            ))}
+            {latestEssays.length > 0 ? (
+              latestEssays.map((essay) => (
+                <ArticleCard
+                  key={essay.slug}
+                  eyebrow={`${formatEssayDate(essay.date)} · ${essay.category}`}
+                  title={essay.title}
+                  description={essay.description}
+                  meta={essay.series}
+                  href={`/essays/${essay.slug}`}
+                />
+              ))
+            ) : (
+              <p className="border-t border-line py-8 text-base leading-8 text-ink-muted">
+                아직 공개된 글이 없습니다. 원고가 공개되면 이 자리에 최신순으로
+                표시됩니다.
+              </p>
+            )}
           </div>
         </div>
       </Section>
@@ -111,23 +118,30 @@ export default async function Home() {
             </p>
           </div>
           <div className="border-t border-line">
-            {primarySeries.map((item) => (
-              <Link
-                key={item.slug}
-                className="block border-b border-line py-7 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                href={`/series/${item.slug}`}
-              >
-                <p className="text-xs uppercase tracking-[0.16em] text-ink-muted">
-                  {item.count}편 · 최근 {formatEssayDate(item.latestDate)}
-                </p>
-                <h3 className="mt-3 font-serif text-2xl leading-tight text-ink sm:text-[1.7rem]">
-                  {item.title}
-                </h3>
-                <p className="mt-3 max-w-2xl text-base leading-8 text-ink-muted">
-                  {item.description}
-                </p>
-              </Link>
-            ))}
+            {primarySeries.length > 0 ? (
+              primarySeries.map((item) => (
+                <Link
+                  key={item.slug}
+                  className="block border-b border-line py-7 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                  href={`/series/${item.slug}`}
+                >
+                  <p className="text-xs uppercase tracking-[0.16em] text-ink-muted">
+                    {item.count}편 · 최근 {formatEssayDate(item.latestDate)}
+                  </p>
+                  <h3 className="mt-3 font-serif text-2xl leading-tight text-ink sm:text-[1.7rem]">
+                    {item.title}
+                  </h3>
+                  <p className="mt-3 max-w-2xl text-base leading-8 text-ink-muted">
+                    {item.description}
+                  </p>
+                </Link>
+              ))
+            ) : (
+              <p className="py-8 text-base leading-8 text-ink-muted">
+                아직 묶인 시리즈가 없습니다. 같은 시리즈 이름을 가진 글이
+                공개되면 이곳에 주제별 서가가 생깁니다.
+              </p>
+            )}
           </div>
         </div>
       </Section>
