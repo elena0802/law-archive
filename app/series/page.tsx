@@ -1,7 +1,10 @@
-import { ArticleCard } from "@/components/article-card";
+import Link from "next/link";
 import { Section } from "@/components/section";
+import { formatEssayDate, getAllSeries } from "@/lib/essays";
 
-export default function SeriesPage() {
+export default async function SeriesPage() {
+  const series = await getAllSeries();
+
   return (
     <>
       <Section size="reading" className="py-page">
@@ -13,24 +16,45 @@ export default function SeriesPage() {
         </h1>
         <p className="text-keep mt-7 text-lg leading-9 text-ink-muted">
           하나의 주제를 여러 편으로 나누어 읽을 수 있도록 준비하는
-          공간입니다. 아직 실제 연재 데이터는 연결하지 않았습니다.
+          공간입니다. 공개된 글은 연재명별로 묶여 아카이브처럼 쌓입니다.
         </p>
       </Section>
 
       <Section size="wide" className="border-t border-line">
         <div className="mx-auto max-w-reading">
-          <ArticleCard
-            eyebrow="Placeholder"
-            title="형사법 강의 노트"
-            description="연재 상세 페이지와 글 목록을 붙이기 전의 기본 카드 형태입니다."
-            meta="준비 중"
-          />
-          <ArticleCard
-            eyebrow="Placeholder"
-            title="쟁점별 판례 읽기"
-            description="시리즈 목록의 폭, 행간, 구분선을 점검하기 위한 임시 항목입니다."
-            meta="준비 중"
-          />
+          {series.map((item) => (
+            <article key={item.slug} className="border-t border-line py-9">
+              <p className="text-xs uppercase tracking-[0.16em] text-ink-muted">
+                {item.count}편 · 최근 {formatEssayDate(item.latestDate)}
+              </p>
+              <h2 className="mt-4 font-serif text-3xl leading-tight text-ink">
+                <Link
+                  className="hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                  href={`/series/${item.slug}`}
+                >
+                  {item.title}
+                </Link>
+              </h2>
+              <p className="mt-4 text-base leading-8 text-ink-muted">
+                {item.description}
+              </p>
+              <ul className="mt-6 space-y-3 text-sm leading-6 text-ink-muted">
+                {item.essays.map((essay) => (
+                  <li key={essay.slug}>
+                    <Link
+                      className="text-ink underline-offset-4 hover:text-accent hover:underline"
+                      href={`/essays/${essay.slug}`}
+                    >
+                      {essay.title}
+                    </Link>
+                    <span className="ml-3 text-ink-muted">
+                      {formatEssayDate(essay.date)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
         </div>
       </Section>
     </>
