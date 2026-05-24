@@ -25,7 +25,7 @@ export default async function SeriesPage() {
         <p className="mb-6 text-sm uppercase tracking-[0.18em] text-accent">
           Series
         </p>
-        <h1 className="font-serif text-5xl leading-[1.1] text-ink">
+        <h1 className="font-serif text-4xl leading-[1.1] text-ink sm:text-5xl">
           연재
         </h1>
         <p className="text-keep mt-7 text-lg leading-9 text-ink-muted">

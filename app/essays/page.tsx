@@ -26,7 +26,7 @@ export default async function EssaysPage() {
         <p className="mb-6 text-sm uppercase tracking-[0.18em] text-accent">
           Essays
         </p>
-        <h1 className="font-serif text-5xl leading-[1.1] text-ink">
+        <h1 className="font-serif text-4xl leading-[1.1] text-ink sm:text-5xl">
           에세이
         </h1>
         <p className="text-keep mt-7 text-lg leading-9 text-ink-muted">

@@ -1,7 +1,22 @@
 import type { Metadata } from "next";
+import { Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
+
+const notoSansKr = Noto_Sans_KR({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  variable: "--font-noto-sans-kr",
+});
+
+const notoSerifKr = Noto_Serif_KR({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  display: "swap",
+  variable: "--font-noto-serif-kr",
+});
 
 const siteUrl = new URL(
   process.env.NEXT_PUBLIC_SITE_URL ??
@@ -43,7 +58,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className="h-full">
+    <html
+      lang="ko"
+      className={`${notoSansKr.variable} ${notoSerifKr.variable} h-full`}
+    >
       <body className="min-h-full bg-paper text-ink antialiased">
         <div className="flex min-h-dvh flex-col">
           <SiteHeader />
