@@ -10,11 +10,10 @@ import {
 
 export default async function Home() {
   const [featuredEssays, recentEssays, series] = await Promise.all([
-    getFeaturedEssays(1),
+    getFeaturedEssays(3),
     getAllEssays(),
     getAllSeries(),
   ]);
-  const featuredEssay = featuredEssays[0];
   const latestEssays = recentEssays.slice(0, 3);
   const primarySeries = series.slice(0, 4);
 
@@ -25,11 +24,11 @@ export default async function Home() {
           Digital Study
         </p>
         <h1 className="text-keep font-serif text-4xl leading-[1.18] text-ink sm:text-5xl lg:text-[3.6rem]">
-          형사법의 오래된 질문을 차분히 보관하는 서재
+          형사법을 오래 연구하고 가르쳤습니다.
         </h1>
         <p className="text-keep mt-8 text-xl leading-9 text-ink-muted">
-          판례, 논문, 강의 노트, 그리고 사유의 흔적을 긴 호흡으로 읽을 수
-          있도록 정돈하는 원로 형사법학자의 개인 아카이브입니다.
+          이제는 법과 인간, 책임과 사회에 대해 조금 더 천천히 기록합니다.
+          판례와 제도 너머에 남는 질문들을 조용히 모아 두는 개인 서재입니다.
         </p>
       </Section>
 
@@ -37,23 +36,30 @@ export default async function Home() {
         <div className="grid gap-12 lg:grid-cols-[18rem_1fr]">
           <div>
             <p className="text-sm uppercase tracking-[0.18em] text-accent">
-              Featured Essay
+              Selected Essays
             </p>
             <h2 className="mt-4 font-serif text-3xl leading-tight text-ink">
-              먼저 읽을 글
+              먼저 놓아둔 글
             </h2>
+            <p className="mt-5 text-base leading-8 text-ink-muted">
+              이 서재의 문제의식을 먼저 보여주는 글입니다. 처벌, 책임,
+              기술과 인간에 관한 질문을 천천히 따라갑니다.
+            </p>
           </div>
           <div>
-            {featuredEssay ? (
-              <ArticleCard
-                eyebrow={`${formatEssayDate(featuredEssay.date)} · ${featuredEssay.category}`}
-                title={featuredEssay.title}
-                description={featuredEssay.description}
-                meta={`연재: ${featuredEssay.series}`}
-                href={`/essays/${featuredEssay.slug}`}
-              />
+            {featuredEssays.length > 0 ? (
+              featuredEssays.map((essay) => (
+                <ArticleCard
+                  key={essay.slug}
+                  eyebrow={`${formatEssayDate(essay.date)} · ${essay.category}`}
+                  title={essay.title}
+                  description={essay.description}
+                  meta={essay.series}
+                  href={`/essays/${essay.slug}`}
+                />
+              ))
             ) : (
-              <p className="border-t border-line py-7 text-base leading-8 text-ink-muted">
+              <p className="border-t border-line py-8 text-base leading-8 text-ink-muted">
                 대표 글로 표시할 원고가 아직 없습니다.
               </p>
             )}
@@ -68,8 +74,12 @@ export default async function Home() {
               Recent Essays
             </p>
             <h2 className="mt-4 font-serif text-3xl leading-tight text-ink">
-              최근 글
+              최근에 놓인 기록
             </h2>
+            <p className="mt-5 text-base leading-8 text-ink-muted">
+              새로 정리한 글을 날짜순으로 모았습니다. 빠른 반응보다 오래
+              생각할 수 있는 문장을 남기는 데 뜻을 둡니다.
+            </p>
           </div>
           <div>
             {latestEssays.map((essay) => (
@@ -78,7 +88,7 @@ export default async function Home() {
                 eyebrow={`${formatEssayDate(essay.date)} · ${essay.category}`}
                 title={essay.title}
                 description={essay.description}
-                meta={`연재: ${essay.series}`}
+                meta={essay.series}
                 href={`/essays/${essay.slug}`}
               />
             ))}
@@ -95,6 +105,10 @@ export default async function Home() {
             <h2 className="mt-4 font-serif text-3xl leading-tight text-ink">
               주제별 서가
             </h2>
+            <p className="mt-5 text-base leading-8 text-ink-muted">
+              같은 질문을 여러 글이 이어 받도록 시리즈로 묶었습니다. 한 편의
+              결론보다 오래 지속되는 사유의 흐름을 살펴볼 수 있습니다.
+            </p>
           </div>
           <div className="border-t border-line">
             {primarySeries.map((item) => (
@@ -116,6 +130,20 @@ export default async function Home() {
             ))}
           </div>
         </div>
+      </Section>
+
+      <Section size="reading" className="border-t border-line bg-paper-muted/35">
+        <p className="text-sm uppercase tracking-[0.18em] text-accent">
+          Archive Note
+        </p>
+        <h2 className="text-keep mt-4 font-serif text-3xl leading-tight text-ink sm:text-4xl">
+          빠른 논평보다 오래 남을 사유를 위한 공간입니다.
+        </h2>
+        <p className="text-keep mt-6 text-lg leading-9 text-ink-muted">
+          이곳의 글은 사건을 따라 급히 달려가기보다, 형사법이 인간과 사회를
+          어떻게 바라보아야 하는지 천천히 묻기 위해 놓입니다. 시간이 지나도
+          다시 펼쳐 읽을 수 있는 기록으로 남기고자 합니다.
+        </p>
       </Section>
     </>
   );
