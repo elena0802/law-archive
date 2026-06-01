@@ -14,7 +14,7 @@ type SeriesPageProps = {
 };
 
 export async function generateStaticParams() {
-  const series = await getAllSeries();
+  const series = await getAllSeries({ includeDrafts: true });
 
   return series.map((item) => ({
     slug: item.slug,
@@ -25,7 +25,7 @@ export async function generateMetadata({
   params,
 }: SeriesPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const series = await getSeriesBySlug(slug);
+  const series = await getSeriesBySlug(slug, { includeDrafts: true });
 
   if (!series) {
     return {};
@@ -47,7 +47,7 @@ export async function generateMetadata({
 
 export default async function SeriesDetailPage({ params }: SeriesPageProps) {
   const { slug } = await params;
-  const series = await getSeriesBySlug(slug);
+  const series = await getSeriesBySlug(slug, { includeDrafts: true });
 
   if (!series) {
     notFound();

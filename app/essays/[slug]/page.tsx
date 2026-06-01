@@ -27,7 +27,7 @@ type EssayPageProps = {
 };
 
 export async function generateStaticParams() {
-  const essays = await getAllEssays();
+  const essays = await getAllEssays({ includeDrafts: true });
 
   return essays.map((essay) => ({
     slug: essay.slug,
@@ -65,12 +65,12 @@ export default async function EssayPage({ params }: EssayPageProps) {
   const { slug } = await params;
   const essay = await getEssayBySlug(slug);
 
-  if (!essay || essay.draft) {
+  if (!essay) {
     notFound();
   }
 
   const seriesSlug = getSeriesSlug(essay.series);
-  const series = await getSeriesBySlug(seriesSlug);
+  const series = await getSeriesBySlug(seriesSlug, { includeDrafts: true });
   const essaysInSeries = series ? sortEssaysByDateAsc(series.essays) : [];
   const readingMinutes = estimateReadingMinutes(essay.content);
   const partLabel = getSeriesPartLabel(essaysInSeries, essay.slug);

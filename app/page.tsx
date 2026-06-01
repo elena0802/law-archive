@@ -21,8 +21,8 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const [flagshipSeries, allSeries] = await Promise.all([
-    getSeriesBySlug(siteConfig.flagshipSeriesSlug),
-    getAllSeries(),
+    getSeriesBySlug(siteConfig.flagshipSeriesSlug, { includeDrafts: true }),
+    getAllSeries({ includeDrafts: true }),
   ]);
 
   const shelfSeries = allSeries.filter(

@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SeriesPage() {
-  const series = await getAllSeries();
+  const series = await getAllSeries({ includeDrafts: true });
 
   return (
     <>
