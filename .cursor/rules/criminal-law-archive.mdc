@@ -1,0 +1,142 @@
+---
+description: Criminal Law Archive — project identity, design, and development conventions
+alwaysApply: true
+---
+
+# Criminal Law Archive
+
+This project is a dignified digital archive for a retired criminal law professor.
+
+Korean-language essays and series. Prefer minimal, focused diffs that match existing patterns.
+
+## Project Identity
+
+This is NOT:
+
+- a startup website
+- a SaaS landing page
+- a marketing site
+- a news media outlet
+
+This IS:
+
+- a scholarly archive
+- a legal essay collection
+- a long-term knowledge repository
+- a digital legacy project
+
+## Design Principles
+
+Use:
+
+- generous whitespace
+- calm typography
+- restrained visual hierarchy
+- timeless layouts
+- academic tone
+
+Avoid:
+
+- flashy gradients
+- aggressive call-to-actions
+- startup aesthetics
+- social media style engagement patterns
+
+## Typography
+
+Headings:
+
+- Noto Serif KR
+
+Body:
+
+- Noto Sans KR
+
+Typography should feel:
+
+- authoritative
+- thoughtful
+- readable
+- timeless
+
+Implementation: long-form MDX uses `.archive-prose`; Korean copy uses `.text-keep`. Page rhythm: small uppercase eyebrow → serif `h1` → muted lead → `border-line` sections.
+
+## Technical Stack
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- Vercel
+
+Future:
+
+- Supabase CMS
+
+### Next.js (16.x)
+
+- Read `node_modules/next/dist/docs/` before changing framework code; APIs differ from older Next.js.
+- `app/` pages are async Server Components. Dynamic `params` are `Promise<{ slug: string }>`.
+- No `middleware`, `app/api`, or route groups yet. Use `generateStaticParams` on `[slug]` routes where content is static.
+- Path alias: `@/*` → project root.
+
+### Content
+
+- Essays live in `content/essays/*.mdx` (exclude `_*.mdx` from publishing).
+- All reads/writes go through `lib/essays.ts` — do not duplicate filesystem logic in pages.
+- Frontmatter: `title`, `description`, `date`, `category`, `series`, `draft`, `featured` (strict string/boolean validation).
+- Series are derived from the `series` field, not separate files. Slugs use `getSeriesSlug()` (NFKC + Korean-safe).
+- Rendering: `gray-matter` + `next-mdx-remote/rsc` on `app/essays/[slug]/page.tsx`. Draft essays must `notFound()` and stay out of public lists.
+
+### UI components
+
+- Tailwind v4 tokens in `app/globals.css`: `paper`, `ink`, `line`, `accent`, `max-w-reading`, `max-w-wide`.
+- Reuse `Section`, `Container`, `ArticleCard`, `SiteHeader`, `SiteFooter`.
+
+## CMS Philosophy
+
+The primary user is a retired criminal law professor.
+
+Prioritize:
+
+- simplicity
+- reliability
+- clarity
+
+Avoid:
+
+- complex dashboards
+- unnecessary settings
+- feature overload
+
+When adding Supabase: keep public URLs `/essays/[slug]` and `/series/[slug]`; add `lib/content/` (or adapter behind `lib/essays.ts`), `app/admin/`, auth middleware, and revalidation. Store stable series slugs if titles can change.
+
+## Development Rules
+
+Before making large changes:
+
+1. Explain the plan.
+2. List affected files.
+3. Make incremental changes.
+4. Preserve existing functionality.
+
+## Visual Reference
+
+The desired quality level is similar to premium editorial journals.
+
+References:
+
+- The New Yorker
+- Aeon
+- Long Now
+- Second Season Project
+
+The site should feel closer to a journal than a blog.
+
+## Commands
+
+```bash
+npm run dev    # local
+npm run lint && npm run build   # before deploy
+```
+
+New essays: copy `content/essays/_template.mdx`, set `draft: false` to publish.

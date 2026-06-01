@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Criminal Law Archive — High-Fidelity Comps</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --paper: #f8f4ea;
+        --paper-muted: #efe7d8;
+        --ink: #1d1a15;
+        --ink-muted: #655d52;
+        --line: #d9cbb7;
+        --accent: #68462d;
+        --reading: 42rem;
+        --wide: 68rem;
+        --font-body: "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+        --font-heading: "Noto Serif KR", Georgia, serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      body {
+        background: #e8e4dc;
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      .comp-toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1.25rem;
+        background: #2a2620;
+        color: #f8f4ea;
+        font-size: 0.75rem;
+        letter-spacing: 0.04em;
+      }
+
+      .comp-toolbar strong {
+        font-weight: 500;
+        letter-spacing: 0.02em;
+      }
+
+      .comp-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+      }
+
+      .comp-tabs button {
+        border: 1px solid #5a5248;
+        background: transparent;
+        color: #efe7d8;
+        padding: 0.35rem 0.75rem;
+        font-family: inherit;
+        font-size: 0.75rem;
+        cursor: pointer;
+      }
+
+      .comp-tabs button[aria-selected="true"] {
+        background: #f8f4ea;
+        color: #1d1a15;
+        border-color: #f8f4ea;
+      }
+
+      .comp-frame {
+        display: none;
+        max-width: 1440px;
+        margin: 2rem auto 4rem;
+        box-shadow: 0 24px 80px rgba(29, 26, 21, 0.12);
+      }
+
+      .comp-frame.active {
+        display: block;
+      }
+
+      .page {
+        background: var(--paper);
+        min-height: 100vh;
+      }
+
+      .container-wide {
+        max-width: var(--wide);
+        margin: 0 auto;
+        padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+      }
+
+      .container-reading {
+        max-width: var(--reading);
+        margin: 0 auto;
+        padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+      }
+
+      /* Header */
+      .site-header {
+        border-bottom: 1px solid var(--line);
+        background: var(--paper);
+      }
+
+      .site-header-inner {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        padding: 1.5rem clamp(1.25rem, 4vw, 2.5rem);
+        max-width: var(--wide);
+        margin: 0 auto;
+      }
+
+      @media (min-width: 640px) {
+        .site-header-inner {
+          flex-direction: row;
+          align-items: flex-end;
+          justify-content: space-between;
+        }
+      }
+
+      .wordmark {
+        font-family: var(--font-heading);
+        font-size: 1.35rem;
+        font-weight: 400;
+        color: var(--ink);
+        text-decoration: none;
+        letter-spacing: -0.01em;
+      }
+
+      .nav ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.25rem 1.5rem;
+        list-style: none;
+        padding: 0;
+      }
+
+      .nav a {
+        font-size: 0.8125rem;
+        letter-spacing: 0.12em;
+        text-transform: none;
+        color: var(--ink-muted);
+        text-decoration: none;
+      }
+
+      .nav a:hover,
+      .nav a.active {
+        color: var(--ink);
+      }
+
+      .nav a.active {
+        border-bottom: 1px solid var(--accent);
+        padding-bottom: 2px;
+      }
+
+      /* Typography */
+      .eyebrow {
+        font-size: 0.8125rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 1.25rem;
+      }
+
+      h1,
+      .h1 {
+        font-family: var(--font-heading);
+        font-weight: 400;
+        font-size: clamp(2.25rem, 5vw, 3.35rem);
+        line-height: 1.12;
+        color: var(--ink);
+        word-break: keep-all;
+      }
+
+      h2,
+      .h2 {
+        font-family: var(--font-heading);
+        font-weight: 400;
+        font-size: clamp(1.75rem, 3vw, 2.25rem);
+        line-height: 1.2;
+        color: var(--ink);
+      }
+
+      h3,
+      .h3 {
+        font-family: var(--font-heading);
+        font-weight: 400;
+        font-size: 1.35rem;
+        line-height: 1.3;
+      }
+
+      .lead {
+        margin-top: 1.75rem;
+        font-size: 1.125rem;
+        line-height: 1.85;
+        color: var(--ink-muted);
+        word-break: keep-all;
+      }
+
+      .deck {
+        margin-top: 1.25rem;
+        font-size: 1.125rem;
+        line-height: 1.75;
+        color: var(--ink-muted);
+        word-break: keep-all;
+      }
+
+      .section {
+        padding: clamp(3.5rem, 7vw, 6rem) 0;
+      }
+
+      .section-tight {
+        padding: clamp(2.5rem, 5vw, 4rem) 0;
+      }
+
+      .rule {
+        border: none;
+        border-top: 1px solid var(--line);
+        margin: 0;
+      }
+
+      .back-link {
+        font-size: 0.8125rem;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .back-link:hover {
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+      }
+
+      .breadcrumb {
+        margin-top: 2.5rem;
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+      }
+
+      .breadcrumb a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      .meta-row {
+        margin-top: 1rem;
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+      }
+
+      /* Home hero series */
+      .hero-series {
+        margin-top: 0.5rem;
+        padding: clamp(2rem, 5vw, 3.5rem) 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        background: linear-gradient(
+          180deg,
+          rgba(239, 231, 216, 0.35) 0%,
+          transparent 100%
+        );
+      }
+
+      .hero-series .h1 {
+        font-size: clamp(2.5rem, 6vw, 3.75rem);
+      }
+
+      .hero-meta {
+        margin-top: 1.25rem;
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+      }
+
+      .hero-cta {
+        display: inline-block;
+        margin-top: 1.75rem;
+        font-size: 0.9375rem;
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px solid var(--accent);
+        padding-bottom: 2px;
+      }
+
+      .hero-toc {
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--line);
+      }
+
+      .hero-toc-label {
+        font-size: 0.75rem;
+        letter-spacing: 0.14em;
+        color: var(--ink-muted);
+        margin-bottom: 1rem;
+      }
+
+      .hero-toc ol {
+        list-style: none;
+        padding: 0;
+        counter-reset: toc;
+      }
+
+      .hero-toc li {
+        counter-increment: toc;
+        padding: 0.65rem 0;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        gap: 1rem;
+        align-items: baseline;
+      }
+
+      .hero-toc li::before {
+        content: counter(toc);
+        font-size: 0.8125rem;
+        color: var(--accent);
+        min-width: 1.25rem;
+      }
+
+      .hero-toc a {
+        color: var(--ink);
+        text-decoration: none;
+        font-family: var(--font-heading);
+        font-size: 1.0625rem;
+      }
+
+      .hero-toc a:hover {
+        color: var(--accent);
+      }
+
+      /* Series shelf */
+      .shelf-grid {
+        display: grid;
+        gap: 0;
+        margin-top: 2rem;
+      }
+
+      @media (min-width: 640px) {
+        .shelf-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .volume {
+        padding: 1.75rem 0;
+        border-top: 1px solid var(--line);
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+
+      .volume:hover h3 {
+        color: var(--accent);
+      }
+
+      .volume-meta {
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        color: var(--ink-muted);
+        margin-bottom: 0.5rem;
+      }
+
+      .quiet-link {
+        display: inline-block;
+        margin-top: 2rem;
+        font-size: 0.875rem;
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .quiet-link:hover {
+        text-decoration: underline;
+      }
+
+      /* Prose */
+      .archive-prose {
+        margin-top: 2.5rem;
+        font-size: 1.0625rem;
+        line-height: 1.85;
+        word-break: keep-all;
+        color: var(--ink);
+      }
+
+      .archive-prose p + p {
+        margin-top: 1.35em;
+      }
+
+      .archive-prose h2 {
+        margin-top: 2em;
+        font-size: 1.5rem;
+      }
+
+      /* Essay footer */
+      .essay-footer {
+        margin-top: 3.5rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--line);
+      }
+
+      .essay-footer h4 {
+        font-size: 0.75rem;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+      }
+
+      .citation-box {
+        background: var(--paper-muted);
+        border: 1px solid var(--line);
+        padding: 1rem 1.25rem;
+        font-size: 0.875rem;
+        line-height: 1.7;
+        color: var(--ink-muted);
+      }
+
+      .sibling-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 2rem;
+      }
+
+      .sibling-list li {
+        padding: 0.5rem 0;
+      }
+
+      .sibling-list a {
+        color: var(--ink);
+        text-decoration: none;
+        font-family: var(--font-heading);
+      }
+
+      .sibling-list a:hover {
+        color: var(--accent);
+      }
+
+      /* Series TOC */
+      .catalogue {
+        margin-top: 2rem;
+      }
+
+      .catalogue-row {
+        display: grid;
+        grid-template-columns: 2rem 1fr auto;
+        gap: 1rem;
+        align-items: baseline;
+        padding: 1.1rem 0;
+        border-top: 1px solid var(--line);
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .catalogue-row:hover .cat-title {
+        color: var(--accent);
+      }
+
+      .cat-num {
+        font-size: 0.875rem;
+        color: var(--accent);
+      }
+
+      .cat-title {
+        font-family: var(--font-heading);
+        font-size: 1.125rem;
+        transition: color 0.15s;
+      }
+
+      .cat-date {
+        font-size: 0.8125rem;
+        color: var(--ink-muted);
+        white-space: nowrap;
+      }
+
+      /* About */
+      .about-section {
+        padding: 2.5rem 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .about-section:first-of-type {
+        border-top: none;
+        padding-top: 0;
+      }
+
+      .about-section p,
+      .about-section li {
+        margin-top: 0.85em;
+        color: var(--ink);
+        line-height: 1.8;
+        word-break: keep-all;
+      }
+
+      .about-section ul {
+        padding-left: 1.25rem;
+      }
+
+      .timeline {
+        margin-top: 1.25rem;
+      }
+
+      .timeline-row {
+        display: grid;
+        grid-template-columns: 4.5rem 1fr;
+        gap: 1.5rem;
+        padding: 0.85rem 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .timeline-year {
+        font-size: 0.875rem;
+        color: var(--accent);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .pub-item {
+        padding: 0.5rem 0;
+        font-size: 0.9375rem;
+        line-height: 1.75;
+      }
+
+      .collapsible-note {
+        margin-top: 3rem;
+        padding: 1.25rem 0;
+        border-top: 1px solid var(--line);
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+      }
+
+      /* Footer */
+      .site-footer {
+        border-top: 1px solid var(--line);
+        background: var(--paper-muted);
+        padding: 2rem clamp(1.25rem, 4vw, 2.5rem);
+      }
+
+      .site-footer-inner {
+        max-width: var(--wide);
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--ink-muted);
+      }
+
+      @media (min-width: 640px) {
+        .site-footer-inner {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+      }
+
+      .label-comp {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: var(--accent);
+        color: var(--paper);
+        font-size: 0.625rem;
+        letter-spacing: 0.12em;
+        padding: 0.35rem 0.6rem;
+      }
+
+      .page-wrap {
+        position: relative;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="comp-toolbar">
+      <strong>Hi-Fi Comps · Criminal Law Archive</strong>
+      <div class="comp-tabs" role="tablist">
+        <button type="button" role="tab" aria-selected="true" data-comp="home">
+          서재
+        </button>
+        <button type="button" role="tab" aria-selected="false" data-comp="essay">
+          글 상세
+        </button>
+        <button type="button" role="tab" aria-selected="false" data-comp="series">
+          연재 상세
+        </button>
+        <button type="button" role="tab" aria-selected="false" data-comp="about">
+          서재 소개
+        </button>
+      </div>
+    </div>
+
+    <!-- HOME -->
+    <div id="comp-home" class="comp-frame active">
+      <div class="page page-wrap">
+        <span class="label-comp">HOME</span>
+        <header class="site-header">
+          <div class="site-header-inner">
+            <a class="wordmark" href="#">형사법 아카이브</a>
+            <nav class="nav" aria-label="주 메뉴">
+              <ul>
+                <li><a href="#" class="active">서재</a></li>
+                <li><a href="#">글</a></li>
+                <li><a href="#">연재</a></li>
+                <li><a href="#">서재 소개</a></li>
+              </ul>
+            </nav>
+          </div>
+        </header>
+
+        <section class="section">
+          <div class="container-reading">
+            <p class="eyebrow">디지털 서재</p>
+            <h1 class="h1">형사법을 오래 연구하고<br />가르쳤습니다.</h1>
+            <p class="lead">
+              판례와 제도 너머에 남는 질문들을 조용히 모아 두는 개인 서재입니다.
+              이곳의 글은 빠른 논평보다 오래 남을 사유를 위해 놓입니다.
+            </p>
+          </div>
+        </section>
+
+        <section class="hero-series">
+          <div class="container-reading">
+            <p class="eyebrow">대표 연재</p>
+            <h2 class="h1">형벌과 사회</h2>
+            <p class="lead" style="margin-top: 1.25rem">
+              국가 형벌권, 복수의 감정, 공동체의 응답을 형사법의 언어로 차분히
+              따라가는 연재입니다. 한 편의 결론보다 오래 지속되는 질문의
+              흐름을 기록합니다.
+            </p>
+            <p class="hero-meta">3편 · 2026년 5월 6일 – 5월 20일</p>
+            <a class="hero-cta" href="#">연재 읽기</a>
+            <div class="hero-toc">
+              <p class="hero-toc-label">목차</p>
+              <ol>
+                <li>
+                  <a href="#">왜 사람은 처벌을 원하는가</a>
+                </li>
+                <li>
+                  <a href="#">형벌은 복수와 어떻게 다른가</a>
+                </li>
+                <li>
+                  <a href="#">국가가 처벌할 수 있다는 것은 무엇인가</a>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-tight">
+          <div class="container-wide">
+            <p class="eyebrow">연재 서가</p>
+            <h2 class="h2">주제별 서가</h2>
+            <p class="lead" style="font-size: 1rem; margin-top: 1rem">
+              같은 질문을 여러 글이 이어 받도록 묶었습니다.
+            </p>
+            <div class="shelf-grid">
+              <a class="volume" href="#">
+                <p class="volume-meta">2편 · 최근 2026년 5월 24일</p>
+                <h3>AI와 형사법</h3>
+                <p class="lead" style="font-size: 0.9375rem; margin-top: 0.5rem">
+                  기술이 형사절차와 책임 개념에 던지는 질문
+                </p>
+              </a>
+              <a class="volume" href="#">
+                <p class="volume-meta">1편 · 최근 2026년 5월 15일</p>
+                <h3>법과 인간</h3>
+                <p class="lead" style="font-size: 0.9375rem; margin-top: 0.5rem">
+                  법이 인간을 어디까지 바꿀 수 있는가
+                </p>
+              </a>
+              <a class="volume" href="#">
+                <p class="volume-meta">2편 · 최근 2026년 5월 12일</p>
+                <h3>로스쿨 시대</h3>
+                <p class="lead" style="font-size: 0.9375rem; margin-top: 0.5rem">
+                  법학 교육과 법조인의 사유 방식
+                </p>
+              </a>
+              <a class="volume" href="#">
+                <p class="volume-meta">1편 · 최근 2026년 5월 30일</p>
+                <h3>형사법 교수로 산다는 것</h3>
+                <p class="lead" style="font-size: 0.9375rem; margin-top: 0.5rem">
+                  강의실과 연구실의 기록
+                </p>
+              </a>
+            </div>
+            <a class="quiet-link" href="#">모든 연재 보기</a>
+          </div>
+        </section>
+
+        <footer class="site-footer">
+          <div class="site-footer-inner">
+            <span>형사법 아카이브</span>
+            <span>형사법의 글과 강의 노트를 조용히 모으는 디지털 서재</span>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- ESSAY -->
+    <div id="comp-essay" class="comp-frame">
+      <div class="page page-wrap">
+        <span class="label-comp">ESSAY</span>
+        <header class="site-header">
+          <div class="site-header-inner">
+            <a class="wordmark" href="#">형사법 아카이브</a>
+            <nav class="nav" aria-label="주 메뉴">
+              <ul>
+                <li><a href="#">서재</a></li>
+                <li><a href="#" class="active">글</a></li>
+                <li><a href="#">연재</a></li>
+                <li><a href="#">서재 소개</a></li>
+              </ul>
+            </nav>
+          </div>
+        </header>
+
+        <article class="section">
+          <div class="container-reading">
+            <a class="back-link" href="#">← 글 목록</a>
+            <p class="breadcrumb">
+              <a href="#">연재</a> › <a href="#">형벌과 사회</a>
+            </p>
+            <p class="meta-row">
+              형벌론 · 2026년 5월 18일 · 약 6분 · 제2편 / 총 3편
+            </p>
+            <h1 class="h1" style="margin-top: 1.25rem">
+              형벌은 복수와 어떻게 다른가
+            </h1>
+            <p class="deck">
+              복수의 충동과 형벌의 제도적 한계를 구별하기 위한 예비 노트.
+            </p>
+
+            <div class="archive-prose">
+              <p>
+                복수는 상처의 기억에서 출발한다. 자신이나 가까운 사람이 부당한
+                해를 입었을 때, 인간은 그 고통이 아무 일도 아니었던 것처럼
+                지나가기를 견디기 어렵다. 그래서 복수의 감정은 인간에게 낯선
+                것이 아니다.
+              </p>
+              <p>
+                형벌도 이 기억을 완전히 외면하지 않는다. 형벌이 피해를 입은
+                사람의 고통과 아무 관련이 없다고 말한다면, 법은 지나치게 차갑고
+                추상적인 제도가 될 것이다. 그러나 형벌은 복수와 같은 길을 걷지
+                않는다.
+              </p>
+              <h2>제도로서의 자제</h2>
+              <p>
+                형벌은 개인의 손에 있는 응답을 국가의 절차 안으로 옮겨 놓고, 그
+                과정에서 반드시 책임과 비례의 원칙을 통과하게 한다. 우리가
+                형벌을 제도라고 부르는 이유는 바로 여기에 있다.
+              </p>
+            </div>
+
+            <footer class="essay-footer">
+              <h4>인용</h4>
+              <div class="citation-box">
+                ○○○, 「형벌은 복수와 어떻게 다른가」, 형사법 아카이브, 2026. 5.
+                18., https://example.org/essays/punishment-and-revenge
+                <span style="display: block; margin-top: 0.5rem; color: var(--accent)"
+                  >[복사]</span
+                >
+              </div>
+              <h4 style="margin-top: 2rem">같은 연재</h4>
+              <ul class="sibling-list">
+                <li><a href="#">왜 사람은 처벌을 원하는가</a></li>
+                <li>
+                  <a href="#">국가가 처벌할 수 있다는 것은 무엇인가</a>
+                </li>
+              </ul>
+            </footer>
+          </div>
+        </article>
+
+        <footer class="site-footer">
+          <div class="site-footer-inner">
+            <span>형사법 아카이브</span>
+            <span>형사법의 글과 강의 노트를 조용히 모으는 디지털 서재</span>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- SERIES -->
+    <div id="comp-series" class="comp-frame">
+      <div class="page page-wrap">
+        <span class="label-comp">SERIES</span>
+        <header class="site-header">
+          <div class="site-header-inner">
+            <a class="wordmark" href="#">형사법 아카이브</a>
+            <nav class="nav" aria-label="주 메뉴">
+              <ul>
+                <li><a href="#">서재</a></li>
+                <li><a href="#">글</a></li>
+                <li><a href="#" class="active">연재</a></li>
+                <li><a href="#">서재 소개</a></li>
+              </ul>
+            </nav>
+          </div>
+        </header>
+
+        <section class="section">
+          <div class="container-reading">
+            <a class="back-link" href="#">← 연재 목록</a>
+            <p class="eyebrow" style="margin-top: 2.5rem">연재</p>
+            <h1 class="h1">형벌과 사회</h1>
+            <p class="lead">
+              국가 형벌권과 공동체의 응답을 형사법의 관점에서 차분히 정리하는
+              연재입니다. 복수의 감정과 제도적 형벌이 만나는 지점에서, 우리는
+              무엇을 묻어야 하는가.
+            </p>
+            <p class="meta-row">3편 · 2026년 5월 6일 – 2026년 5월 20일</p>
+
+            <h2 class="h2" style="margin-top: 3rem">목차</h2>
+            <div class="catalogue">
+              <a class="catalogue-row" href="#">
+                <span class="cat-num">1</span>
+                <span class="cat-title">왜 사람은 처벌을 원하는가</span>
+                <span class="cat-date">2026년 5월 20일</span>
+              </a>
+              <a class="catalogue-row" href="#">
+                <span class="cat-num">2</span>
+                <span class="cat-title">형벌은 복수와 어떻게 다른가</span>
+                <span class="cat-date">2026년 5월 18일</span>
+              </a>
+              <a class="catalogue-row" href="#">
+                <span class="cat-num">3</span>
+                <span class="cat-title"
+                  >국가가 처벌할 수 있다는 것은 무엇인가</span
+                >
+                <span class="cat-date">2026년 5월 6일</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <footer class="site-footer">
+          <div class="site-footer-inner">
+            <span>형사법 아카이브</span>
+            <span>형사법의 글과 강의 노트를 조용히 모으는 디지털 서재</span>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div id="comp-about" class="comp-frame">
+      <div class="page page-wrap">
+        <span class="label-comp">ABOUT</span>
+        <header class="site-header">
+          <div class="site-header-inner">
+            <a class="wordmark" href="#">형사법 아카이브</a>
+            <nav class="nav" aria-label="주 메뉴">
+              <ul>
+                <li><a href="#">서재</a></li>
+                <li><a href="#">글</a></li>
+                <li><a href="#">연재</a></li>
+                <li><a href="#" class="active">서재 소개</a></li>
+              </ul>
+            </nav>
+          </div>
+        </header>
+
+        <section class="section">
+          <div class="container-reading">
+            <p class="eyebrow">서재 소개</p>
+            <h1 class="h1">학자 소개</h1>
+            <p class="lead">
+              이 서재를 짓는 형사법학자에 대한 기록입니다. 글과 강의, 연구의
+              궤적을 한곳에 모았습니다.
+            </p>
+
+            <div class="about-section">
+              <h2 class="h2">학력 및 약력</h2>
+              <p>
+                서울에서 성장하여 법학을 공부했고, 형사법을 전공으로 학문과
+                교육에 오랜 세월을 바쳤다. 여러 대학에서 형사법을 가르치며
+                형벌론·형사책임론·국가형벌권을 중심으로 연구해 왔다. 은퇴
+                이후에는 강의실에서 나누던 질문들을 글로 옮기며 이 디지털
+                서재를 열었다.
+              </p>
+            </div>
+
+            <div class="about-section">
+              <h2 class="h2">연구 분야</h2>
+              <ul>
+                <li>형벌론과 형벌의 정당화</li>
+                <li>형사책임과 고의·과실</li>
+                <li>국가형벌권의 한계</li>
+                <li>디지털 시대의 형사법</li>
+                <li>법조윤리와 법학교육</li>
+              </ul>
+            </div>
+
+            <div class="about-section">
+              <h2 class="h2">주요 저서 및 논문</h2>
+              <p class="pub-item">
+                《형사법 총론》(가상출판사, 1998) — 대학 교재로 오랫동안
+                사용되었다.
+              </p>
+              <p class="pub-item">
+                《형벌의 한계》(가상출판사, 2008)
+              </p>
+              <p class="pub-item">
+                「국가형벌권의 정당화」, 가상법학 (2015)
+              </p>
+              <p class="pub-item">
+                「디지털 증거와 형사절차」, 가상형사법연구 (2022)
+              </p>
+            </div>
+
+            <div class="about-section">
+              <h2 class="h2">학술 연표</h2>
+              <div class="timeline">
+                <div class="timeline-row">
+                  <span class="timeline-year">1972</span>
+                  <span>법학 학위 취득</span>
+                </div>
+                <div class="timeline-row">
+                  <span class="timeline-year">1985</span>
+                  <span>○○대학교 법학전문대학원 교수 임용</span>
+                </div>
+                <div class="timeline-row">
+                  <span class="timeline-year">2008</span>
+                  <span>《형벌의 한계》 출간</span>
+                </div>
+                <div class="timeline-row">
+                  <span class="timeline-year">2020</span>
+                  <span>정년 은퇴</span>
+                </div>
+                <div class="timeline-row">
+                  <span class="timeline-year">2026</span>
+                  <span>형사법 아카이브 개설</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="about-section">
+              <h2 class="h2">이 서재에 대하여</h2>
+              <p>
+                빠른 논평보다 오래 남을 사유를 위한 공간입니다. 시간이 지나도
+                다시 펼쳐 읽을 수 있는 기록으로 남기고자 합니다.
+              </p>
+            </div>
+
+            <p class="collapsible-note">
+              ▼ 서재 안내 — 원고 추가 방법 (편집자용, 접이식)
+            </p>
+          </div>
+        </section>
+
+        <footer class="site-footer">
+          <div class="site-footer-inner">
+            <span>형사법 아카이브</span>
+            <span>형사법의 글과 강의 노트를 조용히 모으는 디지털 서재</span>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script>
+      const tabs = document.querySelectorAll(".comp-tabs button");
+      const frames = document.querySelectorAll(".comp-frame");
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const id = tab.dataset.comp;
+          tabs.forEach((t) =>
+            t.setAttribute("aria-selected", t === tab ? "true" : "false"),
+          );
+          frames.forEach((f) => {
+            f.classList.toggle("active", f.id === `comp-${id}`);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
