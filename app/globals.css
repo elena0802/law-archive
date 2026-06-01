@@ -59,6 +59,29 @@ a {
   word-break: keep-all;
 }
 
+.sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.sr-only:focus,
+.focus\:not-sr-only:focus {
+  clip: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  position: absolute;
+  white-space: normal;
+  width: auto;
+}
+
 .archive-prose {
   max-width: var(--container-reading);
   color: var(--ink);

@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
+import { getSeriesIntroduction } from "@/lib/series";
 
 const essaysDirectory = path.join(process.cwd(), "content", "essays");
 
@@ -23,8 +24,10 @@ export type EssaySeries = {
   title: string;
   slug: string;
   description: string;
+  introduction: string;
   count: number;
   essays: Essay[];
+  firstDate: string;
   latestDate: string;
 };
 
@@ -88,6 +91,54 @@ export function formatEssayDate(date: string) {
     month: "long",
     year: "numeric",
   }).format(new Date(date));
+}
+
+export function sortEssaysByDateAsc(essays: Essay[]) {
+  return [...essays].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+  );
+}
+
+/** Rough reading time for Korean long-form prose (~500 chars/min). */
+export function estimateReadingMinutes(content: string) {
+  const plain = content
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/[#>*\[\]`_-]/g, " ")
+    .replace(/\s+/g, "");
+  const minutes = Math.round(plain.length / 500);
+
+  return Math.max(1, minutes);
+}
+
+export function getSeriesPartLabel(essays: Essay[], currentSlug: string) {
+  if (essays.length <= 1) {
+    return null;
+  }
+
+  const ordered = sortEssaysByDateAsc(essays);
+  const index = ordered.findIndex((essay) => essay.slug === currentSlug);
+
+  if (index < 0) {
+    return null;
+  }
+
+  return `제${index + 1}편 / 총 ${ordered.length}편`;
+}
+
+export function formatSeriesDateRange(essays: Essay[]) {
+  if (essays.length === 0) {
+    return "";
+  }
+
+  const sorted = sortEssaysByDateAsc(essays);
+  const earliest = formatEssayDate(sorted[0].date);
+  const latest = formatEssayDate(sorted[sorted.length - 1].date);
+
+  if (sorted.length === 1) {
+    return earliest;
+  }
+
+  return `${earliest} – ${latest}`;
 }
 
 export function getSeriesSlug(series: string) {
@@ -173,13 +224,18 @@ export async function getAllSeries(): Promise<EssaySeries[]> {
       const sortedEssays = [...essaysInSeries].sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
       );
+      const sortedAsc = sortEssaysByDateAsc(essaysInSeries);
+      const slug = getSeriesSlug(title);
+      const description = getSeriesDescription(title, sortedEssays.length);
 
       return {
         title,
-        slug: getSeriesSlug(title),
-        description: getSeriesDescription(title, sortedEssays.length),
+        slug,
+        description,
+        introduction: getSeriesIntroduction(slug, description),
         count: sortedEssays.length,
         essays: sortedEssays,
+        firstDate: sortedAsc[0].date,
         latestDate: sortedEssays[0].date,
       };
     })

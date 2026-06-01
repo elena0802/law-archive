@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
 const notoSansKr = Noto_Sans_KR({
@@ -25,17 +26,14 @@ const siteUrl = new URL(
       : "http://localhost:3000"),
 );
 
-const siteDescription =
-  "형사법을 오래 연구하고 가르친 학자의 글과 사유를 에세이와 시리즈로 정리한 디지털 서재입니다.";
-
 export const metadata: Metadata = {
   metadataBase: siteUrl,
   title: {
-    default: "Criminal Law Archive",
-    template: "%s | Criminal Law Archive",
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
   },
-  description: siteDescription,
-  applicationName: "Criminal Law Archive",
+  description: siteConfig.description,
+  applicationName: siteConfig.name,
   alternates: {
     canonical: "/",
   },
@@ -43,10 +41,10 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
   },
   openGraph: {
-    title: "Criminal Law Archive",
-    description: siteDescription,
+    title: siteConfig.name,
+    description: siteConfig.description,
     url: "/",
-    siteName: "Criminal Law Archive",
+    siteName: siteConfig.name,
     locale: "ko_KR",
     type: "website",
   },
@@ -63,9 +61,17 @@ export default function RootLayout({
       className={`${notoSansKr.variable} ${notoSerifKr.variable} h-full`}
     >
       <body className="min-h-full bg-paper text-ink antialiased">
+        <a
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-paper focus:px-3 focus:py-2 focus:text-sm focus:text-ink focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-accent"
+          href="#main-content"
+        >
+          본문으로 건너뛰기
+        </a>
         <div className="flex min-h-dvh flex-col">
           <SiteHeader />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1" id="main-content">
+            {children}
+          </main>
           <SiteFooter />
         </div>
       </body>

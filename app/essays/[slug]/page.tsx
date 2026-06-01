@@ -1,9 +1,24 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import { CitationBlock } from "@/components/citation-block";
+import {
+  EssayBreadcrumb,
+  EssayDetailNav,
+  EssayMetaRow,
+} from "@/components/essay-meta";
 import { Section } from "@/components/section";
-import { formatEssayDate, getAllEssays, getEssayBySlug } from "@/lib/essays";
+import { SeriesSiblings } from "@/components/series-siblings";
+import {
+  estimateReadingMinutes,
+  getAllEssays,
+  getEssayBySlug,
+  getSeriesBySlug,
+  getSeriesPartLabel,
+  getSeriesSlug,
+  sortEssaysByDateAsc,
+} from "@/lib/essays";
+import { formatEssayCitation, getSiteOrigin } from "@/lib/site";
 
 type EssayPageProps = {
   params: Promise<{
@@ -54,41 +69,53 @@ export default async function EssayPage({ params }: EssayPageProps) {
     notFound();
   }
 
+  const seriesSlug = getSeriesSlug(essay.series);
+  const series = await getSeriesBySlug(seriesSlug);
+  const essaysInSeries = series ? sortEssaysByDateAsc(series.essays) : [];
+  const readingMinutes = estimateReadingMinutes(essay.content);
+  const partLabel = getSeriesPartLabel(essaysInSeries, essay.slug);
+  const citation = formatEssayCitation({
+    title: essay.title,
+    slug: essay.slug,
+    date: essay.date,
+    siteOrigin: getSiteOrigin(),
+  });
+
   return (
     <Section size="reading" className="py-page">
-      <Link
-        className="text-sm uppercase tracking-[0.16em] text-accent underline-offset-4 hover:underline"
-        href="/essays"
-      >
-        Essays로 돌아가기
-      </Link>
+      <EssayDetailNav />
+      <EssayBreadcrumb seriesTitle={essay.series} />
 
-      <article className="mt-12">
+      <article className="mt-8">
         <header className="border-b border-line pb-10">
-          <p className="text-sm uppercase tracking-[0.18em] text-accent">
-            {essay.category}
-          </p>
+          <EssayMetaRow
+            category={essay.category}
+            date={essay.date}
+            partLabel={partLabel}
+            readingMinutes={readingMinutes}
+            seriesTitle={essay.series}
+          />
           <h1 className="text-keep mt-5 font-serif text-4xl leading-[1.18] text-ink sm:text-5xl">
             {essay.title}
           </h1>
           <p className="text-keep mt-6 text-lg leading-9 text-ink-muted">
             {essay.description}
           </p>
-          <dl className="mt-7 grid gap-3 text-sm leading-6 text-ink-muted sm:grid-cols-2">
-            <div>
-              <dt className="sr-only">작성일</dt>
-              <dd>{formatEssayDate(essay.date)}</dd>
-            </div>
-            <div>
-              <dt className="sr-only">연재</dt>
-              <dd>연재: {essay.series}</dd>
-            </div>
-          </dl>
         </header>
 
         <div className="archive-prose mt-12">
           <MDXRemote source={essay.content} />
         </div>
+
+        <footer className="mt-14 space-y-10 border-t border-line pt-10">
+          <CitationBlock citation={citation} />
+          {essaysInSeries.length > 0 ? (
+            <SeriesSiblings
+              currentSlug={essay.slug}
+              essays={essaysInSeries}
+            />
+          ) : null}
+        </footer>
       </article>
     </Section>
   );
