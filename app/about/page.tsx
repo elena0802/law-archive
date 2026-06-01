@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AboutSection } from "@/components/about-section";
+import { ProfileNarrative } from "@/components/profile-narrative";
+import { ProfileSelectedBooks } from "@/components/profile-selected-books";
 import { Section } from "@/components/section";
+import { scholarProfile } from "@/lib/profile";
+import { researchPagePath } from "@/lib/research-record";
 import { siteConfig } from "@/lib/site";
 
 const { about } = siteConfig;
+const profile = scholarProfile;
 
 export const metadata: Metadata = {
   title: "서재 소개",
@@ -28,77 +34,39 @@ export default function AboutPage() {
           {about.pageTitle}
         </p>
         <h1 className="text-keep font-serif text-4xl leading-[1.12] text-ink sm:text-5xl">
-          {about.scholarName}
+          {profile.name}
         </h1>
         <p className="mt-3 text-base tracking-wide text-ink-muted">
-          {about.role}
+          {profile.role}
         </p>
       </header>
 
       <div className="mt-14 space-y-10">
-        <AboutSection heading={about.introduction.heading} id="introduction">
-          {about.introduction.paragraphs.map((paragraph) => (
+        <ProfileNarrative section={profile.introduction} />
+        <ProfileNarrative section={profile.academicBackground} />
+        <AboutSection heading={profile.research.heading} id={profile.research.id}>
+          {profile.research.paragraphs.map((paragraph) => (
             <p key={paragraph} className="text-keep not-first:mt-5">
               {paragraph}
             </p>
           ))}
+          <p className="text-keep mt-5 text-base leading-[1.85] text-ink-muted">
+            <Link
+              href={researchPagePath}
+              className="text-ink underline decoration-line underline-offset-4 hover:text-accent"
+            >
+              연구업적
+            </Link>
+            에서 대표 논문과 연도별 연구 목록을 볼 수 있습니다.
+          </p>
         </AboutSection>
-
-        <AboutSection
-          heading={about.academicBackground.heading}
-          id="academic-background"
-        >
-          {about.academicBackground.paragraphs.map((paragraph) => (
-            <p key={paragraph} className="text-keep not-first:mt-5">
-              {paragraph}
-            </p>
-          ))}
-        </AboutSection>
-
-        <AboutSection heading={about.research.heading} id="research">
-          {about.research.paragraphs.map((paragraph) => (
-            <p key={paragraph} className="text-keep not-first:mt-5">
-              {paragraph}
-            </p>
-          ))}
-        </AboutSection>
-
-        <AboutSection
-          heading={about.academicActivities.heading}
-          id="academic-activities"
-        >
-          {about.academicActivities.paragraphs.map((paragraph) => (
-            <p key={paragraph} className="text-keep not-first:mt-5">
-              {paragraph}
-            </p>
-          ))}
-        </AboutSection>
-
-        <AboutSection heading={about.publicService.heading} id="public-service">
-          {about.publicService.paragraphs.map((paragraph) => (
-            <p key={paragraph} className="text-keep not-first:mt-5">
-              {paragraph}
-            </p>
-          ))}
-        </AboutSection>
-
-        <AboutSection heading={about.selectedBooks.heading} id="selected-books">
-          <ul className="list-none space-y-3 p-0">
-            {about.selectedBooks.items.map((item) => (
-              <li key={item.citation} className="text-keep">
-                {item.citation}
-              </li>
-            ))}
-          </ul>
-        </AboutSection>
-
-        <AboutSection heading={about.whyArchive.heading} id="why-archive">
-          {about.whyArchive.paragraphs.map((paragraph) => (
-            <p key={paragraph} className="text-keep not-first:mt-5">
-              {paragraph}
-            </p>
-          ))}
-        </AboutSection>
+        <ProfileNarrative section={profile.academicActivities} />
+        <ProfileNarrative section={profile.publicService} />
+        <ProfileSelectedBooks
+          section={profile.selectedBooks}
+          intro="강의와 연구를 바탕으로 집필한 대표 저서입니다. 수험용 총서가 아니라, 형사법의 기본 문제를 차분히 정리한 교재와 논저입니다."
+        />
+        <ProfileNarrative section={profile.whyArchive} />
       </div>
 
       <details className="mt-14 border-t border-line pt-8 text-sm leading-7 text-ink-muted">
