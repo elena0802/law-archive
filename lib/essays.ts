@@ -424,3 +424,67 @@ export async function searchEssays(query: string): Promise<Essay[]> {
     return haystack.includes(normalizedQuery);
   });
 }
+
+function tokenizeForOverlap(input: string) {
+  return input
+    .toLocaleLowerCase()
+    .split(/[^0-9a-zA-Z가-힣]+/)
+    .map((token) => token.trim())
+    .filter((token) => token.length >= 2);
+}
+
+function keywordOverlapScore(current: Essay, candidate: Essay) {
+  const currentTokens = new Set(
+    tokenizeForOverlap(`${current.title} ${current.description}`),
+  );
+  if (currentTokens.size === 0) {
+    return 0;
+  }
+
+  const candidateTokens = new Set(
+    tokenizeForOverlap(`${candidate.title} ${candidate.description}`),
+  );
+  for (const token of currentTokens) {
+    if (candidateTokens.has(token)) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+export async function getRelatedEssays(currentEssay: Essay, limit = 3) {
+  const essays = await getAllEssays();
+  const candidates = essays.filter((essay) => essay.slug !== currentEssay.slug);
+
+  const ranked = candidates
+    .map((essay) => {
+      let score = 0;
+      if (essay.category === currentEssay.category) {
+        score += 3;
+      }
+      if (essay.series === currentEssay.series) {
+        score += 2;
+      }
+      score += keywordOverlapScore(currentEssay, essay);
+
+      return { essay, score };
+    })
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        new Date(b.essay.date).getTime() - new Date(a.essay.date).getTime(),
+    );
+
+  const withSignal = ranked.filter((item) => item.score > 0).slice(0, limit);
+  if (withSignal.length >= limit) {
+    return withSignal.map((item) => item.essay);
+  }
+
+  const fallback = ranked
+    .filter((item) => item.score === 0)
+    .slice(0, limit - withSignal.length)
+    .map((item) => item.essay);
+
+  return [...withSignal.map((item) => item.essay), ...fallback].slice(0, limit);
+}

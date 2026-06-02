@@ -11,6 +11,8 @@ import type { Essay } from "@/lib/essays";
 import { isPublishedEssayStatus } from "@/lib/content/essay-status";
 import {
   estimateReadingMinutes,
+  formatEssayDate,
+  getRelatedEssays,
   getSeriesBySlug,
   getSeriesPartLabel,
   getSeriesSlug,
@@ -57,6 +59,7 @@ export async function EssayArticleView({
     date: essay.date,
     siteOrigin: getSiteOrigin(),
   });
+  const relatedEssays = isPreview ? [] : await getRelatedEssays(essay, 3);
 
   return (
     <>
@@ -188,6 +191,40 @@ export async function EssayArticleView({
                 essays={essaysInSeries}
                 previewMode={isPreview}
               />
+            ) : null}
+            {relatedEssays.length > 0 ? (
+              <section aria-labelledby="related-reading-heading">
+                <h2
+                  className="text-xs tracking-[0.14em] text-accent uppercase"
+                  id="related-reading-heading"
+                >
+                  함께 읽으면 좋은 글
+                </h2>
+                <ul className="mt-3 list-none space-y-5 p-0">
+                  {relatedEssays.map((item) => (
+                    <li key={item.slug}>
+                      <Link
+                        className="block border-t border-line pt-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                        href={`/essays/${item.slug}`}
+                      >
+                        <p className="font-serif text-[1.125rem] leading-snug text-ink underline-offset-4 hover:text-accent hover:underline">
+                          {item.title}
+                        </p>
+                        <p className="text-keep mt-2 text-base leading-8 text-ink-muted">
+                          {item.description}
+                        </p>
+                        <p className="mt-3 text-sm leading-6 text-ink-muted">
+                          {formatEssayDate(item.date)} · {item.category}
+                          <span aria-hidden="true" className="mx-2 text-line">
+                            ·
+                          </span>
+                          연재: {item.series}
+                        </p>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             ) : null}
           </footer>
         </article>
