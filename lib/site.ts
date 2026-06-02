@@ -27,6 +27,8 @@ export const siteConfig = {
     { href: "/", label: "서재", match: "exact" as const },
     { href: "/essays", label: "글", match: "prefix" as const },
     { href: "/series", label: "연재", match: "prefix" as const },
+    { href: "/categories", label: "주제", match: "prefix" as const },
+    { href: "/search", label: "검색", match: "prefix" as const },
     { href: "/about", label: "서재 소개", match: "exact" as const },
   ],
   about: {

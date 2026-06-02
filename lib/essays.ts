@@ -1,4 +1,5 @@
 import { archiveSeriesTitles } from "@/lib/content/archive-series";
+import { getCategorySlug } from "@/lib/content/category-slug";
 import { getEssayRepository } from "@/lib/content/get-repository";
 import { sortEssaysByDateAsc } from "@/lib/content/series-aggregation";
 
@@ -323,6 +324,7 @@ export function formatSeriesDateRange(essays: Essay[]) {
 }
 
 export { getSeriesSlug } from "@/lib/content/series-slug";
+export { getCategorySlug };
 
 export async function getEssayBySlug(
   slug: string,
@@ -363,4 +365,62 @@ export async function getEssaysBySeries(
   const series = await getSeriesBySlug(slug, options);
 
   return series?.essays ?? [];
+}
+
+export type EssayCategory = {
+  slug: string;
+  title: string;
+  count: number;
+};
+
+export async function getAllCategories(): Promise<EssayCategory[]> {
+  const essays = await getAllEssays();
+  const counts = new Map<string, number>();
+
+  for (const essay of essays) {
+    counts.set(essay.category, (counts.get(essay.category) ?? 0) + 1);
+  }
+
+  return [...counts.entries()]
+    .map(([title, count]) => ({
+      slug: getCategorySlug(title),
+      title,
+      count,
+    }))
+    .sort((a, b) => b.count - a.count || a.title.localeCompare(b.title, "ko"));
+}
+
+export async function getCategoryBySlug(slug: string) {
+  const categories = await getAllCategories();
+  const category = categories.find((item) => item.slug === slug) ?? null;
+
+  if (!category) {
+    return null;
+  }
+
+  const essays = await getAllEssays();
+  const items = essays.filter((essay) => essay.category === category.title);
+
+  return { ...category, essays: items };
+}
+
+export async function searchEssays(query: string): Promise<Essay[]> {
+  const normalizedQuery = query.trim().toLocaleLowerCase();
+  if (!normalizedQuery) {
+    return [];
+  }
+
+  const essays = await getAllEssays();
+  return essays.filter((essay) => {
+    const haystack = [
+      essay.title,
+      essay.description,
+      essay.content,
+      essay.series,
+    ]
+      .join("\n")
+      .toLocaleLowerCase();
+
+    return haystack.includes(normalizedQuery);
+  });
 }
