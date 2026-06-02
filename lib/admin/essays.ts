@@ -28,6 +28,9 @@ export async function listAdminEssays(
 
   if (params.status) {
     essaysQuery = essaysQuery.eq("status", params.status);
+  } else {
+    // "전체" excludes trash so deleted essays appear only under 휴지통.
+    essaysQuery = essaysQuery.neq("status", "deleted");
   }
 
   if (params.seriesSlug) {

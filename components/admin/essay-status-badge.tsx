@@ -6,6 +6,8 @@ export function essayStatusLabel(status: EssayStatus) {
       return "공개";
     case "archived":
       return "보관";
+    case "deleted":
+      return "휴지통";
     default:
       return "임시 저장";
   }
@@ -39,6 +41,10 @@ export function EssayStatusBadge({
           <p>
             <span className="font-medium text-ink">보관</span> — 공개
             사이트에서는 보이지 않지만 관리 화면에는 계속 보관됩니다.
+          </p>
+          <p>
+            <span className="font-medium text-ink">휴지통</span> — 공개
+            사이트에서는 보이지 않으며 휴지통 목록에서만 관리됩니다.
           </p>
         </div>
       ) : null}

@@ -9,7 +9,12 @@ export function isPublicEssayStatus(status: EssayStatus) {
 }
 
 export function parseEssayStatus(value: unknown): EssayStatus | null {
-  if (value === "draft" || value === "published" || value === "archived") {
+  if (
+    value === "draft" ||
+    value === "published" ||
+    value === "archived" ||
+    value === "deleted"
+  ) {
     return value;
   }
 

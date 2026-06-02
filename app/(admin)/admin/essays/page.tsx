@@ -4,6 +4,7 @@ import {
   EssayStatusFilters,
   type EssayListFilter,
 } from "@/components/admin/essay-status-filters";
+import { EssayTrashActions } from "@/components/admin/essay-trash-actions";
 import { essayStatusLabel } from "@/components/admin/essay-status-badge";
 import {
   type AdminEssaySort,
@@ -30,7 +31,8 @@ function parseListFilter(status: string | undefined): EssayListFilter {
   if (
     status === "published" ||
     status === "draft" ||
-    status === "archived"
+    status === "archived" ||
+    status === "deleted"
   ) {
     return status;
   }
@@ -94,8 +96,8 @@ export default async function AdminEssaysPage({
             글 관리
           </h1>
           <p className="text-keep mt-5 max-w-2xl text-base leading-8 text-ink-muted">
-            원고를 작성하고 임시 저장·공개·보관할 수 있습니다. 최근에 손본
-            글이 위에 표시됩니다.
+            원고를 작성하고 임시 저장·공개·보관·휴지통으로 관리할 수 있습니다.
+            최근에 손본 글이 위에 표시됩니다.
           </p>
         </div>
         <Link
@@ -242,30 +244,36 @@ export default async function AdminEssaysPage({
                   </td>
                   <td className="py-4 align-top">
                     <div className="flex flex-col gap-2">
-                      <Link
-                        className="text-accent underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                        href={`/admin/essays/${essay.id}`}
-                      >
-                        수정
-                      </Link>
-                      <Link
-                        className="text-keep text-ink-muted underline-offset-4 hover:text-ink hover:underline"
-                        href={`/preview/${essay.slug}`}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                      >
-                        미리보기
-                      </Link>
-                      {essay.status === "published" ? (
-                        <Link
-                          className="text-keep text-ink-muted underline-offset-4 hover:text-ink hover:underline"
-                          href={`/essays/${essay.slug}`}
-                          rel="noopener noreferrer"
-                          target="_blank"
-                        >
-                          공개 사이트에서 보기
-                        </Link>
-                      ) : null}
+                      {essay.status === "deleted" ? (
+                        <EssayTrashActions essayId={essay.id} />
+                      ) : (
+                        <>
+                          <Link
+                            className="text-accent underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                            href={`/admin/essays/${essay.id}`}
+                          >
+                            수정
+                          </Link>
+                          <Link
+                            className="text-keep text-ink-muted underline-offset-4 hover:text-ink hover:underline"
+                            href={`/preview/${essay.slug}`}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            미리보기
+                          </Link>
+                          {essay.status === "published" ? (
+                            <Link
+                              className="text-keep text-ink-muted underline-offset-4 hover:text-ink hover:underline"
+                              href={`/essays/${essay.slug}`}
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              공개 사이트에서 보기
+                            </Link>
+                          ) : null}
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

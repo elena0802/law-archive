@@ -17,6 +17,7 @@ const filters: { value: EssayListFilter; label: string }[] = [
   { value: "published", label: "공개" },
   { value: "draft", label: "임시" },
   { value: "archived", label: "보관" },
+  { value: "deleted", label: "휴지통" },
 ];
 
 function filterHref(

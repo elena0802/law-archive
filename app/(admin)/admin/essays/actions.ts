@@ -145,3 +145,50 @@ export async function updateEssay(
   const intent = readSaveIntent(formData);
   redirect(`/admin/essays/${essayId}?notice=${noticeKeyForIntent(intent)}`);
 }
+
+export async function restoreDeletedEssay(essayId: string) {
+  const existing = await getAdminEssayById(essayId);
+
+  if (!existing || existing.status !== "deleted") {
+    redirect("/admin/essays?status=deleted");
+  }
+
+  const { supabase } = await requireEditorSupabase();
+  const { error } = await supabase
+    .from("essays")
+    .update({ status: "draft" })
+    .eq("id", essayId);
+
+  if (error) {
+    throw new Error(`복원에 실패했습니다: ${error.message}`);
+  }
+
+  await revalidatePublicEssayPaths({
+    slug: existing.slug,
+    seriesSlug: existing.series_slug,
+  });
+
+  redirect("/admin/essays?status=deleted");
+}
+
+export async function permanentlyDeleteEssay(essayId: string) {
+  const existing = await getAdminEssayById(essayId);
+
+  if (!existing || existing.status !== "deleted") {
+    redirect("/admin/essays?status=deleted");
+  }
+
+  const { supabase } = await requireEditorSupabase();
+  const { error } = await supabase.from("essays").delete().eq("id", essayId);
+
+  if (error) {
+    throw new Error(`영구 삭제에 실패했습니다: ${error.message}`);
+  }
+
+  await revalidatePublicEssayPaths({
+    slug: existing.slug,
+    seriesSlug: existing.series_slug,
+  });
+
+  redirect("/admin/essays?status=deleted");
+}

@@ -5,6 +5,7 @@ const options: { value: EssayStatus; label: string }[] = [
   { value: "draft", label: essayStatusLabel("draft") },
   { value: "published", label: essayStatusLabel("published") },
   { value: "archived", label: essayStatusLabel("archived") },
+  { value: "deleted", label: essayStatusLabel("deleted") },
 ];
 
 type EssayStatusSelectorProps = {
@@ -54,6 +55,10 @@ export function EssayStatusSelector({
           사이트에서는 보이지 않지만
           <br />
           관리 화면에는 계속 보관됩니다.
+        </p>
+        <p>
+          <span className="font-medium text-ink">휴지통</span> — 공개
+          사이트에서는 보이지 않으며 휴지통 목록에서만 관리됩니다.
         </p>
       </div>
     </fieldset>
