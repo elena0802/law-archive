@@ -12,7 +12,7 @@ export function isSafeEditorNextPath(path: string) {
 
 export function safeEditorNextPath(
   next: string | null,
-  fallback = "/admin/essays",
+  fallback = "/admin",
 ) {
   if (next && isSafeEditorNextPath(next)) {
     return next;

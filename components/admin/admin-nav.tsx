@@ -20,6 +20,7 @@ export function AdminNav() {
     return null;
   }
 
+  const isDashboard = pathname === "/admin";
   const isEssayList =
     pathname === "/admin/essays" || pathname.startsWith("/admin/essays/");
   const isNew = pathname === "/admin/essays/new";
@@ -30,6 +31,12 @@ export function AdminNav() {
       className="border-b border-line bg-paper-muted/40"
     >
       <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-3 px-6 py-4">
+        <Link
+          className={isDashboard ? activeLinkClassName : linkClassName}
+          href="/admin"
+        >
+          대시보드
+        </Link>
         <Link
           className={
             isEssayList && !isNew ? activeLinkClassName : linkClassName
