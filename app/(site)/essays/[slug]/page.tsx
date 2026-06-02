@@ -26,8 +26,10 @@ type EssayPageProps = {
   }>;
 };
 
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
-  const essays = await getAllEssays({ includeDrafts: true });
+  const essays = await getAllEssays();
 
   return essays.map((essay) => ({
     slug: essay.slug,
@@ -65,12 +67,12 @@ export default async function EssayPage({ params }: EssayPageProps) {
   const { slug } = await params;
   const essay = await getEssayBySlug(slug);
 
-  if (!essay) {
+  if (!essay || essay.draft) {
     notFound();
   }
 
   const seriesSlug = getSeriesSlug(essay.series);
-  const series = await getSeriesBySlug(seriesSlug, { includeDrafts: true });
+  const series = await getSeriesBySlug(seriesSlug);
   const essaysInSeries = series ? sortEssaysByDateAsc(series.essays) : [];
   const readingMinutes = estimateReadingMinutes(essay.content);
   const partLabel = getSeriesPartLabel(essaysInSeries, essay.slug);

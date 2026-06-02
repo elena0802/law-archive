@@ -50,7 +50,7 @@ export default async function EssaysPage() {
             ))
           ) : (
             <p className="border-t border-line py-8 text-base leading-8 text-ink-muted">
-              아직 공개된 에세이가 없습니다. 새 글의 draft 값을 false로 바꾸면
+              아직 공개된 에세이가 없습니다. 관리 화면에서 공개된 글이 있으면
               이 목록에 표시됩니다.
             </p>
           )}

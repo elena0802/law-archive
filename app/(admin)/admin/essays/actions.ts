@@ -1,0 +1,144 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import {
+  getAdminEssayById,
+  isEssaySlugTaken,
+  resolvePublishedAt,
+} from "@/lib/admin/essays";
+import { parseEssayForm } from "@/lib/admin/parse-essay-form";
+import { requireEditorSupabase } from "@/lib/admin/require-editor";
+import type { EssayActionState } from "@/lib/admin/essay-action-state";
+import type { EssayInsert } from "@/lib/content/db-types";
+import { revalidatePublicEssayPaths } from "@/lib/content/revalidate-public";
+
+export async function createEssay(
+  _prevState: EssayActionState,
+  formData: FormData,
+): Promise<EssayActionState> {
+  const parsed = parseEssayForm(formData);
+
+  if (!parsed.ok) {
+    return {
+      status: "error",
+      message: parsed.message,
+      fieldErrors: parsed.errors,
+    };
+  }
+
+  const { values } = parsed;
+
+  if (await isEssaySlugTaken(values.slug)) {
+    return {
+      status: "error",
+      message: "이 주소(slug)는 이미 사용 중입니다.",
+      fieldErrors: { slug: "다른 주소를 입력해 주세요." },
+    };
+  }
+
+  const { supabase } = await requireEditorSupabase();
+  const published_at = resolvePublishedAt(values.status, null);
+
+  const row: EssayInsert = {
+    ...values,
+    published_at,
+  };
+
+  const { data, error } = await supabase
+    .from("essays")
+    .insert(row)
+    .select("id")
+    .single();
+
+  if (error || !data) {
+    return {
+      status: "error",
+      message: "글을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    };
+  }
+
+  await revalidatePublicEssayPaths({
+    slug: values.slug,
+    seriesSlug: values.series_slug,
+  });
+
+  redirect(`/admin/essays/${data.id}?saved=1`);
+}
+
+export async function updateEssay(
+  essayId: string,
+  _prevState: EssayActionState,
+  formData: FormData,
+): Promise<EssayActionState> {
+  const parsed = parseEssayForm(formData);
+
+  if (!parsed.ok) {
+    return {
+      status: "error",
+      message: parsed.message,
+      fieldErrors: parsed.errors,
+    };
+  }
+
+  const existing = await getAdminEssayById(essayId);
+
+  if (!existing) {
+    return {
+      status: "error",
+      message: "글을 찾을 수 없습니다.",
+    };
+  }
+
+  const { values } = parsed;
+
+  if (existing.status === "published" && values.slug !== existing.slug) {
+    return {
+      status: "error",
+      message: "공개된 글의 주소(slug)는 바꿀 수 없습니다.",
+      fieldErrors: { slug: "주소를 변경할 수 없습니다." },
+    };
+  }
+
+  if (await isEssaySlugTaken(values.slug, essayId)) {
+    return {
+      status: "error",
+      message: "이 주소(slug)는 이미 사용 중입니다.",
+      fieldErrors: { slug: "다른 주소를 입력해 주세요." },
+    };
+  }
+
+  const { supabase } = await requireEditorSupabase();
+  const published_at = resolvePublishedAt(values.status, existing.published_at);
+
+  const { error } = await supabase
+    .from("essays")
+    .update({
+      title: values.title,
+      slug: values.slug,
+      description: values.description,
+      content: values.content,
+      essay_date: values.essay_date,
+      category: values.category,
+      series_slug: values.series_slug,
+      status: values.status,
+      featured: values.featured,
+      published_at,
+    })
+    .eq("id", essayId);
+
+  if (error) {
+    return {
+      status: "error",
+      message: "변경 내용을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    };
+  }
+
+  await revalidatePublicEssayPaths({
+    slug: values.slug,
+    seriesSlug: values.series_slug,
+    previousSlug: existing.slug,
+    previousSeriesSlug: existing.series_slug,
+  });
+
+  redirect(`/admin/essays/${essayId}?saved=1`);
+}

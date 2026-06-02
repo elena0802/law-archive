@@ -13,8 +13,10 @@ type SeriesPageProps = {
   }>;
 };
 
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
-  const series = await getAllSeries({ includeDrafts: true });
+  const series = await getAllSeries();
 
   return series.map((item) => ({
     slug: item.slug,
@@ -25,7 +27,7 @@ export async function generateMetadata({
   params,
 }: SeriesPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const series = await getSeriesBySlug(slug, { includeDrafts: true });
+  const series = await getSeriesBySlug(slug);
 
   if (!series) {
     return {};
@@ -47,7 +49,7 @@ export async function generateMetadata({
 
 export default async function SeriesDetailPage({ params }: SeriesPageProps) {
   const { slug } = await params;
-  const series = await getSeriesBySlug(slug, { includeDrafts: true });
+  const series = await getSeriesBySlug(slug);
 
   if (!series) {
     notFound();

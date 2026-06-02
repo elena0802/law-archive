@@ -1,21 +1,8 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-import matter from "gray-matter";
-import { getSeriesIntroduction } from "@/lib/series";
+import { archiveSeriesTitles } from "@/lib/content/archive-series";
+import { getEssayRepository } from "@/lib/content/get-repository";
+import { sortEssaysByDateAsc } from "@/lib/content/series-aggregation";
 
-const essaysDirectory = path.join(process.cwd(), "content", "essays");
-
-/** Registered series titles — ensures volumes appear before any essay is published. */
-export const archiveSeriesTitles = [
-  "형벌과 사회",
-  "AI와 형사법",
-  "로스쿨 시대",
-  "형사법 교수로 산다는 것",
-  "법과 인간",
-  "형사소송의 질문들",
-  "판례를 읽는 방법",
-  "법학자의 서재",
-] as const;
+export { archiveSeriesTitles };
 
 export type EssayCatalogEntry = {
   slug: string;
@@ -29,8 +16,7 @@ export type EssayCatalogEntry = {
 };
 
 /**
- * Archive essay registry (metadata). MDX frontmatter in content/essays should match.
- * New entries: add here first, then add a matching .mdx stub.
+ * Legacy MDX registry (metadata). Supabase is authoritative when CONTENT_SOURCE=supabase.
  */
 export const essayCatalog: readonly EssayCatalogEntry[] = [
   {
@@ -256,29 +242,6 @@ export const essayCatalog: readonly EssayCatalogEntry[] = [
   },
 ] as const;
 
-function compareSeriesByArchiveOrder(a: string, b: string) {
-  const indexA = archiveSeriesTitles.indexOf(
-    a as (typeof archiveSeriesTitles)[number],
-  );
-  const indexB = archiveSeriesTitles.indexOf(
-    b as (typeof archiveSeriesTitles)[number],
-  );
-
-  if (indexA >= 0 && indexB >= 0) {
-    return indexA - indexB;
-  }
-
-  if (indexA >= 0) {
-    return -1;
-  }
-
-  if (indexB >= 0) {
-    return 1;
-  }
-
-  return a.localeCompare(b, "ko");
-}
-
 export type EssayFrontmatter = {
   title: string;
   description: string;
@@ -305,59 +268,7 @@ export type EssaySeries = {
   latestDate: string;
 };
 
-type RawFrontmatter = Partial<Record<keyof EssayFrontmatter, unknown>>;
-
-function assertString(value: unknown, field: keyof EssayFrontmatter, slug: string) {
-  if (typeof value !== "string" || value.trim() === "") {
-    throw new Error(`Invalid frontmatter field "${field}" in essay "${slug}".`);
-  }
-
-  return value;
-}
-
-function assertBoolean(
-  value: unknown,
-  field: keyof EssayFrontmatter,
-  slug: string,
-) {
-  if (typeof value !== "boolean") {
-    throw new Error(`Invalid frontmatter field "${field}" in essay "${slug}".`);
-  }
-
-  return value;
-}
-
-function parseFrontmatter(data: RawFrontmatter, slug: string): EssayFrontmatter {
-  return {
-    title: assertString(data.title, "title", slug),
-    description: assertString(data.description, "description", slug),
-    date: assertString(data.date, "date", slug),
-    category: assertString(data.category, "category", slug),
-    series: assertString(data.series, "series", slug),
-    draft: assertBoolean(data.draft, "draft", slug),
-    featured: assertBoolean(data.featured, "featured", slug),
-  };
-}
-
-function getSlugFromFilename(filename: string) {
-  return filename.replace(/\.mdx$/, "");
-}
-
-async function getEssayFilenames() {
-  const filenames = await fs.readdir(essaysDirectory);
-
-  return filenames.filter(
-    (filename) => filename.endsWith(".mdx") && !filename.startsWith("_"),
-  );
-}
-
-function isNotFoundError(error: unknown) {
-  return (
-    error instanceof Error &&
-    "code" in error &&
-    (error as NodeJS.ErrnoException).code === "ENOENT"
-  );
-}
+export { sortEssaysByDateAsc };
 
 export function formatEssayDate(date: string) {
   return new Intl.DateTimeFormat("ko-KR", {
@@ -365,12 +276,6 @@ export function formatEssayDate(date: string) {
     month: "long",
     year: "numeric",
   }).format(new Date(date));
-}
-
-export function sortEssaysByDateAsc(essays: Essay[]) {
-  return [...essays].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-  );
 }
 
 /** Rough reading time for Korean long-form prose (~500 chars/min). */
@@ -415,66 +320,19 @@ export function formatSeriesDateRange(essays: Essay[]) {
   return `${earliest} – ${latest}`;
 }
 
-export function getSeriesSlug(series: string) {
-  return series
-    .trim()
-    .toLowerCase()
-    .normalize("NFKC")
-    .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
-    .replace(/^-+|-+$/g, "");
-}
+export { getSeriesSlug } from "@/lib/content/series-slug";
 
-function getSeriesDescription(series: string, count: number) {
-  return `${series}에 속한 ${count}편의 글을 한 흐름으로 모아둔 아카이브입니다.`;
-}
-
-function decodeSlug(slug: string) {
-  try {
-    return decodeURIComponent(slug);
-  } catch {
-    return slug;
-  }
-}
-
-export async function getEssayBySlug(slug: string): Promise<Essay | null> {
-  if (slug.includes("/") || slug.includes("..")) {
-    return null;
-  }
-
-  try {
-    const filePath = path.join(essaysDirectory, `${slug}.mdx`);
-    const file = await fs.readFile(filePath, "utf8");
-    const { content, data } = matter(file);
-    const frontmatter = parseFrontmatter(data, slug);
-
-    return {
-      slug,
-      content,
-      ...frontmatter,
-    };
-  } catch (error) {
-    if (isNotFoundError(error)) {
-      return null;
-    }
-
-    throw error;
-  }
+export async function getEssayBySlug(
+  slug: string,
+  options: { includeDrafts?: boolean } = {},
+): Promise<Essay | null> {
+  return getEssayRepository().getEssayBySlug(slug, options);
 }
 
 export async function getAllEssays(
   options: { includeDrafts?: boolean } = {},
 ): Promise<Essay[]> {
-  const filenames = await getEssayFilenames();
-  const essays = await Promise.all(
-    filenames.map((filename) => getEssayBySlug(getSlugFromFilename(filename))),
-  );
-
-  return essays
-    .filter((essay): essay is Essay => essay !== null)
-    .filter((essay) => options.includeDrafts || !essay.draft)
-    .sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
+  return getEssayRepository().getAllEssays(options);
 }
 
 export async function getFeaturedEssays(limit?: number): Promise<Essay[]> {
@@ -486,68 +344,14 @@ export async function getFeaturedEssays(limit?: number): Promise<Essay[]> {
 export async function getAllSeries(
   options: { includeDrafts?: boolean } = {},
 ): Promise<EssaySeries[]> {
-  const essays = await getAllEssays(options);
-  const seriesMap = new Map<string, Essay[]>();
-
-  for (const title of archiveSeriesTitles) {
-    seriesMap.set(title, []);
-  }
-
-  for (const essay of essays) {
-    if (!seriesMap.has(essay.series)) {
-      seriesMap.set(essay.series, []);
-    }
-
-    const essaysInSeries = seriesMap.get(essay.series) ?? [];
-    essaysInSeries.push(essay);
-    seriesMap.set(essay.series, essaysInSeries);
-  }
-
-  return Array.from(seriesMap.entries())
-    .map(([title, essaysInSeries]) => {
-      const sortedEssays = [...essaysInSeries].sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-      );
-      const sortedAsc = sortEssaysByDateAsc(essaysInSeries);
-      const slug = getSeriesSlug(title);
-      const description = getSeriesDescription(title, sortedEssays.length);
-      const firstDate = sortedAsc[0]?.date ?? "";
-      const latestDate = sortedEssays[0]?.date ?? "";
-
-      return {
-        title,
-        slug,
-        description,
-        introduction: getSeriesIntroduction(slug, description),
-        count: sortedEssays.length,
-        essays: sortedEssays,
-        firstDate,
-        latestDate,
-      };
-    })
-    .filter((item) => item.count > 0)
-    .sort((a, b) => {
-      const order = compareSeriesByArchiveOrder(a.title, b.title);
-
-      if (order !== 0) {
-        return order;
-      }
-
-      const latestDateDelta =
-        new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime();
-
-      return latestDateDelta || a.title.localeCompare(b.title, "ko");
-    });
+  return getEssayRepository().getAllSeries(options);
 }
 
 export async function getSeriesBySlug(
   slug: string,
   options: { includeDrafts?: boolean } = {},
 ): Promise<EssaySeries | null> {
-  const normalizedSlug = getSeriesSlug(decodeSlug(slug));
-  const series = await getAllSeries(options);
-
-  return series.find((item) => item.slug === normalizedSlug) ?? null;
+  return getEssayRepository().getSeriesBySlug(slug, options);
 }
 
 export async function getEssaysBySeries(
