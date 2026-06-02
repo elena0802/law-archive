@@ -69,8 +69,16 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
         <h1 className="text-keep mt-4 font-serif text-4xl leading-[1.14] text-ink sm:text-5xl">
           {series.title}
         </h1>
+        {series.description ? (
+          <p className="text-keep mt-5 text-lg leading-9 text-ink">
+            {series.description}
+          </p>
+        ) : null}
         <p className="text-keep mt-6 text-lg leading-9 text-ink-muted">
           {series.introduction}
+        </p>
+        <p className="text-keep mt-5 text-base leading-8 text-ink-muted">
+          총 {series.count}편
         </p>
         <SeriesVolumeStats
           count={series.count}

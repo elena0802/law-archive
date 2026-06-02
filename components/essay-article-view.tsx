@@ -24,6 +24,10 @@ type EssayArticleViewProps = {
   editHref?: string;
 };
 
+function essayHref(slug: string, previewMode: boolean) {
+  return previewMode ? `/preview/${slug}` : `/essays/${slug}`;
+}
+
 export async function EssayArticleView({
   essay,
   mode = "public",
@@ -37,6 +41,12 @@ export async function EssayArticleView({
   const essaysInSeries = series ? sortEssaysByDateAsc(series.essays) : [];
   const readingMinutes = estimateReadingMinutes(essay.content);
   const partLabel = getSeriesPartLabel(essaysInSeries, essay.slug);
+  const currentIndex = essaysInSeries.findIndex((item) => item.slug === essay.slug);
+  const previousEssay = currentIndex > 0 ? essaysInSeries[currentIndex - 1] : null;
+  const nextEssay =
+    currentIndex >= 0 && currentIndex < essaysInSeries.length - 1
+      ? essaysInSeries[currentIndex + 1]
+      : null;
   const isPublic =
     essay.status !== undefined
       ? isPublishedEssayStatus(essay.status)
@@ -82,26 +92,95 @@ export async function EssayArticleView({
 
         <article className="mt-8">
           <header className="border-b border-line pb-10">
-            <EssayMetaRow
-              category={essay.category}
-              date={essay.date}
-              partLabel={partLabel}
-              readingMinutes={readingMinutes}
-              seriesTitle={essay.series}
-            />
+            <p className="text-keep text-xl font-serif leading-snug text-ink-muted sm:text-2xl">
+              {essay.series}
+            </p>
+            {series ? (
+              <p className="sr-only">연재 페이지: {series.title}</p>
+            ) : null}
             <h1 className="text-keep mt-5 font-serif text-4xl leading-[1.18] text-ink sm:text-5xl">
               {essay.title}
             </h1>
             <p className="text-keep mt-6 text-lg leading-9 text-ink-muted">
               {essay.description}
             </p>
+            <EssayMetaRow
+              category={essay.category}
+              date={essay.date}
+              partLabel={null}
+              readingMinutes={readingMinutes}
+              seriesTitle={essay.series}
+            />
+            {series && partLabel ? (
+              <p className="text-keep mt-3 text-sm leading-7 text-ink-muted">
+                {partLabel}
+                <span aria-hidden="true" className="mx-2 text-line">
+                  ·
+                </span>
+                <Link
+                  className="text-accent underline-offset-4 hover:underline"
+                  href={`/series/${seriesSlug}`}
+                >
+                  연재 전체 보기 →
+                </Link>
+              </p>
+            ) : series ? (
+              <p className="text-keep mt-3 text-sm leading-7 text-ink-muted">
+                <Link
+                  className="text-accent underline-offset-4 hover:underline"
+                  href={`/series/${seriesSlug}`}
+                >
+                  연재 전체 보기 →
+                </Link>
+              </p>
+            ) : null}
           </header>
 
           <div className="archive-prose mt-12">
             <MDXRemote source={essay.content} />
           </div>
 
-          <footer className="mt-14 space-y-10 border-t border-line pt-10">
+          {previousEssay || nextEssay ? (
+            <nav
+              aria-label="연재 이전 다음 글"
+              className="mt-12 border-t border-line pt-8"
+            >
+              <div className="grid gap-6 sm:grid-cols-2">
+                <div>
+                  {previousEssay ? (
+                    <>
+                      <p className="text-xs tracking-[0.14em] text-ink-muted uppercase">
+                        이전 글
+                      </p>
+                      <Link
+                        className="text-keep mt-2 block font-serif text-lg leading-8 text-ink underline-offset-4 hover:text-accent hover:underline"
+                        href={essayHref(previousEssay.slug, isPreview)}
+                      >
+                        ← {previousEssay.title}
+                      </Link>
+                    </>
+                  ) : null}
+                </div>
+                <div className="text-left sm:text-right">
+                  {nextEssay ? (
+                    <>
+                      <p className="text-xs tracking-[0.14em] text-ink-muted uppercase">
+                        다음 글
+                      </p>
+                      <Link
+                        className="text-keep mt-2 block font-serif text-lg leading-8 text-ink underline-offset-4 hover:text-accent hover:underline"
+                        href={essayHref(nextEssay.slug, isPreview)}
+                      >
+                        {nextEssay.title} →
+                      </Link>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            </nav>
+          ) : null}
+
+          <footer className="mt-10 space-y-10 border-t border-line pt-10">
             <CitationBlock citation={citation} />
             {essaysInSeries.length > 0 ? (
               <SeriesSiblings

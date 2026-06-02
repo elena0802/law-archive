@@ -21,9 +21,7 @@ export function SeriesSiblings({
   currentSlug,
   previewMode = false,
 }: SeriesSiblingsProps) {
-  const siblings = essays.filter((essay) => essay.slug !== currentSlug);
-
-  if (siblings.length === 0) {
+  if (essays.length <= 1) {
     return null;
   }
 
@@ -35,18 +33,31 @@ export function SeriesSiblings({
       >
         같은 연재
       </h2>
-      <ul className="mt-3 list-none space-y-2 p-0">
-        {siblings.map((essay) => (
+      <ol className="mt-3 list-none space-y-2 p-0">
+        {essays.map((essay, index) => (
           <li key={essay.slug}>
-            <Link
-              className="font-serif text-[1.0625rem] leading-snug text-ink underline-offset-4 hover:text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-              href={siblingHref(essay, previewMode)}
-            >
-              {essay.title}
-            </Link>
+            <span className="mr-2 text-sm text-ink-muted tabular-nums">
+              {index + 1}.
+            </span>
+            {essay.slug === currentSlug ? (
+              <span
+                aria-current="page"
+                className="font-serif text-[1.0625rem] leading-snug text-accent"
+              >
+                {essay.title}
+                <span className="ml-2 text-sm text-ink-muted">(현재 글)</span>
+              </span>
+            ) : (
+              <Link
+                className="font-serif text-[1.0625rem] leading-snug text-ink underline-offset-4 hover:text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                href={siblingHref(essay, previewMode)}
+              >
+                {essay.title}
+              </Link>
+            )}
           </li>
         ))}
-      </ul>
+      </ol>
     </section>
   );
 }
