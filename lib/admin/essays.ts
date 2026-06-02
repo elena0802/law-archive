@@ -5,15 +5,67 @@ export type EssayListItem = EssayRow & {
   series_title: string;
 };
 
-export async function listAdminEssays(): Promise<EssayListItem[]> {
+export type AdminEssaySort =
+  | "updated_desc"
+  | "updated_asc"
+  | "date_desc"
+  | "date_asc"
+  | "title_asc";
+
+export type ListAdminEssaysParams = {
+  status?: EssayRow["status"];
+  seriesSlug?: string;
+  query?: string;
+  sort?: AdminEssaySort;
+};
+
+export async function listAdminEssays(
+  params: ListAdminEssaysParams = {},
+): Promise<EssayListItem[]> {
   const { supabase } = await requireEditorSupabase();
+  const normalizedQuery = params.query?.trim();
+  let essaysQuery = supabase.from("essays").select("*");
+
+  if (params.status) {
+    essaysQuery = essaysQuery.eq("status", params.status);
+  }
+
+  if (params.seriesSlug) {
+    essaysQuery = essaysQuery.eq("series_slug", params.seriesSlug);
+  }
+
+  if (normalizedQuery) {
+    const escaped = normalizedQuery
+      .replaceAll("\\", "\\\\")
+      .replaceAll(",", "\\,")
+      .replaceAll("%", "\\%");
+    essaysQuery = essaysQuery.or(
+      `title.ilike.%${escaped}%,slug.ilike.%${escaped}%,description.ilike.%${escaped}%`,
+    );
+  }
+
+  switch (params.sort ?? "updated_desc") {
+    case "updated_asc":
+      essaysQuery = essaysQuery.order("updated_at", { ascending: true });
+      break;
+    case "date_desc":
+      essaysQuery = essaysQuery.order("essay_date", { ascending: false });
+      break;
+    case "date_asc":
+      essaysQuery = essaysQuery.order("essay_date", { ascending: true });
+      break;
+    case "title_asc":
+      essaysQuery = essaysQuery.order("title", { ascending: true });
+      break;
+    case "updated_desc":
+    default:
+      essaysQuery = essaysQuery.order("updated_at", { ascending: false });
+      break;
+  }
 
   const [{ data: essays, error: essaysError }, { data: series, error: seriesError }] =
     await Promise.all([
-      supabase
-        .from("essays")
-        .select("*")
-        .order("updated_at", { ascending: false }),
+      essaysQuery,
       supabase.from("series").select("*").order("display_order", { ascending: true }),
     ]);
 

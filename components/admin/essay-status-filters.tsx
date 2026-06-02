@@ -5,6 +5,11 @@ export type EssayListFilter = "all" | EssayStatus;
 
 type EssayStatusFiltersProps = {
   current: EssayListFilter;
+  baseParams?: {
+    q?: string;
+    series?: string;
+    sort?: string;
+  };
 };
 
 const filters: { value: EssayListFilter; label: string }[] = [
@@ -14,15 +19,36 @@ const filters: { value: EssayListFilter; label: string }[] = [
   { value: "archived", label: "보관" },
 ];
 
-function filterHref(value: EssayListFilter) {
-  if (value === "all") {
-    return "/admin/essays";
+function filterHref(
+  value: EssayListFilter,
+  baseParams: EssayStatusFiltersProps["baseParams"],
+) {
+  const params = new URLSearchParams();
+
+  if (value !== "all") {
+    params.set("status", value);
   }
 
-  return `/admin/essays?status=${value}`;
+  if (baseParams?.series) {
+    params.set("series", baseParams.series);
+  }
+
+  if (baseParams?.q) {
+    params.set("q", baseParams.q);
+  }
+
+  if (baseParams?.sort) {
+    params.set("sort", baseParams.sort);
+  }
+
+  const query = params.toString();
+  return query ? `/admin/essays?${query}` : "/admin/essays";
 }
 
-export function EssayStatusFilters({ current }: EssayStatusFiltersProps) {
+export function EssayStatusFilters({
+  current,
+  baseParams,
+}: EssayStatusFiltersProps) {
   return (
     <div
       className="mt-8 flex flex-wrap gap-2"
@@ -40,7 +66,7 @@ export function EssayStatusFilters({ current }: EssayStatusFiltersProps) {
                 ? "rounded-full border border-accent bg-accent px-4 py-2 text-sm font-medium text-paper"
                 : "rounded-full border border-line bg-paper px-4 py-2 text-sm text-ink-muted transition hover:border-accent/40 hover:text-ink"
             }
-            href={filterHref(filter.value)}
+            href={filterHref(filter.value, baseParams)}
             key={filter.value}
             role="tab"
           >

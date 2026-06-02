@@ -6,18 +6,24 @@ import {
 } from "@/components/admin/essay-status-filters";
 import { essayStatusLabel } from "@/components/admin/essay-status-badge";
 import {
+  type AdminEssaySort,
   formatAdminDate,
   formatAdminDateTime,
   listAdminEssays,
+  listAdminSeries,
 } from "@/lib/admin/essays";
-import type { EssayStatus } from "@/lib/content/db-types";
 
 export const metadata: Metadata = {
   title: "글 관리",
 };
 
 type AdminEssaysPageProps = {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{
+    status?: string;
+    series?: string;
+    q?: string;
+    sort?: string;
+  }>;
 };
 
 function parseListFilter(status: string | undefined): EssayListFilter {
@@ -32,24 +38,52 @@ function parseListFilter(status: string | undefined): EssayListFilter {
   return "all";
 }
 
-function filterEssays<T extends { status: EssayStatus }>(
-  essays: T[],
-  filter: EssayListFilter,
-) {
-  if (filter === "all") {
-    return essays;
+const sortOptions: { value: AdminEssaySort; label: string }[] = [
+  { value: "updated_desc", label: "최근 수정순" },
+  { value: "updated_asc", label: "오래된 수정순" },
+  { value: "date_desc", label: "글 날짜 최신순" },
+  { value: "date_asc", label: "글 날짜 오래된순" },
+  { value: "title_asc", label: "제목순" },
+];
+
+function parseSort(sort: string | undefined): AdminEssaySort {
+  if (
+    sort === "updated_desc" ||
+    sort === "updated_asc" ||
+    sort === "date_desc" ||
+    sort === "date_asc" ||
+    sort === "title_asc"
+  ) {
+    return sort;
   }
 
-  return essays.filter((essay) => essay.status === filter);
+  return "updated_desc";
+}
+
+function parseSearchQuery(q: string | undefined) {
+  return q?.trim() ?? "";
+}
+
+function resetFiltersHref() {
+  return "/admin/essays";
 }
 
 export default async function AdminEssaysPage({
   searchParams,
 }: AdminEssaysPageProps) {
-  const { status } = await searchParams;
+  const { status, series: seriesSlug, q, sort } = await searchParams;
   const listFilter = parseListFilter(status);
-  const allEssays = await listAdminEssays();
-  const essays = filterEssays(allEssays, listFilter);
+  const parsedSort = parseSort(sort);
+  const searchQuery = parseSearchQuery(q);
+  const [seriesList, essays] = await Promise.all([
+    listAdminSeries(),
+    listAdminEssays({
+      status: listFilter === "all" ? undefined : listFilter,
+      seriesSlug: seriesSlug || undefined,
+      query: searchQuery || undefined,
+      sort: parsedSort,
+    }),
+  ]);
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
@@ -72,7 +106,86 @@ export default async function AdminEssaysPage({
         </Link>
       </div>
 
-      <EssayStatusFilters current={listFilter} />
+      <EssayStatusFilters
+        baseParams={{
+          q: searchQuery || undefined,
+          series: seriesSlug || undefined,
+          sort: parsedSort,
+        }}
+        current={listFilter}
+      />
+
+      <form className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" method="get">
+        {listFilter !== "all" ? (
+          <input name="status" type="hidden" value={listFilter} />
+        ) : null}
+
+        <div className="sm:col-span-2 lg:col-span-1">
+          <label className="text-keep block text-sm text-ink-muted" htmlFor="admin-search-q">
+            검색
+          </label>
+          <input
+            className="mt-2 w-full rounded border border-line bg-paper px-4 py-2.5 text-sm text-ink outline-none transition focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/25"
+            defaultValue={searchQuery}
+            id="admin-search-q"
+            name="q"
+            placeholder="글 제목, 주소, 소개 검색"
+            type="search"
+          />
+        </div>
+
+        <div>
+          <label className="text-keep block text-sm text-ink-muted" htmlFor="admin-search-series">
+            연재
+          </label>
+          <select
+            className="mt-2 w-full rounded border border-line bg-paper px-4 py-2.5 text-sm text-ink outline-none transition focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/25"
+            defaultValue={seriesSlug ?? ""}
+            id="admin-search-series"
+            name="series"
+          >
+            <option value="">전체 연재</option>
+            {seriesList.map((series) => (
+              <option key={series.slug} value={series.slug}>
+                {series.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="text-keep block text-sm text-ink-muted" htmlFor="admin-search-sort">
+            정렬
+          </label>
+          <select
+            className="mt-2 w-full rounded border border-line bg-paper px-4 py-2.5 text-sm text-ink outline-none transition focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/25"
+            defaultValue={parsedSort}
+            id="admin-search-sort"
+            name="sort"
+          >
+            {sortOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-3">
+          <button
+            className="rounded border border-accent bg-accent px-4 py-2 text-sm font-medium text-paper transition hover:bg-accent/90"
+            type="submit"
+          >
+            적용
+          </button>
+          <Link
+            className="rounded border border-line bg-paper px-4 py-2 text-sm text-ink-muted transition hover:border-accent/40 hover:text-ink"
+            href={resetFiltersHref()}
+          >
+            전체 글 보기
+          </Link>
+        </div>
+      </form>
 
       {essays.length > 0 ? (
         <div className="mt-8 overflow-x-auto border-t border-line">
@@ -161,11 +274,17 @@ export default async function AdminEssaysPage({
           </table>
         </div>
       ) : (
-        <p className="text-keep mt-10 rounded border border-line bg-paper-muted px-4 py-6 text-base leading-8 text-ink-muted">
-          {listFilter === "all"
-            ? "아직 저장된 글이 없습니다. 「새 글 작성」으로 첫 원고를 추가할 수 있습니다."
-            : "이 상태에 해당하는 글이 없습니다."}
-        </p>
+        <div className="mt-10 rounded border border-line bg-paper-muted px-4 py-6">
+          <p className="text-keep text-base leading-8 text-ink-muted">
+            조건에 맞는 글이 없습니다.
+          </p>
+          <Link
+            className="mt-3 inline-block text-sm text-accent underline-offset-4 hover:underline"
+            href={resetFiltersHref()}
+          >
+            전체 글 보기
+          </Link>
+        </div>
       )}
     </div>
   );
