@@ -32,14 +32,16 @@ export default async function AdminEditEssayPage({
 }: AdminEditEssayPageProps) {
   const { id } = await params;
   const { notice } = await searchParams;
-  const [essay, series] = await Promise.all([
-    getAdminEssayById(id),
-    listAdminSeries(),
-  ]);
+  const essay = await getAdminEssayById(id);
 
   if (!essay) {
     notFound();
   }
+
+  const series = await listAdminSeries({
+    activeOnly: true,
+    includeSlug: essay.series_slug,
+  });
 
   const updateWithId = updateEssay.bind(null, id);
   const noticeMessage =

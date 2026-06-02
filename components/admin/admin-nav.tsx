@@ -24,6 +24,7 @@ export function AdminNav() {
   const isEssayList =
     pathname === "/admin/essays" || pathname.startsWith("/admin/essays/");
   const isNew = pathname === "/admin/essays/new";
+  const isSeries = pathname === "/admin/series" || pathname.startsWith("/admin/series/");
 
   return (
     <nav
@@ -50,6 +51,12 @@ export function AdminNav() {
           href="/admin/essays/new"
         >
           새 글 작성
+        </Link>
+        <Link
+          className={isSeries ? activeLinkClassName : linkClassName}
+          href="/admin/series"
+        >
+          연재 관리
         </Link>
         <Link className={linkClassName} href="/">
           공개 서재 보기

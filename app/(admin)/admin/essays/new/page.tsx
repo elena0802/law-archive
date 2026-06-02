@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminNewEssayPage() {
-  const series = await listAdminSeries();
+  const series = await listAdminSeries({ activeOnly: true });
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">

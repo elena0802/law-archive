@@ -90,13 +90,27 @@ export async function listAdminEssays(
   }));
 }
 
-export async function listAdminSeries(): Promise<SeriesRow[]> {
+type ListAdminSeriesOptions = {
+  activeOnly?: boolean;
+  includeSlug?: string;
+};
+
+export async function listAdminSeries(
+  options: ListAdminSeriesOptions = {},
+): Promise<SeriesRow[]> {
   const { supabase } = await requireEditorSupabase();
 
-  const { data, error } = await supabase
-    .from("series")
-    .select("*")
-    .order("display_order", { ascending: true });
+  let query = supabase.from("series").select("*");
+
+  if (options.activeOnly && options.includeSlug) {
+    query = query.or(`status.eq.active,slug.eq.${options.includeSlug}`);
+  } else if (options.activeOnly) {
+    query = query.eq("status", "active");
+  }
+
+  const { data, error } = await query
+    .order("display_order", { ascending: true })
+    .order("title", { ascending: true });
 
   if (error) {
     throw new Error(error.message);

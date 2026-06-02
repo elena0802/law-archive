@@ -4,13 +4,16 @@
  */
 
 export type EssayStatus = "draft" | "published" | "archived" | "deleted";
+export type SeriesStatus = "active" | "hidden";
 
 export type SeriesRow = {
   id: string;
   slug: string;
   title: string;
   description: string;
+  introduction: string;
   display_order: number;
+  status: SeriesStatus;
   created_at: string;
   updated_at: string;
 };

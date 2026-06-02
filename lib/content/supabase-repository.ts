@@ -26,18 +26,37 @@ function isPublicSlugSafe(slug: string) {
   return !slug.includes("/") && !slug.includes("..");
 }
 
-async function loadSeriesRows(): Promise<SeriesRow[]> {
+async function loadSeriesRows(options: { activeOnly?: boolean } = {}): Promise<SeriesRow[]> {
   const supabase = requireSupabaseServiceRoleClient();
-  const { data, error } = await supabase
-    .from("series")
-    .select("*")
-    .order("display_order", { ascending: true });
+  let query = supabase.from("series").select("*");
+  if (options.activeOnly) {
+    query = query.eq("status", "active");
+  }
+  let { data, error } = await query.order("display_order", { ascending: true });
+
+  // Backward compatibility for environments where PR19 migration is not applied yet.
+  if (
+    error &&
+    typeof error.message === "string" &&
+    error.message.includes("column series.status does not exist")
+  ) {
+    const fallback = await supabase
+      .from("series")
+      .select("*")
+      .order("display_order", { ascending: true });
+    data = fallback.data;
+    error = fallback.error;
+  }
 
   if (error) {
     throw new Error(`Failed to load series: ${error.message}`);
   }
 
-  return data ?? [];
+  return (data ?? []).map((row) => ({
+    ...row,
+    introduction: row.introduction ?? "",
+    status: row.status ?? "active",
+  }));
 }
 
 async function loadEssayRows(options: EssayRepositoryOptions = {}) {
@@ -73,6 +92,7 @@ function seriesRowsToVolumes(rows: SeriesRow[]): SeriesVolumeSource[] {
     title: row.title,
     slug: row.slug,
     description: row.description,
+    introduction: row.introduction,
     sortKey: row.display_order,
   }));
 }
@@ -121,7 +141,7 @@ export function createSupabaseEssayRepository(): EssayRepository {
 
     async getAllSeries(options = {}) {
       const [seriesRows, essayRows] = await Promise.all([
-        loadSeriesRows(),
+        loadSeriesRows({ activeOnly: true }),
         loadEssayRows(options),
       ]);
       const seriesBySlug = new Map(seriesRows.map((item) => [item.slug, item]));

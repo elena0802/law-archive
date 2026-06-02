@@ -5,6 +5,7 @@ export type SeriesVolumeSource = {
   title: string;
   slug: string;
   description: string;
+  introduction?: string;
   sortKey: number;
 };
 
@@ -44,6 +45,7 @@ export function buildEssaySeriesList(
       const count = sortedEssays.length;
       const autoDescription = getSeriesDescription(volume.title, count);
       const introduction =
+        volume.introduction?.trim() ||
         volume.description.trim() ||
         getSeriesIntroduction(volume.slug, autoDescription);
 
