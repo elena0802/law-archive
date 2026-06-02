@@ -1,4 +1,5 @@
 import type { EssayStatus } from "@/lib/content/db-types";
+import { readSaveIntent, resolveStatusFromIntent } from "@/lib/admin/save-intent";
 
 export type EssayFormValues = {
   title: string;
@@ -42,16 +43,11 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
   const essay_date = readString(formData, "essay_date");
   const category = readString(formData, "category");
   const series_slug = readString(formData, "series_slug");
-  const statusRaw = readString(formData, "status");
   const featured = formData.get("featured") === "on";
   const errors: EssayFormFieldErrors = {};
 
-  const status: EssayStatus =
-    statusRaw === "published" ? "published" : "draft";
-
-  if (statusRaw !== "draft" && statusRaw !== "published") {
-    errors.status = "상태를 선택해 주세요.";
-  }
+  const intent = readSaveIntent(formData);
+  const status = resolveStatusFromIntent(intent, formData);
 
   if (!title) {
     errors.title = "제목을 입력해 주세요.";

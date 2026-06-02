@@ -255,6 +255,8 @@ export type EssayFrontmatter = {
 export type Essay = EssayFrontmatter & {
   slug: string;
   content: string;
+  /** Present when loaded from Supabase CMS. */
+  status?: import("@/lib/content/db-types").EssayStatus;
 };
 
 export type EssaySeries = {

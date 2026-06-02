@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" role="img" aria-labelledby="heroIllusTitle heroIllusDesc">
+  <title id="heroIllusTitle">서재 책상 위의 연구 기록</title>
+  <desc id="heroIllusDesc">책, 손글씨 메모, 형사법 서적, 스탠드 조명이 있는 서재 책상과 학자의 옆모습을 담은 따뜻한 편집 선화</desc>
+  <defs>
+    <linearGradient id="wallWash" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#efe7d8" stop-opacity="0.85"/>
+      <stop offset="55%" stop-color="#f8f4ea" stop-opacity="0.2"/>
+    </linearGradient>
+    <linearGradient id="lampGlow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f3e8d4" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#f8f4ea" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="softLine" x="-2%" y="-2%" width="104%" height="104%">
+      <feGaussianBlur stdDeviation="0.35"/>
+    </filter>
+  </defs>
+  <rect width="600" height="500" fill="#f8f4ea"/>
+  <rect width="600" height="280" fill="url(#wallWash)"/>
+  <!-- wall shelf -->
+  <rect x="72" y="52" width="456" height="10" fill="#e8dcc8" stroke="#d9cbb7" stroke-width="1"/>
+  <rect x="88" y="28" width="44" height="24" fill="#fffef9" stroke="#68462d" stroke-width="1" opacity="0.7"/>
+  <rect x="140" y="22" width="52" height="30" fill="#efe7d8" stroke="#68462d" stroke-width="1" opacity="0.75"/>
+  <rect x="200" y="26" width="38" height="26" fill="#fffef9" stroke="#68462d" stroke-width="1" opacity="0.65"/>
+  <rect x="248" y="20" width="48" height="32" fill="#efe7d8" stroke="#68462d" stroke-width="1" opacity="0.8"/>
+  <rect x="306" y="24" width="40" height="28" fill="#fffef9" stroke="#68462d" stroke-width="1" opacity="0.7"/>
+  <rect x="356" y="18" width="56" height="34" fill="#efe7d8" stroke="#68462d" stroke-width="1" opacity="0.75"/>
+  <line x1="96" y1="40" x2="124" y2="40" stroke="#68462d" stroke-width="0.6" opacity="0.35"/>
+  <line x1="152" y1="36" x2="188" y2="36" stroke="#68462d" stroke-width="0.6" opacity="0.35"/>
+  <!-- lamp -->
+  <ellipse cx="118" cy="200" rx="72" ry="28" fill="url(#lampGlow)" opacity="0.65"/>
+  <path d="M118 108 V360" stroke="#68462d" stroke-width="1.6" fill="none" opacity="0.45"/>
+  <path d="M86 108 H150 L136 78 H100 Z" fill="none" stroke="#68462d" stroke-width="1.3" opacity="0.5"/>
+  <ellipse cx="118" cy="118" rx="38" ry="11" fill="#faf6ee" stroke="#d9cbb7" stroke-width="1"/>
+  <!-- book stack -->
+  <rect x="64" y="286" width="78" height="14" fill="#efe7d8" stroke="#68462d" stroke-width="1" opacity="0.8"/>
+  <rect x="68" y="268" width="70" height="14" fill="#fffef9" stroke="#68462d" stroke-width="1" opacity="0.85"/>
+  <rect x="72" y="250" width="62" height="14" fill="#efe7d8" stroke="#68462d" stroke-width="1" opacity="0.9"/>
+  <rect x="76" y="232" width="54" height="14" fill="#fffef9" stroke="#68462d" stroke-width="1"/>
+  <text x="84" y="243" font-family="Georgia, 'Noto Serif KR', serif" font-size="8" fill="#68462d" opacity="0.55">형사법 총론</text>
+  <!-- open book -->
+  <path d="M168 358 Q210 338 252 358 V396 Q210 416 168 396 Z" fill="#fffef9" stroke="#68462d" stroke-width="1.1"/>
+  <path d="M252 358 Q294 338 336 358 V396 Q294 416 252 396 Z" fill="#f8f4ea" stroke="#68462d" stroke-width="1.1"/>
+  <path d="M210 368 V388" stroke="#d9cbb7" stroke-width="0.9"/>
+  <path d="M188 376 H232 M188 386 H228" stroke="#68462d" stroke-width="0.5" opacity="0.25"/>
+  <!-- handwritten notes -->
+  <g transform="rotate(-3 390 340)">
+    <rect x="318" y="300" width="132" height="92" rx="2" fill="#fffef9" stroke="#d9cbb7" stroke-width="1"/>
+    <path d="M332 318 H442 M332 334 H420 M332 350 H436 M332 366 H408" stroke="#68462d" stroke-width="0.75" opacity="0.32" stroke-linecap="round"/>
+    <path d="M336 378 Q360 386 384 374 Q408 362 430 370" stroke="#68462d" stroke-width="0.9" fill="none" opacity="0.38" stroke-linecap="round"/>
+  </g>
+  <!-- pen -->
+  <path d="M452 388 L488 342" stroke="#1d1a15" stroke-width="1.4" opacity="0.5" stroke-linecap="round"/>
+  <path d="M448 392 L454 384" stroke="#68462d" stroke-width="1" opacity="0.6"/>
+  <!-- mug -->
+  <ellipse cx="498" cy="372" rx="20" ry="7" fill="#d9cbb7" opacity="0.55"/>
+  <path d="M476 332 H520 V368 Q498 382 476 368 Z" fill="none" stroke="#68462d" stroke-width="1.1" opacity="0.5"/>
+  <path d="M520 348 H532 Q538 360 532 368 H520" fill="none" stroke="#68462d" stroke-width="1" opacity="0.45"/>
+  <!-- desk -->
+  <path d="M48 400 H552 V428 H48 Z" fill="#d9cbb7"/>
+  <path d="M56 400 Q56 388 72 386 H528 Q544 388 544 400" fill="none" stroke="#68462d" stroke-width="1" opacity="0.28"/>
+  <!-- scholar at desk - profile, editorial line -->
+  <g opacity="0.9" filter="url(#softLine)">
+    <ellipse cx="400" cy="248" rx="30" ry="34" fill="none" stroke="#1d1a15" stroke-width="1.4"/>
+    <path d="M428 252 Q452 256 458 272 Q454 288 436 292" fill="none" stroke="#1d1a15" stroke-width="1.25"/>
+    <path d="M382 268 Q372 310 384 358" fill="none" stroke="#1d1a15" stroke-width="1.45"/>
+    <path d="M408 322 Q438 334 458 358" fill="none" stroke="#1d1a15" stroke-width="1.2"/>
+    <circle cx="412" cy="240" r="2.5" fill="#68462d" opacity="0.55"/>
+    <path d="M372 236 Q364 218 378 206" fill="none" stroke="#1d1a15" stroke-width="1" opacity="0.45"/>
+    <path d="M394 278 Q398 288 394 298" fill="none" stroke="#68462d" stroke-width="0.85" opacity="0.35"/>
+  </g>
+  <!-- reading glasses on desk -->
+  <ellipse cx="286" cy="374" rx="16" ry="5" fill="none" stroke="#68462d" stroke-width="0.9" opacity="0.35"/>
+  <ellipse cx="314" cy="374" rx="16" ry="5" fill="none" stroke="#68462d" stroke-width="0.9" opacity="0.35"/>
+  <path d="M302 374 H298" stroke="#68462d" stroke-width="0.9" opacity="0.35"/>
+</svg>

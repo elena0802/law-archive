@@ -88,7 +88,7 @@ export function resolvePublishedAt(
   status: EssayRow["status"],
   existingPublishedAt: string | null,
 ) {
-  if (status === "draft") {
+  if (status !== "published") {
     return existingPublishedAt;
   }
 

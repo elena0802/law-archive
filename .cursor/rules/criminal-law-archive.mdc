@@ -20,6 +20,7 @@ This is NOT:
 
 This IS:
 
+- **one scholar's study** (한 학자의 서재) — not a legal blog or content platform
 - a scholarly archive
 - a legal essay collection
 - a long-term knowledge repository
@@ -109,6 +110,14 @@ Avoid:
 - feature overload
 
 When adding Supabase: keep public URLs `/essays/[slug]` and `/series/[slug]`; add `lib/content/` (or adapter behind `lib/essays.ts`), `app/admin/`, auth middleware, and revalidation. Store stable series slugs if titles can change.
+
+## Home hero (approved)
+
+- Feeling: **a lifetime of scholarship, reflection, and teaching** — not a content catalogue.
+- Visual: editorial watercolor (`public/images/hero-study.png`) — books, manuscripts, desk lamp, scholar at work; not schematic line art or icons.
+- **Headline:** 「형사법을 연구하며 / 사람과 사회를 생각해 왔습니다.」
+- Flagship **series** in 「지금 읽는 연재」 below warm lead. Korean nav only.
+- Specs: `design/DESIGN-PROPOSAL.md`, `design/PHASE-1-IMPLEMENTATION.md`, `design/comps/HOME-HERO-SPEC.md`.
 
 ## Development Rules
 

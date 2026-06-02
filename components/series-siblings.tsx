@@ -4,9 +4,23 @@ import type { Essay } from "@/lib/essays";
 type SeriesSiblingsProps = {
   essays: Essay[];
   currentSlug: string;
+  /** When true, sibling links use /preview/[slug] for editor preview. */
+  previewMode?: boolean;
 };
 
-export function SeriesSiblings({ essays, currentSlug }: SeriesSiblingsProps) {
+function siblingHref(essay: Essay, previewMode: boolean) {
+  if (previewMode) {
+    return `/preview/${essay.slug}`;
+  }
+
+  return `/essays/${essay.slug}`;
+}
+
+export function SeriesSiblings({
+  essays,
+  currentSlug,
+  previewMode = false,
+}: SeriesSiblingsProps) {
   const siblings = essays.filter((essay) => essay.slug !== currentSlug);
 
   if (siblings.length === 0) {
@@ -26,7 +40,7 @@ export function SeriesSiblings({ essays, currentSlug }: SeriesSiblingsProps) {
           <li key={essay.slug}>
             <Link
               className="font-serif text-[1.0625rem] leading-snug text-ink underline-offset-4 hover:text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-              href={`/essays/${essay.slug}`}
+              href={siblingHref(essay, previewMode)}
             >
               {essay.title}
             </Link>

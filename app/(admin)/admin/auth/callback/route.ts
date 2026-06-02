@@ -1,19 +1,12 @@
 import { NextResponse } from "next/server";
 import { isAllowedEditorEmail } from "@/lib/auth/editor";
+import { safeEditorNextPath } from "@/lib/auth/editor-paths";
 import { createSupabaseServerClient } from "@/lib/supabase/server-ssr";
-
-function safeAdminNextPath(next: string | null) {
-  if (next && next.startsWith("/admin") && !next.startsWith("/admin/auth")) {
-    return next;
-  }
-
-  return "/admin/essays";
-}
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = safeAdminNextPath(searchParams.get("next"));
+  const next = safeEditorNextPath(searchParams.get("next"));
 
   if (!code) {
     return NextResponse.redirect(

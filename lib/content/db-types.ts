@@ -3,7 +3,7 @@
  * @see design/PR11-CMS-ARCHITECTURE.md §3
  */
 
-export type EssayStatus = "draft" | "published";
+export type EssayStatus = "draft" | "published" | "archived";
 
 export type SeriesRow = {
   id: string;

@@ -6,6 +6,7 @@ import {
   isEssaySlugTaken,
   resolvePublishedAt,
 } from "@/lib/admin/essays";
+import { noticeKeyForIntent, readSaveIntent } from "@/lib/admin/save-intent";
 import { parseEssayForm } from "@/lib/admin/parse-essay-form";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
@@ -62,7 +63,8 @@ export async function createEssay(
     seriesSlug: values.series_slug,
   });
 
-  redirect(`/admin/essays/${data.id}?saved=1`);
+  const intent = readSaveIntent(formData);
+  redirect(`/admin/essays/${data.id}?notice=${noticeKeyForIntent(intent)}`);
 }
 
 export async function updateEssay(
@@ -140,5 +142,6 @@ export async function updateEssay(
     previousSeriesSlug: existing.series_slug,
   });
 
-  redirect(`/admin/essays/${essayId}?saved=1`);
+  const intent = readSaveIntent(formData);
+  redirect(`/admin/essays/${essayId}?notice=${noticeKeyForIntent(intent)}`);
 }

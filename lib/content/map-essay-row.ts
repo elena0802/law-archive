@@ -1,5 +1,6 @@
 import type { Essay, EssayFrontmatter } from "@/lib/essays";
 import type { EssayRow, SeriesRow } from "@/lib/content/db-types";
+import { isPublishedEssayStatus } from "@/lib/content/essay-status";
 
 /** Map Postgres `essay_date` to app `date` (YYYY-MM-DD). */
 export function formatEssayDateFromRow(essayDate: string) {
@@ -16,13 +17,14 @@ export function mapEssayRowToEssay(
     date: formatEssayDateFromRow(row.essay_date),
     category: row.category,
     series: seriesTitle,
-    draft: row.status === "draft",
+    draft: !isPublishedEssayStatus(row.status),
     featured: row.featured,
   };
 
   return {
     slug: row.slug,
     content: row.content,
+    status: row.status,
     ...frontmatter,
   };
 }

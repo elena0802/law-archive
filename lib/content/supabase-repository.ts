@@ -10,6 +10,7 @@ import {
   type SeriesVolumeSource,
 } from "@/lib/content/series-aggregation";
 import type { EssayRow, SeriesRow } from "@/lib/content/db-types";
+import { isPublishedEssayStatus } from "@/lib/content/essay-status";
 import { getSeriesSlug } from "@/lib/content/series-slug";
 import { requireSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
@@ -98,7 +99,7 @@ export function createSupabaseEssayRepository(): EssayRepository {
         return null;
       }
 
-      if (!options.includeDrafts && row.status === "draft") {
+      if (!options.includeDrafts && !isPublishedEssayStatus(row.status)) {
         return null;
       }
 

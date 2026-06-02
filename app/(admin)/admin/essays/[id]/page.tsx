@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { updateEssay } from "@/app/(admin)/admin/essays/actions";
 import { EssayForm } from "@/components/admin/essay-form";
+import { essayStatusLabel } from "@/components/admin/essay-status-badge";
 import {
   essayRowToFormValues,
   getAdminEssayById,
@@ -11,7 +12,7 @@ import {
 
 type AdminEditEssayPageProps = {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ notice?: string }>;
 };
 
 export async function generateMetadata({
@@ -30,7 +31,7 @@ export default async function AdminEditEssayPage({
   searchParams,
 }: AdminEditEssayPageProps) {
   const { id } = await params;
-  const { saved } = await searchParams;
+  const { notice } = await searchParams;
   const [essay, series] = await Promise.all([
     getAdminEssayById(id),
     listAdminSeries(),
@@ -41,30 +42,37 @@ export default async function AdminEditEssayPage({
   }
 
   const updateWithId = updateEssay.bind(null, id);
-  const savedMessage = saved === "1" ? "저장되었습니다." : undefined;
+  const noticeMessage =
+    notice === "saved" || notice === "published"
+      ? `${notice === "published" ? "공개되었습니다." : "저장되었습니다."} 현재 상태: ${essayStatusLabel(essay.status)}`
+      : undefined;
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-12">
+    <div className="mx-auto max-w-5xl px-6 py-12">
       <p className="text-sm tracking-[0.18em] text-accent uppercase">편집</p>
       <h1 className="text-keep mt-4 font-serif text-3xl leading-tight text-ink">
         글 편집
       </h1>
-      <p className="text-keep mt-5 text-base leading-8 text-ink-muted">
-        {essay.title}
-      </p>
-      <p className="mt-6">
+      <div className="mt-5 flex flex-wrap items-center gap-4">
+        <p className="text-keep text-base leading-8 text-ink-muted">
+          {essay.title}
+        </p>
         <Link
           className="text-sm text-accent underline-offset-4 hover:underline"
-          href="/admin/essays"
+          href={`/preview/${essay.slug}`}
+          rel="noopener noreferrer"
+          target="_blank"
         >
-          ← 글 목록
+          미리보기
         </Link>
-      </p>
+      </div>
       <EssayForm
         action={updateWithId}
+        currentStatus={essay.status}
         initialValues={essayRowToFormValues(essay)}
         mode="edit"
-        savedMessage={savedMessage}
+        noticeMessage={noticeMessage}
+        previewSlug={essay.slug}
         series={series}
         slugLocked={essay.status === "published"}
       />

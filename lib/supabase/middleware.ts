@@ -5,6 +5,10 @@ import {
   isEditorAllowlistConfigured,
 } from "@/lib/auth/editor";
 import {
+  isEditorProtectedPath,
+  safeEditorNextPath,
+} from "@/lib/auth/editor-paths";
+import {
   getSupabaseAnonKey,
   getSupabaseUrl,
   isSupabaseConfigured,
@@ -12,13 +16,6 @@ import {
 import type { Database } from "@/lib/supabase/database";
 
 const ADMIN_LOGIN = "/admin/login";
-const ADMIN_CALLBACK_PREFIX = "/admin/auth/";
-
-function isAdminAuthPath(pathname: string) {
-  return (
-    pathname === ADMIN_LOGIN || pathname.startsWith(ADMIN_CALLBACK_PREFIX)
-  );
-}
 
 function redirectToLogin(request: NextRequest, nextPath?: string) {
   const url = request.nextUrl.clone();
@@ -33,14 +30,14 @@ function redirectToLogin(request: NextRequest, nextPath?: string) {
 }
 
 /**
- * Refreshes Supabase session cookies and guards /admin/* routes.
+ * Refreshes Supabase session cookies and guards editor-only routes (/admin/*, /preview/*).
  */
 export async function updateSupabaseSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isAuthPath = isAdminAuthPath(pathname);
+  const isProtected = isEditorProtectedPath(pathname);
 
   if (!isSupabaseConfigured() || !isEditorAllowlistConfigured()) {
-    if (!isAuthPath) {
+    if (isProtected) {
       const url = request.nextUrl.clone();
       url.pathname = ADMIN_LOGIN;
       url.searchParams.set("error", "config");
@@ -85,7 +82,7 @@ export async function updateSupabaseSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (!isAuthPath) {
+  if (isProtected) {
     if (!user) {
       return redirectToLogin(request, pathname);
     }
@@ -99,9 +96,11 @@ export async function updateSupabaseSession(request: NextRequest) {
   }
 
   if (pathname === ADMIN_LOGIN && user && isAllowedEditorEmail(user.email)) {
-    const next = request.nextUrl.searchParams.get("next") || "/admin/essays";
+    const next = safeEditorNextPath(
+      request.nextUrl.searchParams.get("next"),
+    );
     const url = request.nextUrl.clone();
-    url.pathname = next.startsWith("/admin") ? next : "/admin/essays";
+    url.pathname = next;
     url.search = "";
     return NextResponse.redirect(url);
   }

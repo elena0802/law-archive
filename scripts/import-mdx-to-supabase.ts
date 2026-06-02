@@ -36,7 +36,7 @@ function resolvePublishedAtForImport(
   essayDate: string,
   existing: EssayRow | null,
 ) {
-  if (status === "draft") {
+  if (status !== "published") {
     return null;
   }
 
