@@ -4,6 +4,9 @@ import { Section } from "@/components/section";
 import { formatEssayDate, getAllEssays } from "@/lib/essays";
 import { siteConfig } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "글",
   description: "형사법과 인간, 책임과 사회에 관한 글을 최신순으로 모았습니다.",
