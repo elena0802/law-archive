@@ -1,5 +1,8 @@
 import { archiveSeriesTitles } from "@/lib/content/archive-series";
-import { getCategorySlug } from "@/lib/content/category-slug";
+import {
+  getCategorySlug,
+  resolveCategorySlugParam,
+} from "@/lib/content/category-slug";
 import { getEssayRepository } from "@/lib/content/get-repository";
 import { sortEssaysByDateAsc } from "@/lib/content/series-aggregation";
 
@@ -324,7 +327,7 @@ export function formatSeriesDateRange(essays: Essay[]) {
 }
 
 export { getSeriesSlug } from "@/lib/content/series-slug";
-export { getCategorySlug };
+export { getCategorySlug, resolveCategorySlugParam };
 
 export async function getEssayBySlug(
   slug: string,
@@ -371,37 +374,52 @@ export type EssayCategory = {
   slug: string;
   title: string;
   count: number;
+  latestEssays: Essay[];
 };
 
 export async function getAllCategories(): Promise<EssayCategory[]> {
   const essays = await getAllEssays();
-  const counts = new Map<string, number>();
+  const byCategory = new Map<string, Essay[]>();
 
   for (const essay of essays) {
-    counts.set(essay.category, (counts.get(essay.category) ?? 0) + 1);
+    const list = byCategory.get(essay.category) ?? [];
+    list.push(essay);
+    byCategory.set(essay.category, list);
   }
 
-  return [...counts.entries()]
-    .map(([title, count]) => ({
+  return [...byCategory.entries()]
+    .map(([title, items]) => {
+      const ordered = [...items].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      );
+
+      return {
       slug: getCategorySlug(title),
       title,
-      count,
-    }))
+      count: items.length,
+      latestEssays: ordered.slice(0, 2),
+    };
+    })
     .sort((a, b) => b.count - a.count || a.title.localeCompare(b.title, "ko"));
 }
 
 export async function getCategoryBySlug(slug: string) {
+  const normalizedSlug = resolveCategorySlugParam(slug);
   const categories = await getAllCategories();
-  const category = categories.find((item) => item.slug === slug) ?? null;
+  const category = categories.find((item) => item.slug === normalizedSlug) ?? null;
 
   if (!category) {
     return null;
   }
 
   const essays = await getAllEssays();
-  const items = essays.filter((essay) => essay.category === category.title);
+  const items = essays
+    .filter((essay) => essay.category === category.title)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const latest = items[0]?.date ?? "";
+  const first = items[items.length - 1]?.date ?? "";
 
-  return { ...category, essays: items };
+  return { ...category, essays: items, firstDate: first, latestDate: latest };
 }
 
 export async function searchEssays(query: string): Promise<Essay[]> {

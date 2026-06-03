@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Section } from "@/components/section";
+import { getCategoryDescription } from "@/lib/content/category-descriptions";
 import { getAllCategories } from "@/lib/essays";
 
 export const metadata: Metadata = {
@@ -30,13 +31,21 @@ export default async function CategoriesPage() {
             {categories.map((category) => (
               <li className="border-t border-line py-6 first:border-t-0" key={category.slug}>
                 <Link
-                  className="group flex items-baseline justify-between gap-6 underline-offset-4 hover:underline"
+                  className="group block rounded-sm px-1 py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
                   href={`/categories/${category.slug}`}
                 >
-                  <span className="text-keep font-serif text-2xl leading-tight text-ink group-hover:text-accent">
-                    {category.title}
-                  </span>
-                  <span className="text-sm text-ink-muted">{category.count}편</span>
+                  <div className="flex items-baseline justify-between gap-6">
+                    <span className="text-keep font-serif text-2xl leading-tight text-ink group-hover:text-accent">
+                      {category.title}
+                    </span>
+                    <span className="text-sm text-ink-muted">{category.count}편</span>
+                  </div>
+                  <p className="text-keep mt-3 text-base leading-8 text-ink-muted">
+                    {getCategoryDescription(category.title)}
+                  </p>
+                  <p className="mt-5 text-sm text-accent underline-offset-4 group-hover:underline">
+                    주제 보기 →
+                  </p>
                 </Link>
               </li>
             ))}
