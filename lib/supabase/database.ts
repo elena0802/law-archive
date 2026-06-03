@@ -5,6 +5,8 @@ import type {
   EssayRow,
   EssayStatus,
   EssayUpdate,
+  NewsletterSubscriberInsert,
+  NewsletterSubscriberRow,
   SeriesRow,
 } from "@/lib/content/db-types";
 
@@ -45,6 +47,12 @@ export type Database = {
         Row: CommentRow;
         Insert: CommentInsert;
         Update: Partial<CommentInsert>;
+        Relationships: [];
+      };
+      newsletter_subscribers: {
+        Row: NewsletterSubscriberRow;
+        Insert: NewsletterSubscriberInsert;
+        Update: Partial<NewsletterSubscriberInsert>;
         Relationships: [];
       };
     };

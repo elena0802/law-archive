@@ -71,3 +71,20 @@ export type CommentInsert = {
   status?: CommentStatus;
   password_hash?: string | null;
 };
+
+export type NewsletterSubscriberStatus = "active" | "unsubscribed";
+
+export type NewsletterSubscriberRow = {
+  id: string;
+  email: string;
+  status: NewsletterSubscriberStatus;
+  source: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type NewsletterSubscriberInsert = {
+  email: string;
+  status?: NewsletterSubscriberStatus;
+  source?: string | null;
+};

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArticleCard } from "@/components/article-card";
 import { HomeHero } from "@/components/home-hero";
+import { NewsletterSubscribeForm } from "@/components/newsletter-subscribe-form";
 import { Section } from "@/components/section";
 import { SeriesVolumeLink } from "@/components/series-volume-link";
 import {
@@ -166,6 +167,19 @@ export default async function Home() {
         >
           모든 글 보기
         </Link>
+      </Section>
+
+      <Section size="reading" className="border-t border-line py-page">
+        <p className="mb-6 text-sm tracking-[0.18em] text-accent uppercase">
+          Newsletter
+        </p>
+        <h2 className="text-keep font-serif text-3xl leading-tight text-ink sm:text-4xl">
+          새 글을 이메일로 받아보세요
+        </h2>
+        <p className="text-keep mt-6 max-w-2xl text-base leading-8 text-ink-muted">
+          형사법 아카이브의 새 글과 연재 소식을 조용히 전해드립니다.
+        </p>
+        <NewsletterSubscribeForm source="homepage" />
       </Section>
     </>
   );
