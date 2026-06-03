@@ -1,4 +1,5 @@
 import type { Essay, EssaySeries } from "@/lib/essays";
+import { sortEssaysForSeries } from "@/lib/content/series-order";
 import { getSeriesIntroduction } from "@/lib/series";
 
 export type SeriesVolumeSource = {
@@ -40,7 +41,7 @@ export function buildEssaySeriesList(
   return volumes
     .map((volume) => {
       const essaysInSeries = essaysByTitle.get(volume.title) ?? [];
-      const sortedEssays = sortEssaysByDateDesc(essaysInSeries);
+      const sortedEssays = sortEssaysForSeries(essaysInSeries);
       const sortedAsc = sortEssaysByDateAsc(essaysInSeries);
       const count = sortedEssays.length;
       const autoDescription = getSeriesDescription(volume.title, count);

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   formatSeriesDateRange,
-  sortEssaysByDateAsc,
+  sortEssaysForSeries,
   type EssaySeries,
 } from "@/lib/essays";
 
@@ -10,7 +10,7 @@ type HomeSeriesPanelProps = {
 };
 
 export function HomeSeriesPanel({ series }: HomeSeriesPanelProps) {
-  const essaysInOrder = sortEssaysByDateAsc(series.essays);
+  const essaysInOrder = sortEssaysForSeries(series.essays);
   const dateRange = formatSeriesDateRange(series.essays);
 
   return (

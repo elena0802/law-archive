@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   formatEssayDate,
-  sortEssaysByDateAsc,
+  sortEssaysForSeries,
   type Essay,
 } from "@/lib/essays";
 
@@ -10,7 +10,7 @@ type SeriesTocProps = {
 };
 
 export function SeriesToc({ essays }: SeriesTocProps) {
-  const ordered = sortEssaysByDateAsc(essays);
+  const ordered = sortEssaysForSeries(essays);
 
   if (ordered.length === 0) {
     return (
@@ -30,8 +30,8 @@ export function SeriesToc({ essays }: SeriesTocProps) {
           목차
         </h2>
         <p className="mt-2 text-sm text-ink-muted">
-          아래 순서는 발행일 오름차순입니다. 처음부터 읽으시면 연재의 흐름을
-          따라가기 쉽습니다.
+          아래 순서는 연재 편 순서입니다. 처음부터 읽으시면 흐름을 따라가기
+          쉽습니다.
         </p>
       </div>
 

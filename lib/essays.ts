@@ -4,7 +4,10 @@ import {
   resolveCategorySlugParam,
 } from "@/lib/content/category-slug";
 import { getEssayRepository } from "@/lib/content/get-repository";
-import { sortEssaysByDateAsc } from "@/lib/content/series-aggregation";
+import {
+  sortEssaysByDateAsc,
+} from "@/lib/content/series-aggregation";
+import { sortEssaysForSeries } from "@/lib/content/series-order";
 
 export { archiveSeriesTitles };
 
@@ -263,6 +266,8 @@ export type Essay = EssayFrontmatter & {
   status?: import("@/lib/content/db-types").EssayStatus;
   /** ISO timestamp when loaded from Supabase CMS. */
   updatedAt?: string;
+  /** Explicit installment order when set in CMS (`series_order`). */
+  seriesOrder?: number | null;
 };
 
 export type EssaySeries = {
@@ -276,7 +281,7 @@ export type EssaySeries = {
   latestDate: string;
 };
 
-export { sortEssaysByDateAsc };
+export { sortEssaysByDateAsc, sortEssaysForSeries };
 
 export function formatEssayDate(date: string) {
   return new Intl.DateTimeFormat("ko-KR", {
@@ -302,7 +307,7 @@ export function getSeriesPartLabel(essays: Essay[], currentSlug: string) {
     return null;
   }
 
-  const ordered = sortEssaysByDateAsc(essays);
+  const ordered = sortEssaysForSeries(essays);
   const index = ordered.findIndex((essay) => essay.slug === currentSlug);
 
   if (index < 0) {

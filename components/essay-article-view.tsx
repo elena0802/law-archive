@@ -17,7 +17,7 @@ import {
   getSeriesBySlug,
   getSeriesPartLabel,
   getSeriesSlug,
-  sortEssaysByDateAsc,
+  sortEssaysForSeries,
 } from "@/lib/essays";
 import { isCommentsAvailable } from "@/lib/comments";
 import { formatEssayCitation, getSiteOrigin } from "@/lib/site";
@@ -42,7 +42,7 @@ export async function EssayArticleView({
   const series = await getSeriesBySlug(seriesSlug, {
     includeDrafts: isPreview,
   });
-  const essaysInSeries = series ? sortEssaysByDateAsc(series.essays) : [];
+  const essaysInSeries = series ? sortEssaysForSeries(series.essays) : [];
   const readingMinutes = estimateReadingMinutes(essay.content);
   const partLabel = getSeriesPartLabel(essaysInSeries, essay.slug);
   const currentIndex = essaysInSeries.findIndex((item) => item.slug === essay.slug);
