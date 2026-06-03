@@ -31,20 +31,20 @@ export function EssayStatusBadge({
       {showHelper ? (
         <div className="text-keep mt-4 space-y-2 text-sm leading-7 text-ink-muted">
           <p>
-            <span className="font-medium text-ink">임시 저장</span> — 공개
-            서재에 보이지 않습니다. 계속 다듬을 때 사용합니다.
+            <span className="font-medium text-ink">임시 저장</span> — 공개하지
+            않습니다. 다듬는 동안에 사용합니다.
           </p>
           <p>
             <span className="font-medium text-ink">공개</span> — 공개 서재에
-            표시됩니다. 준비가 되었을 때 「공개하기」를 누르세요.
+            표시됩니다.
           </p>
           <p>
-            <span className="font-medium text-ink">보관</span> — 공개
-            사이트에서는 보이지 않지만 관리 화면에는 계속 보관됩니다.
+            <span className="font-medium text-ink">보관</span> — 공개 서재에서는
+            보이지 않지만, 관리 화면에 보관해 둡니다.
           </p>
           <p>
-            <span className="font-medium text-ink">휴지통</span> — 공개
-            사이트에서는 보이지 않으며 휴지통 목록에서만 관리됩니다.
+            <span className="font-medium text-ink">휴지통</span> — 공개 서재에서는
+            보이지 않으며, 휴지통 목록에서 따로 관리합니다.
           </p>
         </div>
       ) : null}

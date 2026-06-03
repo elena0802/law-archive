@@ -18,7 +18,9 @@ export default async function AdminNewEssayPage() {
         새 글 작성
       </h1>
       <p className="text-keep mt-5 max-w-2xl text-base leading-8 text-ink-muted">
-        제목과 본문을 작성한 뒤, 아래의 공개 상태를 선택하고 저장하세요.
+        제목과 본문을 작성한 뒤, 아래의 공개 상태를 선택하고 저장하세요. 처음에는
+        보통 「임시 저장」으로 두고, 준비가 되면 「공개」로 바꿔 저장하면 공개
+        서재에 표시됩니다.
       </p>
       <EssayForm
         action={createEssay}

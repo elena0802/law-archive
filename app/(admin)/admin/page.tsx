@@ -116,6 +116,12 @@ export default async function AdminIndexPage() {
         </h2>
         <div className="mt-4 flex flex-wrap gap-3">
           <Link
+            className="rounded border border-line bg-paper px-5 py-3 text-sm text-ink-muted transition hover:border-accent/40 hover:text-ink"
+            href="/admin/essays"
+          >
+            글 관리
+          </Link>
+          <Link
             className="rounded border border-accent bg-accent px-5 py-3 text-sm font-medium text-paper transition hover:bg-accent/90"
             href="/admin/essays/new"
           >
@@ -123,15 +129,17 @@ export default async function AdminIndexPage() {
           </Link>
           <Link
             className="rounded border border-line bg-paper px-5 py-3 text-sm text-ink-muted transition hover:border-accent/40 hover:text-ink"
-            href="/admin/essays"
+            href="/admin/series"
           >
-            글 관리
+            연재 관리
           </Link>
           <Link
             className="rounded border border-line bg-paper px-5 py-3 text-sm text-ink-muted transition hover:border-accent/40 hover:text-ink"
             href="/"
+            rel="noopener noreferrer"
+            target="_blank"
           >
-            공개 사이트 보기
+            공개 서재 보기
           </Link>
         </div>
       </section>

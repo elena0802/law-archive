@@ -55,10 +55,13 @@ export default async function AdminEditEssayPage({
       <h1 className="text-keep mt-4 font-serif text-3xl leading-tight text-ink">
         글 편집
       </h1>
-      <div className="mt-5 flex flex-wrap items-center gap-4">
+      <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
         <p className="text-keep text-base leading-8 text-ink-muted">
           {essay.title}
         </p>
+        <span className="text-sm text-ink-muted">
+          현재 상태: {essayStatusLabel(essay.status)}
+        </span>
         <Link
           className="text-sm text-accent underline-offset-4 hover:underline"
           href={`/preview/${essay.slug}`}
@@ -67,6 +70,16 @@ export default async function AdminEditEssayPage({
         >
           미리보기
         </Link>
+        {essay.status === "published" ? (
+          <Link
+            className="text-sm text-ink-muted underline-offset-4 hover:text-ink hover:underline"
+            href={`/essays/${essay.slug}`}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            공개 서재에서 보기
+          </Link>
+        ) : null}
       </div>
       <EssayForm
         action={updateWithId}
@@ -74,7 +87,6 @@ export default async function AdminEditEssayPage({
         initialValues={essayRowToFormValues(essay)}
         mode="edit"
         noticeMessage={noticeMessage}
-        previewSlug={essay.slug}
         series={series}
         slugLocked={essay.status === "published"}
       />

@@ -24,7 +24,6 @@ type EssayFormProps = {
   mode: "create" | "edit";
   initialValues: EssayFormValues;
   currentStatus: EssayStatus;
-  previewSlug?: string;
   series: Pick<SeriesRow, "slug" | "title">[];
   slugLocked: boolean;
   action: (
@@ -318,7 +317,6 @@ export function EssayForm({
   mode,
   initialValues,
   currentStatus,
-  previewSlug,
   series,
   slugLocked,
   action,
@@ -603,37 +601,40 @@ export function EssayForm({
 
       <div className="border-t border-line border-dashed pt-10">
         <EssayStatusSelector currentStatus={currentStatus} />
-        {mode === "edit" && previewSlug ? (
-          <p className="text-keep mt-6 text-sm leading-7 text-ink-muted">
-            저장한 뒤{" "}
-            <a
-              className="text-accent underline-offset-4 hover:underline"
-              href={`/preview/${previewSlug}`}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              미리보기
-            </a>
-            로 공개 전 모습을 확인할 수 있습니다.
-          </p>
-        ) : null}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 pt-10">
-        <p className="text-keep mr-2 text-sm leading-7 text-ink-muted">
-          {hasUnsavedChanges && !isPending
-            ? "저장하지 않은 변경사항이 있습니다."
-            : "모든 변경사항이 저장되었습니다."}
-        </p>
-        <button
-          className={primaryButtonClassName}
-          disabled={isPending}
-          name="intent"
-          type="submit"
-          value="save"
-        >
-          {isPending ? "저장 중…" : "저장"}
-        </button>
+      <div className="mt-10 rounded border border-line px-5 py-6">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 space-y-2">
+            {hasUnsavedChanges && !isPending ? (
+              <p className="text-keep text-sm font-medium leading-7 text-ink">
+                저장하지 않은 변경사항이 있습니다.
+              </p>
+            ) : mode === "edit" ? (
+              <p className="text-keep text-sm leading-7 text-ink-muted">
+                모든 변경사항이 저장되었습니다.
+              </p>
+            ) : null}
+            <p className="text-keep text-sm leading-7 text-ink-muted">
+              변경사항을 저장한 뒤 미리보기에서 공개 전 모습을 확인할 수 있습니다.
+            </p>
+          </div>
+          <div className="shrink-0">
+            <button
+              className={primaryButtonClassName}
+              disabled={isPending}
+              name="intent"
+              type="submit"
+              value="save"
+            >
+              {isPending
+                ? "저장 중…"
+                : mode === "create"
+                  ? "글 저장"
+                  : "변경 저장"}
+            </button>
+          </div>
+        </div>
       </div>
     </form>
   );

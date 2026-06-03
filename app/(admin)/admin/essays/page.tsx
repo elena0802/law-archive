@@ -210,7 +210,7 @@ export default async function AdminEssaysPage({
                   수정일
                 </th>
                 <th className="py-4 font-medium" scope="col">
-                  <span className="sr-only">작업</span>
+                  작업
                 </th>
               </tr>
             </thead>
@@ -218,9 +218,12 @@ export default async function AdminEssaysPage({
               {essays.map((essay) => (
                 <tr className="border-b border-line" key={essay.id}>
                   <td className="py-4 pr-4 align-top">
-                    <span className="text-keep text-base text-ink">
+                    <Link
+                      className="text-keep text-base text-ink underline-offset-4 hover:text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                      href={`/admin/essays/${essay.id}`}
+                    >
                       {essay.title}
-                    </span>
+                    </Link>
                   </td>
                   <td className="py-4 pr-4 align-top">
                     <span
@@ -269,7 +272,7 @@ export default async function AdminEssaysPage({
                               rel="noopener noreferrer"
                               target="_blank"
                             >
-                              공개 사이트에서 보기
+                              공개 서재에서 보기
                             </Link>
                           ) : null}
                         </>
