@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EssayArticleView } from "@/components/essay-article-view";
+import { JsonLd } from "@/components/json-ld";
 import { Section } from "@/components/section";
 import { getAllEssays, getEssayBySlug } from "@/lib/essays";
+import { buildArticleJsonLd } from "@/lib/seo";
+import { siteConfig } from "@/lib/site";
 
 type EssayPageProps = {
   params: Promise<{
@@ -42,7 +45,10 @@ export async function generateMetadata({
       url: `/essays/${essay.slug}`,
       type: "article",
       publishedTime: essay.date,
+      modifiedTime: essay.updatedAt ?? essay.date,
       section: essay.category,
+      locale: "ko_KR",
+      siteName: siteConfig.name,
     },
   };
 }
@@ -56,8 +62,11 @@ export default async function EssayPage({ params }: EssayPageProps) {
   }
 
   return (
-    <Section size="reading" className="py-page">
-      <EssayArticleView essay={essay} mode="public" />
-    </Section>
+    <>
+      <JsonLd data={buildArticleJsonLd(essay)} />
+      <Section size="reading" className="py-page">
+        <EssayArticleView essay={essay} mode="public" />
+      </Section>
+    </>
   );
 }

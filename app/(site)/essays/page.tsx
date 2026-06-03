@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ArticleCard } from "@/components/article-card";
 import { Section } from "@/components/section";
 import { formatEssayDate, getAllEssays } from "@/lib/essays";
+import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Essays",
@@ -10,10 +11,12 @@ export const metadata: Metadata = {
     canonical: "/essays",
   },
   openGraph: {
-    title: "Essays",
+    title: `글 | ${siteConfig.name}`,
     description:
       "형사법과 인간, 책임과 사회에 관한 에세이를 최신순으로 모았습니다.",
     url: "/essays",
+    locale: "ko_KR",
+    siteName: siteConfig.name,
   },
 };
 

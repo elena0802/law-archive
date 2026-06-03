@@ -261,6 +261,8 @@ export type Essay = EssayFrontmatter & {
   content: string;
   /** Present when loaded from Supabase CMS. */
   status?: import("@/lib/content/db-types").EssayStatus;
+  /** ISO timestamp when loaded from Supabase CMS. */
+  updatedAt?: string;
 };
 
 export type EssaySeries = {

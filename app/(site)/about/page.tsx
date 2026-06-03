@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AboutSection } from "@/components/about-section";
+import { JsonLd } from "@/components/json-ld";
 import { ProfileNarrative } from "@/components/profile-narrative";
 import { ProfileSelectedBooks } from "@/components/profile-selected-books";
 import { Section } from "@/components/section";
 import { scholarProfile } from "@/lib/profile";
 import { researchPagePath } from "@/lib/research-record";
+import { buildPersonJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 const { about } = siteConfig;
@@ -23,12 +25,16 @@ export const metadata: Metadata = {
     description:
       "천진호 형사법학자의 연구 궤적과 이 디지털 서재가 남기려는 기록에 대한 소개입니다.",
     url: "/about",
+    locale: "ko_KR",
+    siteName: siteConfig.name,
   },
 };
 
 export default function AboutPage() {
   return (
-    <Section size="reading" className="py-page">
+    <>
+      <JsonLd data={buildPersonJsonLd()} />
+      <Section size="reading" className="py-page">
       <header>
         <p className="mb-6 text-sm tracking-[0.18em] text-accent uppercase">
           {about.pageTitle}
@@ -76,5 +82,6 @@ export default function AboutPage() {
         <p className="text-keep mt-4">{about.editorGuide.body}</p>
       </details>
     </Section>
+    </>
   );
 }

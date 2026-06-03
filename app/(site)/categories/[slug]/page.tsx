@@ -4,6 +4,7 @@ import { ArticleCard } from "@/components/article-card";
 import { Section } from "@/components/section";
 import { formatEssayDate, getAllCategories, getCategoryBySlug } from "@/lib/essays";
 import { resolveCategorySlugParam } from "@/lib/content/category-slug";
+import { siteConfig } from "@/lib/site";
 
 type CategoryPageProps = {
   params: Promise<{ slug: string }>;
@@ -31,6 +32,13 @@ export async function generateMetadata({
     title: category.title,
     description: `${category.title} 주제의 공개 글 ${category.count}편`,
     alternates: { canonical: `/categories/${category.slug}` },
+    openGraph: {
+      title: `${category.title} | ${siteConfig.name}`,
+      description: `${category.title} 주제의 공개 글 ${category.count}편`,
+      url: `/categories/${category.slug}`,
+      locale: "ko_KR",
+      siteName: siteConfig.name,
+    },
   };
 }
 

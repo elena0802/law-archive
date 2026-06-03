@@ -25,6 +25,7 @@ export function mapEssayRowToEssay(
     slug: row.slug,
     content: row.content,
     status: row.status,
+    updatedAt: row.updated_at,
     ...frontmatter,
   };
 }

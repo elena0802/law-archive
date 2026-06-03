@@ -43,6 +43,8 @@ export async function generateMetadata({
       title: `${series.title} | ${siteConfig.name}`,
       description: series.introduction,
       url: `/series/${series.slug}`,
+      locale: "ko_KR",
+      siteName: siteConfig.name,
     },
   };
 }

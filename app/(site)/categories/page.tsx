@@ -3,11 +3,19 @@ import Link from "next/link";
 import { Section } from "@/components/section";
 import { getCategoryDescription } from "@/lib/content/category-descriptions";
 import { getAllCategories } from "@/lib/essays";
+import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "주제",
   description: "공개된 글의 주제별 분류와 글 수를 확인합니다.",
   alternates: { canonical: "/categories" },
+  openGraph: {
+    title: `주제 | ${siteConfig.name}`,
+    description: "공개된 글의 주제별 분류와 글 수를 확인합니다.",
+    url: "/categories",
+    locale: "ko_KR",
+    siteName: siteConfig.name,
+  },
 };
 
 export default async function CategoriesPage() {

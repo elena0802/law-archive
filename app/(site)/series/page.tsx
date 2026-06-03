@@ -11,12 +11,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/series",
   },
-  openGraph: {
-    title: `연재 | ${siteConfig.name}`,
-    description:
-      "같은 질문을 이어 받는 글들을 연재별로 묶은 서가입니다. 아카이브는 연재 단위로 읽을 수 있도록 정리되어 있습니다.",
-    url: "/series",
-  },
+    openGraph: {
+      title: `연재 | ${siteConfig.name}`,
+      description:
+        "같은 질문을 이어 받는 글들을 연재별로 묶은 서가입니다. 아카이브는 연재 단위로 읽을 수 있도록 정리되어 있습니다.",
+      url: "/series",
+      locale: "ko_KR",
+      siteName: siteConfig.name,
+    },
 };
 
 export default async function SeriesPage() {

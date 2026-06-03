@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
-import { siteConfig } from "@/lib/site";
+import { getSiteOrigin, siteConfig } from "@/lib/site";
 import "./globals.css";
 
 const notoSansKr = Noto_Sans_KR({
@@ -17,12 +17,7 @@ const notoSerifKr = Noto_Serif_KR({
   variable: "--font-noto-serif-kr",
 });
 
-const siteUrl = new URL(
-  process.env.NEXT_PUBLIC_SITE_URL ??
-    (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000"),
-);
+const siteUrl = new URL(getSiteOrigin());
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
@@ -45,6 +40,10 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     locale: "ko_KR",
     type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 

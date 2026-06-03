@@ -23,6 +23,8 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     url: "/",
+    locale: "ko_KR",
+    siteName: siteConfig.name,
   },
 };
 
