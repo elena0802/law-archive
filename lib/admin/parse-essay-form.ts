@@ -64,6 +64,10 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
     errors.description = "한 줄 소개를 입력해 주세요.";
   }
 
+  if (!content) {
+    errors.content = "본문을 입력해 주세요.";
+  }
+
   if (!essay_date) {
     errors.essay_date = "글 날짜를 선택해 주세요.";
   }

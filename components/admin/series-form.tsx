@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
 import { essayActionIdleState } from "@/lib/admin/essay-action-state";
 import type { SeriesFormValues } from "@/lib/admin/parse-series-form";
@@ -39,11 +40,7 @@ export function SeriesForm({
 
   return (
     <form action={formAction} className="mx-auto mt-10 max-w-reading space-y-10">
-      {noticeMessage ? (
-        <p className="text-keep rounded border border-line bg-paper-muted px-5 py-4 text-base leading-7 text-ink">
-          {noticeMessage}
-        </p>
-      ) : null}
+      {noticeMessage ? <AdminNoticeBanner message={noticeMessage} /> : null}
       {state.status === "error" && state.message ? (
         <p className="text-keep rounded border border-accent/40 bg-paper-muted px-5 py-4 text-base leading-7 text-accent">
           {state.message}

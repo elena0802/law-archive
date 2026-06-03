@@ -45,7 +45,7 @@ export async function createSeries(
     };
   }
 
-  redirect("/admin/series");
+  redirect(`/admin/series/${data.id}?notice=saved`);
 }
 
 export async function updateSeries(
@@ -95,6 +95,6 @@ export async function updateSeries(
     };
   }
 
-  redirect("/admin/series");
+  redirect(`/admin/series/${seriesId}?notice=saved`);
 }
 

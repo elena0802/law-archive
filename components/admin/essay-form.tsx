@@ -7,8 +7,11 @@ import {
   useMemo,
   useRef,
   useState,
+  type FormEvent,
 } from "react";
 import { EssayStatusSelector } from "@/components/admin/essay-status-selector";
+import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
+import { PublishConfirmDialog } from "@/components/admin/publish-confirm-dialog";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
 import { essayActionIdleState } from "@/lib/admin/essay-action-state";
 import type { EssayFormValues } from "@/lib/admin/parse-essay-form";
@@ -327,9 +330,11 @@ export function EssayForm({
     essayActionIdleState,
   );
   const formRef = useRef<HTMLFormElement>(null);
+  const publishConfirmedRef = useRef(false);
   const [content, setContent] = useState(initialValues.content);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
   const isGuardEnabled = hasUnsavedChanges && !isSubmitting;
 
   const fieldErrors = state.fieldErrors ?? {};
@@ -404,23 +409,53 @@ export function EssayForm({
     return () => document.removeEventListener("click", onDocumentClick, true);
   }, [isGuardEnabled]);
 
+  const beginSubmit = useCallback(() => {
+    setIsSubmitting(true);
+    setHasUnsavedChanges(false);
+  }, []);
+
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      const form = event.currentTarget;
+      const snapshot = readSnapshotFromForm(form);
+      const isPublishing =
+        snapshot.essay_status === "published" && currentStatus !== "published";
+
+      if (isPublishing && !publishConfirmedRef.current) {
+        event.preventDefault();
+        setPublishConfirmOpen(true);
+        return;
+      }
+
+      publishConfirmedRef.current = false;
+      beginSubmit();
+    },
+    [beginSubmit, currentStatus],
+  );
+
+  const handlePublishConfirm = useCallback(() => {
+    setPublishConfirmOpen(false);
+    publishConfirmedRef.current = true;
+    beginSubmit();
+    formRef.current?.requestSubmit();
+  }, [beginSubmit]);
+
+  const handlePublishCancel = useCallback(() => {
+    setPublishConfirmOpen(false);
+  }, []);
+
   return (
     <form
       action={formAction}
       className="mx-auto mt-10 max-w-reading space-y-10"
       onChangeCapture={refreshDirtyState}
       onInputCapture={refreshDirtyState}
-      onSubmit={() => {
-        setIsSubmitting(true);
-        setHasUnsavedChanges(false);
-      }}
+      onSubmit={handleSubmit}
       ref={formRef}
     >
       <input name="current_status" type="hidden" value={currentStatus} />
 
-      {noticeMessage ? (
-        <FormBanner message={noticeMessage} tone="success" />
-      ) : null}
+      {noticeMessage ? <AdminNoticeBanner message={noticeMessage} /> : null}
 
       {state.status === "error" && state.message ? (
         <FormBanner message={state.message} tone="error" />
@@ -636,6 +671,12 @@ export function EssayForm({
           </div>
         </div>
       </div>
+
+      <PublishConfirmDialog
+        onCancel={handlePublishCancel}
+        onConfirm={handlePublishConfirm}
+        open={publishConfirmOpen}
+      />
     </form>
   );
 }

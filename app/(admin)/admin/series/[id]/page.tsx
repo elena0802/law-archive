@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { updateSeries } from "@/app/(admin)/admin/series/actions";
 import { SeriesForm } from "@/components/admin/series-form";
+import { getAdminSeriesNoticeMessage } from "@/lib/admin/admin-notices";
 import { getAdminSeriesById } from "@/lib/admin/series";
 
 type AdminEditSeriesPageProps = {
@@ -30,7 +31,7 @@ export default async function AdminEditSeriesPage({
   }
 
   const updateWithId = updateSeries.bind(null, id);
-  const noticeMessage = notice === "saved" ? "저장되었습니다." : undefined;
+  const noticeMessage = getAdminSeriesNoticeMessage(notice);
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">

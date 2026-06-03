@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
 import {
   EssayStatusFilters,
   type EssayListFilter,
 } from "@/components/admin/essay-status-filters";
 import { EssayTrashActions } from "@/components/admin/essay-trash-actions";
 import { essayStatusLabel } from "@/components/admin/essay-status-badge";
+import { getAdminEssayNoticeMessage } from "@/lib/admin/admin-notices";
 import {
   type AdminEssaySort,
   formatAdminDate,
@@ -24,6 +26,7 @@ type AdminEssaysPageProps = {
     series?: string;
     q?: string;
     sort?: string;
+    notice?: string;
   }>;
 };
 
@@ -73,10 +76,11 @@ function resetFiltersHref() {
 export default async function AdminEssaysPage({
   searchParams,
 }: AdminEssaysPageProps) {
-  const { status, series: seriesSlug, q, sort } = await searchParams;
+  const { status, series: seriesSlug, q, sort, notice } = await searchParams;
   const listFilter = parseListFilter(status);
   const parsedSort = parseSort(sort);
   const searchQuery = parseSearchQuery(q);
+  const noticeMessage = getAdminEssayNoticeMessage(notice);
   const [seriesList, essays] = await Promise.all([
     listAdminSeries(),
     listAdminEssays({
@@ -107,6 +111,12 @@ export default async function AdminEssaysPage({
           새 글 작성
         </Link>
       </div>
+
+      {noticeMessage ? (
+        <div className="mt-8">
+          <AdminNoticeBanner message={noticeMessage} />
+        </div>
+      ) : null}
 
       <EssayStatusFilters
         baseParams={{

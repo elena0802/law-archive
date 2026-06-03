@@ -6,7 +6,7 @@ import {
   isEssaySlugTaken,
   resolvePublishedAt,
 } from "@/lib/admin/essays";
-import { noticeKeyForIntent, readSaveIntent } from "@/lib/admin/save-intent";
+import { resolveEssaySaveNotice } from "@/lib/admin/admin-notices";
 import { parseEssayForm } from "@/lib/admin/parse-essay-form";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
@@ -63,8 +63,8 @@ export async function createEssay(
     seriesSlug: values.series_slug,
   });
 
-  const intent = readSaveIntent(formData);
-  redirect(`/admin/essays/${data.id}?notice=${noticeKeyForIntent(intent)}`);
+  const notice = resolveEssaySaveNotice("draft", values.status);
+  redirect(`/admin/essays/${data.id}?notice=${notice}`);
 }
 
 export async function updateEssay(
@@ -142,8 +142,8 @@ export async function updateEssay(
     previousSeriesSlug: existing.series_slug,
   });
 
-  const intent = readSaveIntent(formData);
-  redirect(`/admin/essays/${essayId}?notice=${noticeKeyForIntent(intent)}`);
+  const notice = resolveEssaySaveNotice(existing.status, values.status);
+  redirect(`/admin/essays/${essayId}?notice=${notice}`);
 }
 
 export async function restoreDeletedEssay(essayId: string) {
@@ -168,7 +168,7 @@ export async function restoreDeletedEssay(essayId: string) {
     seriesSlug: existing.series_slug,
   });
 
-  redirect("/admin/essays?status=deleted");
+  redirect(`/admin/essays?status=deleted&notice=restored`);
 }
 
 export async function permanentlyDeleteEssay(essayId: string) {

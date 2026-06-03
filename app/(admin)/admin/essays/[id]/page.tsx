@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { updateEssay } from "@/app/(admin)/admin/essays/actions";
 import { EssayForm } from "@/components/admin/essay-form";
 import { essayStatusLabel } from "@/components/admin/essay-status-badge";
+import { getAdminEssayNoticeMessage } from "@/lib/admin/admin-notices";
 import {
   essayRowToFormValues,
   getAdminEssayById,
@@ -44,10 +45,7 @@ export default async function AdminEditEssayPage({
   });
 
   const updateWithId = updateEssay.bind(null, id);
-  const noticeMessage =
-    notice === "saved" || notice === "published"
-      ? `${notice === "published" ? "공개되었습니다." : "저장되었습니다."} 현재 상태: ${essayStatusLabel(essay.status)}`
-      : undefined;
+  const noticeMessage = getAdminEssayNoticeMessage(notice);
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
