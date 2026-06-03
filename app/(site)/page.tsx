@@ -84,7 +84,7 @@ export default async function Home() {
 
       <Section size="reading" className="border-t border-line">
         <p className="mb-6 text-sm tracking-[0.18em] text-accent uppercase">
-          Topics
+          주제
         </p>
         <h2 className="text-keep font-serif text-3xl leading-tight text-ink sm:text-4xl">
           주요 주제
@@ -114,7 +114,7 @@ export default async function Home() {
 
       <Section size="reading" className="border-t border-line">
         <p className="mb-6 text-sm tracking-[0.18em] text-accent uppercase">
-          Series
+          연재
         </p>
         <h2 className="text-keep font-serif text-3xl leading-tight text-ink sm:text-4xl">
           대표 연재
@@ -140,7 +140,7 @@ export default async function Home() {
 
       <Section size="wide" className="border-t border-line">
         <p className="mb-6 text-sm tracking-[0.18em] text-accent uppercase">
-          Recent
+          최근 글
         </p>
         <h2 className="text-keep font-serif text-3xl leading-tight text-ink sm:text-4xl">
           최근 글
@@ -173,7 +173,7 @@ export default async function Home() {
 
       <Section size="reading" className="border-t border-line py-page">
         <p className="mb-6 text-sm tracking-[0.18em] text-accent uppercase">
-          Newsletter
+          뉴스레터
         </p>
         <h2 className="text-keep font-serif text-3xl leading-tight text-ink sm:text-4xl">
           새 글을 이메일로 받아보세요

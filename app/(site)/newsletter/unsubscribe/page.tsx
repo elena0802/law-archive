@@ -19,7 +19,7 @@ export default function NewsletterUnsubscribePage() {
   return (
     <Section size="reading" className="py-page">
       <p className="mb-6 text-sm tracking-[0.18em] text-accent uppercase">
-        Newsletter
+        뉴스레터
       </p>
       <h1 className="text-keep font-serif text-4xl leading-tight text-ink sm:text-5xl">
         뉴스레터 구독 해지

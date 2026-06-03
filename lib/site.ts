@@ -6,7 +6,7 @@ export const siteConfig = {
   authorName: scholarProfile.name,
   tagline: "형사법의 글과 강의 노트를 조용히 모으는 디지털 서재",
   description:
-    "형사법을 연구하며 사람과 사회를 생각해 온 한 학자의 글과 사유를 에세이와 연재로 정리한 디지털 서재입니다.",
+    "형사법을 연구하며 사람과 사회를 생각해 온 한 학자의 글과 사유를 글과 연재로 정리한 디지털 서재입니다.",
   flagshipSeriesTitle: "형벌과 사회",
   flagshipSeriesSlug: "형벌과-사회",
   hero: {

@@ -24,7 +24,7 @@ export default async function CategoriesPage() {
   return (
     <>
       <Section size="reading" className="py-page">
-        <p className="mb-6 text-sm tracking-[0.18em] text-accent uppercase">Categories</p>
+        <p className="mb-6 text-sm tracking-[0.18em] text-accent uppercase">주제</p>
         <h1 className="text-keep font-serif text-4xl leading-[1.1] text-ink sm:text-5xl">
           주제
         </h1>

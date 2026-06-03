@@ -100,7 +100,7 @@ export default async function AdminEssaysPage({
             글 관리
           </h1>
           <p className="text-keep mt-5 max-w-2xl text-base leading-8 text-ink-muted">
-            원고를 작성하고 임시 저장·공개·보관·휴지통으로 관리할 수 있습니다.
+            글을 작성하고 임시 저장·공개·보관·휴지통으로 관리할 수 있습니다.
             최근에 손본 글이 위에 표시됩니다.
           </p>
         </div>

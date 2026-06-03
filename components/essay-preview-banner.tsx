@@ -10,14 +10,14 @@ type EssayPreviewBannerProps = {
 
 function previewHeadline(essayStatus?: EssayStatus, isDraft?: boolean) {
   if (essayStatus === "archived") {
-    return "보관 원고 미리보기";
+    return "보관 글 미리보기";
   }
 
   if (essayStatus === "published") {
     return "미리보기";
   }
 
-  return isDraft ? "임시 원고 미리보기" : "미리보기";
+  return isDraft ? "임시 저장 미리보기" : "미리보기";
 }
 
 function previewDescription(essayStatus?: EssayStatus, isDraft?: boolean) {

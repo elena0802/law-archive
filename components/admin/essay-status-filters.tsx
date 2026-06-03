@@ -15,7 +15,7 @@ type EssayStatusFiltersProps = {
 const filters: { value: EssayListFilter; label: string }[] = [
   { value: "all", label: "전체" },
   { value: "published", label: "공개" },
-  { value: "draft", label: "임시" },
+  { value: "draft", label: "임시 저장" },
   { value: "archived", label: "보관" },
   { value: "deleted", label: "휴지통" },
 ];
