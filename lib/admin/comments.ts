@@ -8,6 +8,7 @@ export type CommentListFilter = "all" | CommentStatus;
 export type AdminComment = {
   id: string;
   essaySlug: string;
+  essayTitle: string | null;
   authorName: string | null;
   authorAffiliation: string | null;
   content: string;
@@ -16,10 +17,14 @@ export type AdminComment = {
   updatedAt: string;
 };
 
-function mapCommentRow(row: CommentRow): AdminComment {
+function mapCommentRow(
+  row: CommentRow,
+  essayTitleBySlug: Map<string, string>,
+): AdminComment {
   return {
     id: row.id,
     essaySlug: row.essay_slug,
+    essayTitle: essayTitleBySlug.get(row.essay_slug) ?? null,
     authorName: row.author_name,
     authorAffiliation: row.author_affiliation,
     content: row.content,
@@ -27,6 +32,26 @@ function mapCommentRow(row: CommentRow): AdminComment {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
+}
+
+async function loadEssayTitlesBySlugs(slugs: string[]) {
+  const uniqueSlugs = [...new Set(slugs.filter(Boolean))];
+  if (uniqueSlugs.length === 0) {
+    return new Map<string, string>();
+  }
+
+  const { supabase } = await requireEditorSupabase();
+  const { data, error } = await supabase
+    .from("essays")
+    .select("slug, title")
+    .in("slug", uniqueSlugs);
+
+  if (error) {
+    console.error("Failed to load essay titles for comments:", error);
+    return new Map<string, string>();
+  }
+
+  return new Map((data ?? []).map((row) => [row.slug, row.title]));
 }
 
 export function commentStatusLabel(status: CommentStatus) {
@@ -67,7 +92,12 @@ export async function listAdminComments(params: {
     throw new Error(`Failed to load comments: ${error.message}`);
   }
 
-  return (data ?? []).map(mapCommentRow);
+  const rows = data ?? [];
+  const essayTitleBySlug = await loadEssayTitlesBySlugs(
+    rows.map((row) => row.essay_slug),
+  );
+
+  return rows.map((row) => mapCommentRow(row, essayTitleBySlug));
 }
 
 export async function getAdminCommentById(
@@ -86,7 +116,12 @@ export async function getAdminCommentById(
     throw new Error(`Failed to load comment: ${error.message}`);
   }
 
-  return data ? mapCommentRow(data) : null;
+  if (!data) {
+    return null;
+  }
+
+  const essayTitleBySlug = await loadEssayTitlesBySlugs([data.essay_slug]);
+  return mapCommentRow(data, essayTitleBySlug);
 }
 
 export async function setAdminCommentStatus(

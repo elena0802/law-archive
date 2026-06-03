@@ -115,9 +115,21 @@ export default async function AdminSeriesPage({ searchParams }: AdminSeriesPageP
           </table>
         </div>
       ) : (
-        <p className="text-keep mt-10 rounded border border-line bg-paper-muted px-4 py-6 text-base leading-8 text-ink-muted">
-          조건에 맞는 연재가 없습니다.
-        </p>
+        <div className="text-keep mt-10 rounded border border-line bg-paper-muted px-4 py-6 text-base leading-8 text-ink-muted">
+          {filter === "all" ? (
+            <>
+              <p>먼저 연재를 만들어 주세요.</p>
+              <Link
+                className="mt-3 inline-block text-sm text-accent underline-offset-4 hover:underline"
+                href="/admin/series/new"
+              >
+                새 연재 작성
+              </Link>
+            </>
+          ) : (
+            <p>조건에 맞는 연재가 없습니다.</p>
+          )}
+        </div>
       )}
     </div>
   );

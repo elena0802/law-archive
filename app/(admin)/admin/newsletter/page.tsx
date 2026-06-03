@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { NewsletterCsvExportButton } from "@/components/admin/newsletter-csv-export-button";
+import { ADMIN_NEWSLETTER_UNAVAILABLE } from "@/lib/admin/admin-messages";
 import {
   formatAdminDateTime,
   formatNewsletterSource,
@@ -30,7 +31,7 @@ export default async function AdminNewsletterPage() {
           뉴스레터
         </h1>
         <p className="text-keep mt-5 max-w-2xl text-base leading-8 text-ink-muted">
-          뉴스레터 관리를 사용하려면 Supabase URL과 서비스 역할 키가 필요합니다.
+          {ADMIN_NEWSLETTER_UNAVAILABLE}
         </p>
       </div>
     );

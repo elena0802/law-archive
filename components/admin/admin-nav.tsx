@@ -21,10 +21,9 @@ export function AdminNav() {
   }
 
   const isDashboard = pathname === "/admin";
-  const isEssayList =
-    pathname === "/admin/essays" || pathname.startsWith("/admin/essays/");
+  const isEssayList = pathname === "/admin/essays";
   const isNew = pathname === "/admin/essays/new";
-  const isSeries = pathname === "/admin/series" || pathname.startsWith("/admin/series/");
+  const isSeriesList = pathname === "/admin/series";
   const isComments =
     pathname === "/admin/comments" || pathname.startsWith("/admin/comments/");
   const isNewsletter =
@@ -44,9 +43,7 @@ export function AdminNav() {
           대시보드
         </Link>
         <Link
-          className={
-            isEssayList && !isNew ? activeLinkClassName : linkClassName
-          }
+          className={isEssayList ? activeLinkClassName : linkClassName}
           href="/admin/essays"
         >
           글 목록
@@ -58,7 +55,7 @@ export function AdminNav() {
           새 글 작성
         </Link>
         <Link
-          className={isSeries ? activeLinkClassName : linkClassName}
+          className={isSeriesList ? activeLinkClassName : linkClassName}
           href="/admin/series"
         >
           연재 관리

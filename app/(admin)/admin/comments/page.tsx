@@ -8,6 +8,7 @@ import {
   listAdminComments,
   type CommentListFilter,
 } from "@/lib/admin/comments";
+import { ADMIN_COMMENTS_UNAVAILABLE } from "@/lib/admin/admin-messages";
 import { formatAdminDateTime } from "@/lib/admin/essays";
 import { getCommentAuthorDisplayName } from "@/lib/comments";
 import type { CommentStatus } from "@/lib/content/db-types";
@@ -46,7 +47,7 @@ export default async function AdminCommentsPage({
           댓글 관리
         </h1>
         <p className="text-keep mt-5 max-w-2xl text-base leading-8 text-ink-muted">
-          댓글 관리를 사용하려면 Supabase URL과 서비스 역할 키가 필요합니다.
+          {ADMIN_COMMENTS_UNAVAILABLE}
         </p>
       </div>
     );
@@ -112,12 +113,17 @@ export default async function AdminCommentsPage({
                   </td>
                   <td className="py-4 pr-4 align-top">
                     <Link
-                      className="text-keep text-ink-muted underline-offset-4 hover:text-accent hover:underline"
+                      className="group block underline-offset-4 hover:underline"
                       href={`/essays/${comment.essaySlug}`}
                       rel="noopener noreferrer"
                       target="_blank"
                     >
-                      {comment.essaySlug}
+                      <span className="text-keep text-base text-ink group-hover:text-accent">
+                        {comment.essayTitle ?? comment.essaySlug}
+                      </span>
+                      <span className="text-keep mt-1 block text-sm leading-6 text-ink-muted">
+                        {comment.essaySlug}
+                      </span>
                     </Link>
                   </td>
                   <td className="py-4 pr-4 align-top">
@@ -149,7 +155,9 @@ export default async function AdminCommentsPage({
       ) : (
         <div className="mt-10 rounded border border-line bg-paper-muted px-4 py-6">
           <p className="text-keep text-base leading-8 text-ink-muted">
-            조건에 맞는 댓글이 없습니다.
+            {listFilter === "all"
+              ? "아직 등록된 댓글이 없습니다."
+              : "조건에 맞는 댓글이 없습니다."}
           </p>
           {listFilter !== "all" ? (
             <Link

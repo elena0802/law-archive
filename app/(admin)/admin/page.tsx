@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { essayStatusLabel } from "@/components/admin/essay-status-badge";
+import { formatAdminDateTime } from "@/lib/admin/essays";
 import {
-  formatAdminDateTime,
-} from "@/lib/admin/essays";
-import {
+  getAdminDashboardAttention,
   getAdminDashboardCounts,
   listRecentAdminEssays,
 } from "@/lib/admin/dashboard";
@@ -14,18 +13,49 @@ export const metadata: Metadata = {
 };
 
 const summaryItems = [
-  { key: "total", label: "전체 글" },
-  { key: "published", label: "공개" },
-  { key: "draft", label: "임시 저장" },
-  { key: "archived", label: "보관" },
-  { key: "deleted", label: "휴지통" },
+  { key: "total", label: "전체 글", href: "/admin/essays" },
+  { key: "published", label: "공개", href: "/admin/essays?status=published" },
+  { key: "draft", label: "임시 저장", href: "/admin/essays?status=draft" },
+  { key: "archived", label: "보관", href: "/admin/essays?status=archived" },
+  { key: "deleted", label: "휴지통", href: "/admin/essays?status=deleted" },
 ] as const;
 
+function formatCountLabel(count: number) {
+  return new Intl.NumberFormat("ko-KR").format(count);
+}
+
 export default async function AdminIndexPage() {
-  const [counts, recentEssays] = await Promise.all([
+  const [counts, recentEssays, attention] = await Promise.all([
     getAdminDashboardCounts(),
     listRecentAdminEssays(5),
+    getAdminDashboardAttention(),
   ]);
+
+  const attentionRows: Array<{
+    label: string;
+    value: string;
+    href: string;
+  }> = [];
+
+  if (attention.pendingComments !== null) {
+    attentionRows.push({
+      label: "승인 대기 댓글",
+      value: `${formatCountLabel(attention.pendingComments)}건`,
+      href: "/admin/comments?status=pending",
+    });
+  }
+
+  if (attention.activeNewsletterSubscribers !== null) {
+    attentionRows.push({
+      label: "뉴스레터 구독자",
+      value: `${formatCountLabel(attention.activeNewsletterSubscribers)}명`,
+      href: "/admin/newsletter",
+    });
+  }
+
+  const hasAttentionItems =
+    (attention.pendingComments ?? 0) > 0 ||
+    (attention.activeNewsletterSubscribers ?? 0) > 0;
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
@@ -48,17 +78,52 @@ export default async function AdminIndexPage() {
         </h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {summaryItems.map((item) => (
-            <div
-              className="rounded border border-line bg-paper-muted px-4 py-4"
+            <Link
+              className="rounded border border-line bg-paper-muted px-4 py-4 transition hover:border-accent/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+              href={item.href}
               key={item.key}
             >
               <p className="text-keep text-sm text-ink-muted">{item.label}</p>
               <p className="mt-2 font-serif text-3xl text-ink">
                 {counts[item.key]}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-sm tracking-[0.14em] text-accent uppercase">
+          확인이 필요한 항목
+        </h2>
+        {attentionRows.length > 0 ? (
+          <>
+            <ul className="mt-4 list-none space-y-2 p-0">
+              {attentionRows.map((row) => (
+                <li key={row.label}>
+                  <Link
+                    className="flex items-baseline justify-between gap-4 rounded border border-line bg-paper-muted px-4 py-4 transition hover:border-accent/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                    href={row.href}
+                  >
+                    <span className="text-keep text-base text-ink">{row.label}</span>
+                    <span className="text-keep text-base text-ink-muted">
+                      {row.value}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            {!hasAttentionItems ? (
+              <p className="text-keep mt-4 text-base leading-8 text-ink-muted">
+                현재 확인이 필요한 항목이 없습니다.
+              </p>
+            ) : null}
+          </>
+        ) : (
+          <p className="text-keep mt-4 rounded border border-line bg-paper-muted px-4 py-6 text-base leading-8 text-ink-muted">
+            관리 기능을 사용할 수 있으면 이곳에 확인할 항목이 표시됩니다.
+          </p>
+        )}
       </section>
 
       <section className="mt-12">

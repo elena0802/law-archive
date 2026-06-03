@@ -1,4 +1,7 @@
+import { isAdminCommentsAvailable } from "@/lib/admin/comments";
+import { isAdminNewsletterAvailable } from "@/lib/admin/newsletter";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
+import { requireSupabaseServiceRoleClient } from "@/lib/supabase/server";
 import type { EssayStatus } from "@/lib/content/db-types";
 
 type DashboardCounts = {
@@ -68,4 +71,54 @@ export async function listRecentAdminEssays(
   }
 
   return data ?? [];
+}
+
+export type DashboardAttention = {
+  pendingComments: number | null;
+  activeNewsletterSubscribers: number | null;
+};
+
+export async function getAdminDashboardAttention(): Promise<DashboardAttention> {
+  let pendingComments: number | null = null;
+  let activeNewsletterSubscribers: number | null = null;
+
+  if (isAdminCommentsAvailable()) {
+    try {
+      await requireEditorSupabase();
+      const supabase = requireSupabaseServiceRoleClient();
+      const { count, error } = await supabase
+        .from("comments")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending");
+
+      if (error) {
+        console.error("Failed to count pending comments:", error);
+      } else {
+        pendingComments = count ?? 0;
+      }
+    } catch (error) {
+      console.error("Failed to load pending comment count:", error);
+    }
+  }
+
+  if (isAdminNewsletterAvailable()) {
+    try {
+      await requireEditorSupabase();
+      const supabase = requireSupabaseServiceRoleClient();
+      const { count, error } = await supabase
+        .from("newsletter_subscribers")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "active");
+
+      if (error) {
+        console.error("Failed to count newsletter subscribers:", error);
+      } else {
+        activeNewsletterSubscribers = count ?? 0;
+      }
+    } catch (error) {
+      console.error("Failed to load newsletter subscriber count:", error);
+    }
+  }
+
+  return { pendingComments, activeNewsletterSubscribers };
 }

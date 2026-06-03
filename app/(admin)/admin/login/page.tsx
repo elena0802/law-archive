@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { LoginForm } from "@/app/(admin)/admin/login/login-form";
+import { ADMIN_LOGIN_CONFIG_ERROR } from "@/lib/admin/admin-messages";
 
 export const metadata: Metadata = {
   title: "로그인",
 };
 
 const errorMessages: Record<string, string> = {
-  config:
-    "Supabase 또는 관리자 이메일(ALLOWED_EDITOR_EMAIL) 설정이 필요합니다.",
+  config: ADMIN_LOGIN_CONFIG_ERROR,
   not_allowed: "등록된 관리자만 이 서재를 편집할 수 있습니다.",
   auth:
     "로그인에 실패했습니다. 링크가 만료되었을 수 있습니다. 다시 시도해 주세요.",

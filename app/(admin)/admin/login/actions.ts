@@ -1,5 +1,6 @@
 "use server";
 
+import { ADMIN_LOGIN_CONFIG_ERROR } from "@/lib/admin/admin-messages";
 import { normalizeEditorEmail } from "@/lib/auth/editor";
 import { getSiteOrigin } from "@/lib/site";
 import { getAllowedEditorEmail } from "@/lib/supabase/config";
@@ -29,7 +30,7 @@ export async function sendMagicLink(
   if (!allowed) {
     return {
       status: "error",
-      message: "관리자 이메일이 설정되지 않았습니다. 서버 환경 변수를 확인해 주세요.",
+      message: ADMIN_LOGIN_CONFIG_ERROR,
     };
   }
 
@@ -62,10 +63,11 @@ export async function sendMagicLink(
       status: "sent",
       message: `${email}로 로그인 링크를 보냈습니다. 메일함을 확인해 주세요.`,
     };
-  } catch {
+  } catch (error) {
+    console.error("Admin login failed:", error);
     return {
       status: "error",
-      message: "서버 설정을 확인할 수 없습니다. Supabase 환경 변수를 점검해 주세요.",
+      message: ADMIN_LOGIN_CONFIG_ERROR,
     };
   }
 }

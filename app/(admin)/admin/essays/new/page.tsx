@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { createEssay } from "@/app/(admin)/admin/essays/actions";
 import { EssayForm } from "@/components/admin/essay-form";
 import { emptyEssayFormValues } from "@/lib/admin/parse-essay-form";
@@ -22,6 +23,17 @@ export default async function AdminNewEssayPage() {
         보통 「임시 저장」으로 두고, 준비가 되면 「공개」로 바꿔 저장하면 공개
         서재에 표시됩니다.
       </p>
+      {series.length === 0 ? (
+        <div className="text-keep mt-8 rounded border border-line bg-paper-muted px-4 py-6 text-base leading-8 text-ink-muted">
+          <p>먼저 연재를 만들어 주세요.</p>
+          <Link
+            className="mt-3 inline-block text-sm text-accent underline-offset-4 hover:underline"
+            href="/admin/series/new"
+          >
+            새 연재 작성
+          </Link>
+        </div>
+      ) : null}
       <EssayForm
         action={createEssay}
         currentStatus="draft"
