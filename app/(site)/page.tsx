@@ -69,6 +69,12 @@ export default async function Home() {
             <li key={topic}>- {topic}</li>
           ))}
         </ul>
+        <Link
+          className="mt-6 inline-block text-sm text-accent underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          href="/about"
+        >
+          학자 소개 보기 →
+        </Link>
       </Section>
 
       <Section size="reading" className="border-t border-line">
