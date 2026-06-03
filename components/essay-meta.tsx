@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatEssayDate, getSeriesSlug } from "@/lib/essays";
+import { formatEssayDate, getCategorySlug, getSeriesSlug } from "@/lib/essays";
 
 type EssayMetaProps = {
   category: string;
@@ -49,25 +49,32 @@ export function EssayMetaRow({
   readingMinutes,
   partLabel,
 }: EssayMetaProps) {
-  const items = [
-    category,
-    formatEssayDate(date),
-    `약 ${readingMinutes}분`,
-    ...(partLabel ? [partLabel] : []),
-  ];
+  const categorySlug = getCategorySlug(category);
 
   return (
     <p className="mt-4 text-sm leading-6 text-ink-muted">
-      {items.map((item, index) => (
-        <span key={item}>
-          {index > 0 ? (
-            <span aria-hidden="true" className="mx-2 text-line">
-              ·
-            </span>
-          ) : null}
-          {item}
-        </span>
-      ))}
+      <Link
+        className="text-accent underline-offset-4 hover:underline"
+        href={`/categories/${categorySlug}`}
+      >
+        {category}
+      </Link>
+      <span aria-hidden="true" className="mx-2 text-line">
+        ·
+      </span>
+      {formatEssayDate(date)}
+      <span aria-hidden="true" className="mx-2 text-line">
+        ·
+      </span>
+      {`약 ${readingMinutes}분`}
+      {partLabel ? (
+        <>
+          <span aria-hidden="true" className="mx-2 text-line">
+            ·
+          </span>
+          {partLabel}
+        </>
+      ) : null}
       <span className="sr-only">, 연재: {seriesTitle}</span>
     </p>
   );

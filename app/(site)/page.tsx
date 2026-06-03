@@ -30,15 +30,9 @@ export const metadata: Metadata = {
 };
 
 const TOP_CATEGORY_COUNT = 6;
+const INTRO_CATEGORY_COUNT = 4;
 const FEATURED_SERIES_COUNT = 3;
 const RECENT_ESSAY_COUNT = 5;
-
-const SCHOLAR_TOPICS = [
-  "형벌과 책임",
-  "법과 인간",
-  "법학교육",
-  "AI 시대의 형사법",
-] as const;
 
 export default async function Home() {
   const [flagshipSeries, categories, allSeries, essays] = await Promise.all([
@@ -49,6 +43,7 @@ export default async function Home() {
   ]);
 
   const topCategories = categories.slice(0, TOP_CATEGORY_COUNT);
+  const introCategories = categories.slice(0, INTRO_CATEGORY_COUNT);
   const featuredSeries = allSeries.slice(0, FEATURED_SERIES_COUNT);
   const recentEssays = essays.slice(0, RECENT_ESSAY_COUNT);
 
@@ -68,8 +63,15 @@ export default async function Home() {
           다루는 주제
         </p>
         <ul className="text-keep mt-3 list-none space-y-1 p-0 text-base leading-8 text-ink-muted">
-          {SCHOLAR_TOPICS.map((topic) => (
-            <li key={topic}>- {topic}</li>
+          {introCategories.map((category) => (
+            <li key={category.slug}>
+              <Link
+                className="text-ink-muted underline-offset-4 hover:text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                href={`/categories/${category.slug}`}
+              >
+                - {category.title}
+              </Link>
+            </li>
           ))}
         </ul>
         <Link

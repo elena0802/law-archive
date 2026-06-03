@@ -431,18 +431,51 @@ export async function searchEssays(query: string): Promise<Essay[]> {
   }
 
   const essays = await getAllEssays();
-  return essays.filter((essay) => {
-    const haystack = [
-      essay.title,
-      essay.description,
-      essay.content,
-      essay.series,
-    ]
-      .join("\n")
-      .toLocaleLowerCase();
+  return essays
+    .filter((essay) => {
+      const haystack = [
+        essay.title,
+        essay.category,
+        essay.description,
+        essay.content,
+        essay.series,
+      ]
+        .join("\n")
+        .toLocaleLowerCase();
 
-    return haystack.includes(normalizedQuery);
-  });
+      return haystack.includes(normalizedQuery);
+    })
+    .sort(
+      (a, b) =>
+        searchEssayRelevanceScore(b, normalizedQuery) -
+        searchEssayRelevanceScore(a, normalizedQuery),
+    );
+}
+
+function searchEssayRelevanceScore(essay: Essay, query: string): number {
+  const title = essay.title.toLocaleLowerCase();
+  const category = essay.category.toLocaleLowerCase();
+  const description = essay.description.toLocaleLowerCase();
+  const series = essay.series.toLocaleLowerCase();
+  const content = essay.content.toLocaleLowerCase();
+
+  if (title.includes(query)) {
+    return 4;
+  }
+  if (category.includes(query)) {
+    return 3;
+  }
+  if (description.includes(query)) {
+    return 2;
+  }
+  if (series.includes(query)) {
+    return 1;
+  }
+  if (content.includes(query)) {
+    return 0;
+  }
+
+  return -1;
 }
 
 function tokenizeForOverlap(input: string) {
