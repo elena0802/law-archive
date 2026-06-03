@@ -158,6 +158,7 @@ export async function updateEssay(
       essay_date: values.essay_date,
       category: values.category,
       series_slug: values.series_slug,
+      series_order: values.series_order,
       status: values.status,
       featured: values.featured,
       published_at,

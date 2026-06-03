@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
+import { parseOptionalSeriesOrder } from "@/lib/content/parse-series-order";
 import type { EssayFrontmatter } from "@/lib/essays";
 
 const essaysDirectory = path.join(process.cwd(), "content", "essays");
@@ -8,6 +9,7 @@ const essaysDirectory = path.join(process.cwd(), "content", "essays");
 export type ParsedMdxEssay = EssayFrontmatter & {
   slug: string;
   content: string;
+  seriesOrder: number | null;
 };
 
 type RawFrontmatter = Partial<Record<keyof EssayFrontmatter, unknown>>;
@@ -74,6 +76,7 @@ export async function readMdxEssayFile(filename: string): Promise<ParsedMdxEssay
   return {
     slug,
     content,
+    seriesOrder: parseOptionalSeriesOrder(data.series_order),
     ...frontmatter,
   };
 }

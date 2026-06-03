@@ -62,6 +62,7 @@ function mdxToInsert(
     essay_date: essayDateToIso(essay.date),
     category: essay.category,
     series_slug: seriesSlug,
+    series_order: essay.seriesOrder ?? null,
     status,
     featured: essay.featured,
     published_at: resolvePublishedAtForImport(
@@ -80,6 +81,7 @@ function rowsAreEqual(existing: EssayRow, next: EssayInsert & { published_at: st
     existing.essay_date.slice(0, 10) === next.essay_date &&
     existing.category === next.category &&
     existing.series_slug === next.series_slug &&
+    (existing.series_order ?? null) === (next.series_order ?? null) &&
     existing.status === next.status &&
     existing.featured === next.featured &&
     (existing.published_at ?? null) === (next.published_at ?? null)

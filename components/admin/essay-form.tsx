@@ -45,6 +45,7 @@ type EssayFormSnapshot = {
   essay_date: string;
   category: string;
   series_slug: string;
+  series_order: string;
   featured: boolean;
   essay_status: EssayStatus;
 };
@@ -275,6 +276,7 @@ function readSnapshotFromForm(form: HTMLFormElement): EssayFormSnapshot {
     essay_date: read("essay_date"),
     category: read("category"),
     series_slug: read("series_slug"),
+    series_order: read("series_order"),
     featured: formData.get("featured") === "on",
     essay_status,
   };
@@ -289,6 +291,7 @@ function snapshotsEqual(a: EssayFormSnapshot, b: EssayFormSnapshot) {
     a.essay_date === b.essay_date &&
     a.category === b.category &&
     a.series_slug === b.series_slug &&
+    a.series_order === b.series_order &&
     a.featured === b.featured &&
     a.essay_status === b.essay_status
   );
@@ -352,6 +355,10 @@ export function EssayForm({
       essay_date: initialValues.essay_date,
       category: initialValues.category,
       series_slug: initialValues.series_slug,
+      series_order:
+        initialValues.series_order === null
+          ? ""
+          : String(initialValues.series_order),
       featured: initialValues.featured,
       essay_status: essayStatus,
     }),
@@ -539,6 +546,32 @@ export function EssayForm({
           <FieldError message={fieldErrors.series_slug} />
         </div>
 
+        <div>
+          <label className={labelClassName} htmlFor="series_order">
+            연재 순서
+          </label>
+          <input
+            className={fieldClassName}
+            defaultValue={
+              initialValues.series_order === null
+                ? ""
+                : String(initialValues.series_order)
+            }
+            id="series_order"
+            inputMode="numeric"
+            min={1}
+            name="series_order"
+            placeholder="예: 1"
+            type="number"
+          />
+          <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+            연재 안에서 읽히는 순서입니다. 비워두면 제목 번호를 기준으로
+            정렬됩니다.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid gap-10 sm:grid-cols-2">
         <div>
           <label className={labelClassName} htmlFor="slug">
             주소 (slug)

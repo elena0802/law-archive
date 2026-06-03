@@ -11,6 +11,7 @@ import path from "node:path";
 import matter from "gray-matter";
 import ws from "ws";
 import type { EssayInsert, EssayStatus } from "../lib/content/db-types";
+import { parseOptionalSeriesOrder } from "../lib/content/parse-series-order";
 import { requireSupabaseServiceRoleClient } from "../lib/supabase/server";
 
 if (typeof globalThis.WebSocket === "undefined") {
@@ -29,6 +30,7 @@ type SeedEssay = {
   essay_date: string;
   status: EssayStatus;
   featured: boolean;
+  series_order: number | null;
   content: string;
 };
 
@@ -130,6 +132,7 @@ function parseSeedFile(filename: string, source: string): SeedEssay {
     ),
     status,
     featured: parseFeatured(data.featured, filename),
+    series_order: parseOptionalSeriesOrder(data.series_order),
     content: body,
   };
 }
@@ -193,6 +196,7 @@ function toInsert(seed: SeedEssay): EssayInsert {
     series_slug: seed.series_slug,
     status: seed.status,
     featured: seed.featured,
+    series_order: seed.series_order,
     published_at: null,
   };
 }

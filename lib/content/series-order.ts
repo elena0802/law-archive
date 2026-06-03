@@ -1,9 +1,5 @@
 import type { Essay } from "@/lib/essays";
-
-/** Optional explicit order from CMS (`series_order` when added). */
-export type EssaySeriesOrderFields = {
-  seriesOrder?: number | null;
-};
+import { parseOptionalSeriesOrder } from "@/lib/content/parse-series-order";
 
 function parsePositiveInt(value: string) {
   const parsed = Number.parseInt(value, 10);
@@ -36,13 +32,10 @@ export function extractSeriesPartFromSlug(slug: string) {
   return match ? parsePositiveInt(match[1]) : null;
 }
 
-export function getEssaySeriesSortKey(essay: Essay & EssaySeriesOrderFields) {
-  if (
-    typeof essay.seriesOrder === "number" &&
-    Number.isFinite(essay.seriesOrder) &&
-    essay.seriesOrder > 0
-  ) {
-    return essay.seriesOrder;
+export function getEssaySeriesSortKey(essay: Essay) {
+  const fromColumn = parseOptionalSeriesOrder(essay.seriesOrder);
+  if (fromColumn !== null) {
+    return fromColumn;
   }
 
   const fromTitle = extractSeriesPartFromTitle(essay.title);

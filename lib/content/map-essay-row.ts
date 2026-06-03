@@ -26,6 +26,7 @@ export function mapEssayRowToEssay(
     content: row.content,
     status: row.status,
     updatedAt: row.updated_at,
+    seriesOrder: row.series_order,
     ...frontmatter,
   };
 }

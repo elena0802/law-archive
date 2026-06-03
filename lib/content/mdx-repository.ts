@@ -8,6 +8,7 @@ import {
 } from "@/lib/content/series-aggregation";
 import { archiveSeriesTitles } from "@/lib/content/archive-series";
 import type { Essay, EssayFrontmatter } from "@/lib/essays";
+import { parseOptionalSeriesOrder } from "@/lib/content/parse-series-order";
 import { getSeriesSlug } from "@/lib/content/series-slug";
 
 const essaysDirectory = path.join(process.cwd(), "content", "essays");
@@ -97,6 +98,7 @@ async function readEssayBySlug(slug: string): Promise<Essay | null> {
     return {
       slug,
       content,
+      seriesOrder: parseOptionalSeriesOrder(data.series_order),
       ...frontmatter,
     };
   } catch (error) {

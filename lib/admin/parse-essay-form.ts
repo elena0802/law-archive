@@ -1,5 +1,6 @@
 import type { EssayStatus } from "@/lib/content/db-types";
 import { resolveStatusFromForm } from "@/lib/admin/save-intent";
+import { parseOptionalSeriesOrder } from "@/lib/content/parse-series-order";
 
 export type EssayFormValues = {
   title: string;
@@ -9,6 +10,7 @@ export type EssayFormValues = {
   essay_date: string;
   category: string;
   series_slug: string;
+  series_order: number | null;
   status: EssayStatus;
   featured: boolean;
 };
@@ -43,6 +45,9 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
   const essay_date = readString(formData, "essay_date");
   const category = readString(formData, "category");
   const series_slug = readString(formData, "series_slug");
+  const series_order = parseOptionalSeriesOrder(
+    readString(formData, "series_order"),
+  );
   const featured = formData.get("featured") === "on";
   const errors: EssayFormFieldErrors = {};
 
@@ -97,6 +102,7 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
       essay_date,
       category,
       series_slug,
+      series_order,
       status,
       featured,
     },
@@ -114,6 +120,7 @@ export function emptyEssayFormValues(): EssayFormValues {
     essay_date: today,
     category: "",
     series_slug: "",
+    series_order: null,
     status: "draft",
     featured: false,
   };

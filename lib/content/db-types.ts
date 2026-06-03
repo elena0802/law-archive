@@ -27,6 +27,7 @@ export type EssayRow = {
   essay_date: string;
   category: string;
   series_slug: string;
+  series_order: number | null;
   status: EssayStatus;
   featured: boolean;
   created_at: string;
@@ -42,6 +43,7 @@ export type EssayInsert = {
   essay_date: string;
   category: string;
   series_slug: string;
+  series_order?: number | null;
   status: EssayStatus;
   featured: boolean;
   published_at?: string | null;
