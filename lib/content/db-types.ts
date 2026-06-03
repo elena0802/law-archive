@@ -48,3 +48,24 @@ export type EssayInsert = {
 };
 
 export type EssayUpdate = Partial<EssayInsert & { published_at: string | null }>;
+
+export type CommentStatus = "pending" | "approved" | "rejected";
+
+export type CommentRow = {
+  id: string;
+  essay_slug: string;
+  author_name: string | null;
+  author_affiliation: string | null;
+  content: string;
+  status: CommentStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CommentInsert = {
+  essay_slug: string;
+  author_name?: string | null;
+  author_affiliation?: string | null;
+  content: string;
+  status?: CommentStatus;
+};

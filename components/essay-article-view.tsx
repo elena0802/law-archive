@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { CitationBlock } from "@/components/citation-block";
+import { EssayCommentsSection } from "@/components/essay-comments-section";
 import { EssayPreviewBanner } from "@/components/essay-preview-banner";
 import {
   EssayBreadcrumb,
@@ -18,6 +19,7 @@ import {
   getSeriesSlug,
   sortEssaysByDateAsc,
 } from "@/lib/essays";
+import { isCommentsAvailable } from "@/lib/comments";
 import { formatEssayCitation, getSiteOrigin } from "@/lib/site";
 
 type EssayArticleViewProps = {
@@ -225,6 +227,9 @@ export async function EssayArticleView({
                   ))}
                 </ul>
               </section>
+            ) : null}
+            {!isPreview && isCommentsAvailable() ? (
+              <EssayCommentsSection essaySlug={essay.slug} />
             ) : null}
           </footer>
         </article>

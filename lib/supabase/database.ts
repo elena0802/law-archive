@@ -1,4 +1,6 @@
 import type {
+  CommentInsert,
+  CommentRow,
   EssayInsert,
   EssayRow,
   EssayStatus,
@@ -38,6 +40,12 @@ export type Database = {
             referencedColumns: ["slug"];
           },
         ];
+      };
+      comments: {
+        Row: CommentRow;
+        Insert: CommentInsert;
+        Update: Partial<CommentInsert>;
+        Relationships: [];
       };
     };
     Views: Record<string, never>;
