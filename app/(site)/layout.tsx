@@ -1,5 +1,19 @@
+import type { Metadata } from "next";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+
+export const metadata: Metadata = {
+  alternates: {
+    types: {
+      "application/rss+xml": [
+        {
+          url: "/feed.xml",
+          title: "형사법 아카이브 RSS",
+        },
+      ],
+    },
+  },
+};
 
 export default function SiteLayout({
   children,
