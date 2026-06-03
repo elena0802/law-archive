@@ -39,7 +39,7 @@ export default async function AdminIndexPage() {
 
   if (attention.pendingComments !== null) {
     attentionRows.push({
-      label: "승인 대기 댓글",
+      label: "댓글 승인 대기",
       value: `${formatCountLabel(attention.pendingComments)}건`,
       href: "/admin/comments?status=pending",
     });
@@ -53,9 +53,13 @@ export default async function AdminIndexPage() {
     });
   }
 
-  const hasAttentionItems =
-    (attention.pendingComments ?? 0) > 0 ||
-    (attention.activeNewsletterSubscribers ?? 0) > 0;
+  const pendingCommentCount = attention.pendingComments ?? 0;
+  const showAttentionEmpty =
+    attention.pendingComments !== null && pendingCommentCount === 0;
+  const visibleAttentionRows = attentionRows.filter(
+    (row) =>
+      row.label !== "댓글 승인 대기" || pendingCommentCount > 0,
+  );
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
@@ -98,25 +102,31 @@ export default async function AdminIndexPage() {
         </h2>
         {attentionRows.length > 0 ? (
           <>
-            <ul className="mt-4 list-none space-y-2 p-0">
-              {attentionRows.map((row) => (
-                <li key={row.label}>
-                  <Link
-                    className="flex items-baseline justify-between gap-4 rounded border border-line bg-paper-muted px-4 py-4 transition hover:border-accent/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                    href={row.href}
-                  >
-                    <span className="text-keep text-base text-ink">{row.label}</span>
-                    <span className="text-keep text-base text-ink-muted">
-                      {row.value}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            {!hasAttentionItems ? (
-              <p className="text-keep mt-4 text-base leading-8 text-ink-muted">
+            {showAttentionEmpty ? (
+              <p className="text-keep mt-4 rounded border border-line bg-paper-muted px-4 py-6 text-base leading-8 text-ink-muted">
                 현재 확인이 필요한 항목이 없습니다.
               </p>
+            ) : null}
+            {visibleAttentionRows.length > 0 ? (
+              <ul
+                className={`mt-4 list-none space-y-2 p-0 ${showAttentionEmpty ? "mt-4" : ""}`}
+              >
+                {visibleAttentionRows.map((row) => (
+                  <li key={row.label}>
+                    <Link
+                      className="flex items-baseline justify-between gap-4 rounded border border-line bg-paper-muted px-4 py-4 transition hover:border-accent/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                      href={row.href}
+                    >
+                      <span className="text-keep text-base text-ink">
+                        {row.label}
+                      </span>
+                      <span className="text-keep text-base text-ink-muted">
+                        {row.value}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             ) : null}
           </>
         ) : (
