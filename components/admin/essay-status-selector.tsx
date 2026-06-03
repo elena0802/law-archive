@@ -9,11 +9,13 @@ const options: { value: EssayStatus; label: string }[] = [
 ];
 
 type EssayStatusSelectorProps = {
-  currentStatus: EssayStatus;
+  selectedStatus: EssayStatus;
+  onStatusChange: (status: EssayStatus) => void;
 };
 
 export function EssayStatusSelector({
-  currentStatus,
+  selectedStatus,
+  onStatusChange,
 }: EssayStatusSelectorProps) {
   return (
     <fieldset className="rounded border border-line bg-paper-muted px-5 py-5">
@@ -29,8 +31,9 @@ export function EssayStatusSelector({
           >
             <input
               className="mt-1 size-4 accent-accent"
-              defaultChecked={currentStatus === option.value}
-              name="essay_status"
+              checked={selectedStatus === option.value}
+              name="essay_status_radio"
+              onChange={() => onStatusChange(option.value)}
               type="radio"
               value={option.value}
             />

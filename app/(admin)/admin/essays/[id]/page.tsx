@@ -166,6 +166,7 @@ export default async function AdminEditEssayPage({
         </div>
       ) : null}
       <EssayForm
+        key={`${essay.id}-${essay.status}-${essay.updated_at}`}
         action={updateWithId}
         currentStatus={essay.status}
         initialValues={essayRowToFormValues(essay)}

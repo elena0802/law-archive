@@ -18,24 +18,19 @@ export function readCurrentStatus(formData: FormData): EssayStatus {
 }
 
 export function readSelectedStatus(formData: FormData): EssayStatus {
-  return parseEssayStatus(formData.get("essay_status")) ?? readCurrentStatus(formData);
+  const fromField = parseEssayStatus(formData.get("essay_status"));
+  if (fromField) {
+    return fromField;
+  }
+
+  return readCurrentStatus(formData);
 }
 
-export function resolveStatusFromIntent(
-  intent: SaveIntent,
-  formData: FormData,
-): EssayStatus {
-  if (intent === "publish") {
+/** Status from form: hidden essay_status (authoritative) plus optional publish intent. */
+export function resolveStatusFromForm(formData: FormData): EssayStatus {
+  if (readSaveIntent(formData) === "publish") {
     return "published";
   }
 
-  if (intent === "draft") {
-    return "draft";
-  }
-
   return readSelectedStatus(formData);
-}
-
-export function noticeKeyForIntent(intent: SaveIntent): "saved" | "published" {
-  return intent === "publish" ? "published" : "saved";
 }

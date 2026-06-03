@@ -1,5 +1,5 @@
 import type { EssayStatus } from "@/lib/content/db-types";
-import { readSaveIntent, resolveStatusFromIntent } from "@/lib/admin/save-intent";
+import { resolveStatusFromForm } from "@/lib/admin/save-intent";
 
 export type EssayFormValues = {
   title: string;
@@ -46,8 +46,7 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
   const featured = formData.get("featured") === "on";
   const errors: EssayFormFieldErrors = {};
 
-  const intent = readSaveIntent(formData);
-  const status = resolveStatusFromIntent(intent, formData);
+  const status = resolveStatusFromForm(formData);
 
   if (!title) {
     errors.title = "제목을 입력해 주세요.";

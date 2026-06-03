@@ -9,6 +9,7 @@ import {
   useState,
   type FormEvent,
 } from "react";
+import { flushSync } from "react-dom";
 import { EssayStatusSelector } from "@/components/admin/essay-status-selector";
 import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
 import { PublishConfirmDialog } from "@/components/admin/publish-confirm-dialog";
@@ -257,7 +258,8 @@ function readSnapshotFromForm(form: HTMLFormElement): EssayFormSnapshot {
     const value = formData.get(name);
     return typeof value === "string" ? value : "";
   };
-  const statusValue = formData.get("essay_status") ?? formData.get("current_status");
+  const statusValue =
+    formData.get("essay_status") ?? formData.get("current_status");
   const essay_status =
     statusValue === "published" ||
     statusValue === "archived" ||
@@ -332,6 +334,7 @@ export function EssayForm({
   const formRef = useRef<HTMLFormElement>(null);
   const publishConfirmedRef = useRef(false);
   const [content, setContent] = useState(initialValues.content);
+  const [essayStatus, setEssayStatus] = useState<EssayStatus>(currentStatus);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
@@ -350,9 +353,9 @@ export function EssayForm({
       category: initialValues.category,
       series_slug: initialValues.series_slug,
       featured: initialValues.featured,
-      essay_status: currentStatus,
+      essay_status: essayStatus,
     }),
-    [currentStatus, initialValues],
+    [essayStatus, initialValues],
   );
 
   const refreshDirtyState = useCallback(() => {
@@ -416,10 +419,8 @@ export function EssayForm({
 
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
-      const form = event.currentTarget;
-      const snapshot = readSnapshotFromForm(form);
       const isPublishing =
-        snapshot.essay_status === "published" && currentStatus !== "published";
+        essayStatus === "published" && currentStatus !== "published";
 
       if (isPublishing && !publishConfirmedRef.current) {
         event.preventDefault();
@@ -430,12 +431,15 @@ export function EssayForm({
       publishConfirmedRef.current = false;
       beginSubmit();
     },
-    [beginSubmit, currentStatus],
+    [beginSubmit, currentStatus, essayStatus],
   );
 
   const handlePublishConfirm = useCallback(() => {
     setPublishConfirmOpen(false);
     publishConfirmedRef.current = true;
+    flushSync(() => {
+      setEssayStatus("published");
+    });
     beginSubmit();
     formRef.current?.requestSubmit();
   }, [beginSubmit]);
@@ -454,6 +458,7 @@ export function EssayForm({
       ref={formRef}
     >
       <input name="current_status" type="hidden" value={currentStatus} />
+      <input name="essay_status" type="hidden" value={essayStatus} />
 
       {noticeMessage ? <AdminNoticeBanner message={noticeMessage} /> : null}
 
@@ -635,7 +640,10 @@ export function EssayForm({
       </div>
 
       <div className="border-t border-line border-dashed pt-10">
-        <EssayStatusSelector currentStatus={currentStatus} />
+        <EssayStatusSelector
+          onStatusChange={setEssayStatus}
+          selectedStatus={essayStatus}
+        />
       </div>
 
       <div className="mt-10 rounded border border-line px-5 py-6">

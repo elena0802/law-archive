@@ -58,7 +58,7 @@ export async function createEssay(
   const { data, error } = await supabase
     .from("essays")
     .insert(row)
-    .select("id")
+    .select("id, status")
     .single();
 
   if (error || !data) {
@@ -76,8 +76,12 @@ export async function createEssay(
     seriesSlug: values.series_slug,
   });
 
-  const notice = resolveEssaySaveNotice("draft", values.status);
-  console.error("[createEssay] before redirect", { essayId: data.id, notice });
+  const notice = resolveEssaySaveNotice("draft", data.status);
+  console.error("[createEssay] before redirect", {
+    essayId: data.id,
+    notice,
+    persistedStatus: data.status,
+  });
   redirectAdminEssayEdit(data.id, notice);
 }
 
@@ -87,6 +91,14 @@ export async function updateEssay(
   formData: FormData,
 ): Promise<EssayActionState> {
   const parsed = parseEssayForm(formData);
+
+  console.error("[updateEssay] parsed form", {
+    essayId,
+    intent: formData.get("intent"),
+    essay_status: formData.get("essay_status"),
+    current_status: formData.get("current_status"),
+    parsedStatus: parsed.ok ? parsed.values.status : null,
+  });
 
   if (!parsed.ok) {
     return {
@@ -136,7 +148,7 @@ export async function updateEssay(
     contentChars: values.content.length,
   });
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from("essays")
     .update({
       title: values.title,
@@ -150,17 +162,27 @@ export async function updateEssay(
       featured: values.featured,
       published_at,
     })
-    .eq("id", essayId);
+    .eq("id", essayId)
+    .select("id, status")
+    .single();
 
-  if (error) {
-    console.error("[updateEssay] supabase update failed", { essayId, error });
+  if (error || !updated) {
+    console.error("[updateEssay] supabase update failed", {
+      essayId,
+      requestedStatus: values.status,
+      error,
+    });
     return {
       status: "error",
       message: "변경 내용을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
     };
   }
 
-  console.error("[updateEssay] after supabase update", { essayId });
+  console.error("[updateEssay] after supabase update", {
+    essayId,
+    requestedStatus: values.status,
+    persistedStatus: updated.status,
+  });
 
   await revalidatePublicEssayPaths({
     slug: values.slug,
@@ -169,8 +191,13 @@ export async function updateEssay(
     previousSeriesSlug: existing.series_slug,
   });
 
-  const notice = resolveEssaySaveNotice(existing.status, values.status);
-  console.error("[updateEssay] before redirect", { essayId, notice });
+  const notice = resolveEssaySaveNotice(existing.status, updated.status);
+  console.error("[updateEssay] before redirect", {
+    essayId,
+    notice,
+    requestedStatus: values.status,
+    persistedStatus: updated.status,
+  });
   redirectAdminEssayEdit(essayId, notice);
 }
 
