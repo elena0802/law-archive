@@ -22,6 +22,8 @@ type AdminEditEssayPageProps = {
   searchParams: Promise<{ notice?: string }>;
 };
 
+const LOG_PREFIX = "[admin/essays/edit]";
+
 const SERIES_LIST_UNAVAILABLE_MESSAGE =
   "연재 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
 
@@ -29,38 +31,47 @@ async function loadSeriesForEdit(seriesSlug: string): Promise<{
   series: SeriesRow[];
   seriesLoadWarning?: string;
 }> {
-  try {
-    const series = await listAdminSeries({
-      activeOnly: true,
-      includeSlug: seriesSlug,
+  const attempts: Array<{
+    label: string;
+    options: Parameters<typeof listAdminSeries>[0];
+  }> = [
+    {
+      label: "activeOnly+includeSlug",
+      options: { activeOnly: true, includeSlug: seriesSlug },
+    },
+    { label: "includeSlug", options: { includeSlug: seriesSlug } },
+    { label: "all", options: {} },
+  ];
+
+  for (const { label, options } of attempts) {
+    console.error(`${LOG_PREFIX} listAdminSeries: before`, {
+      seriesSlug,
+      attempt: label,
+      options,
     });
-    return { series };
-  } catch (error) {
-    console.error(
-      "Admin edit: listAdminSeries activeOnly failed:",
-      { seriesSlug },
-      error,
-    );
+
+    try {
+      const series = await listAdminSeries(options);
+      console.error(`${LOG_PREFIX} listAdminSeries: after`, {
+        seriesSlug,
+        attempt: label,
+        count: series.length,
+      });
+      return { series };
+    } catch (error) {
+      console.error(`${LOG_PREFIX} listAdminSeries: failed`, {
+        seriesSlug,
+        attempt: label,
+        options,
+        error,
+      });
+    }
   }
 
-  try {
-    const series = await listAdminSeries({ includeSlug: seriesSlug });
-    return { series };
-  } catch (error) {
-    console.error(
-      "Admin edit: listAdminSeries includeSlug fallback failed:",
-      { seriesSlug },
-      error,
-    );
-  }
-
-  try {
-    const series = await listAdminSeries();
-    return { series };
-  } catch (error) {
-    console.error("Admin edit: listAdminSeries full fallback failed:", error);
-    return { series: [], seriesLoadWarning: SERIES_LIST_UNAVAILABLE_MESSAGE };
-  }
+  console.error(`${LOG_PREFIX} listAdminSeries: all attempts exhausted`, {
+    seriesSlug,
+  });
+  return { series: [], seriesLoadWarning: SERIES_LIST_UNAVAILABLE_MESSAGE };
 }
 
 export default async function AdminEditEssayPage({
@@ -70,24 +81,52 @@ export default async function AdminEditEssayPage({
   const { id } = await params;
   const { notice } = await searchParams;
 
+  console.error(`${LOG_PREFIX} params`, { id, notice: notice ?? null });
+
   let essay;
+  console.error(`${LOG_PREFIX} getAdminEssayById: before`, { id });
   try {
     essay = await getAdminEssayById(id);
+    console.error(`${LOG_PREFIX} getAdminEssayById: after`, {
+      id,
+      found: Boolean(essay),
+      essayId: essay?.id ?? null,
+      slug: essay?.slug ?? null,
+      series_slug: essay?.series_slug ?? null,
+      status: essay?.status ?? null,
+    });
   } catch (error) {
-    console.error("Admin edit: getAdminEssayById failed:", { id }, error);
+    console.error(`${LOG_PREFIX} getAdminEssayById: failed`, { id, error });
     throw error;
   }
 
   if (!essay) {
+    console.error(`${LOG_PREFIX} essay not found`, { id });
     notFound();
   }
 
+  console.error(`${LOG_PREFIX} loadSeriesForEdit: before`, {
+    id,
+    series_slug: essay.series_slug,
+  });
   const { series, seriesLoadWarning } = await loadSeriesForEdit(
     essay.series_slug,
   );
+  console.error(`${LOG_PREFIX} loadSeriesForEdit: after`, {
+    id,
+    series_slug: essay.series_slug,
+    seriesCount: series.length,
+    seriesLoadWarning: seriesLoadWarning ?? null,
+  });
 
   const updateWithId = updateEssay.bind(null, id);
   const noticeMessage = getAdminEssayNoticeMessage(notice);
+
+  console.error(`${LOG_PREFIX} render EssayForm: before`, {
+    id,
+    seriesCount: series.length,
+    hasSeriesLoadWarning: Boolean(seriesLoadWarning),
+  });
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">

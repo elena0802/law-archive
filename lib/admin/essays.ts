@@ -1,6 +1,34 @@
 import type { EssayRow, SeriesRow } from "@/lib/content/db-types";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
 
+type PostgrestErrorShape = {
+  code?: string;
+  message?: string;
+  details?: string;
+  hint?: string;
+};
+
+function logSupabaseQueryError(
+  functionName: string,
+  context: Record<string, unknown>,
+  error: PostgrestErrorShape | Error | unknown,
+) {
+  const postgrest =
+    error && typeof error === "object" && "code" in error
+      ? (error as PostgrestErrorShape)
+      : null;
+
+  console.error(`[${functionName}] Supabase query failed`, {
+    ...context,
+    errorCode: postgrest?.code,
+    errorMessage:
+      postgrest?.message ??
+      (error instanceof Error ? error.message : String(error)),
+    errorDetails: postgrest?.details,
+    errorHint: postgrest?.hint,
+  });
+}
+
 export type EssayListItem = EssayRow & {
   series_title: string;
 };
@@ -98,7 +126,16 @@ type ListAdminSeriesOptions = {
 export async function listAdminSeries(
   options: ListAdminSeriesOptions = {},
 ): Promise<SeriesRow[]> {
-  const { supabase } = await requireEditorSupabase();
+  let supabase;
+  try {
+    ({ supabase } = await requireEditorSupabase());
+  } catch (error) {
+    console.error("[listAdminSeries] requireEditorSupabase failed", {
+      options,
+      error,
+    });
+    throw error;
+  }
 
   let query = supabase.from("series").select("*");
 
@@ -115,6 +152,7 @@ export async function listAdminSeries(
     .order("title", { ascending: true });
 
   if (error) {
+    logSupabaseQueryError("listAdminSeries", { options }, error);
     throw new Error(error.message);
   }
 
@@ -122,7 +160,16 @@ export async function listAdminSeries(
 }
 
 export async function getAdminEssayById(id: string): Promise<EssayRow | null> {
-  const { supabase } = await requireEditorSupabase();
+  let supabase;
+  try {
+    ({ supabase } = await requireEditorSupabase());
+  } catch (error) {
+    console.error("[getAdminEssayById] requireEditorSupabase failed", {
+      id,
+      error,
+    });
+    throw error;
+  }
 
   const { data, error } = await supabase
     .from("essays")
@@ -131,6 +178,7 @@ export async function getAdminEssayById(id: string): Promise<EssayRow | null> {
     .maybeSingle();
 
   if (error) {
+    logSupabaseQueryError("getAdminEssayById", { id }, error);
     throw new Error(error.message);
   }
 

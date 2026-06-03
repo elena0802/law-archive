@@ -1,12 +1,15 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { resolveEssaySaveNotice } from "@/lib/admin/admin-notices";
+import {
+  redirectAdminEssayEdit,
+  redirectAdminEssaysList,
+} from "@/lib/admin/admin-redirect";
 import {
   getAdminEssayById,
   isEssaySlugTaken,
   resolvePublishedAt,
 } from "@/lib/admin/essays";
-import { resolveEssaySaveNotice } from "@/lib/admin/admin-notices";
 import { parseEssayForm } from "@/lib/admin/parse-essay-form";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
@@ -64,7 +67,7 @@ export async function createEssay(
   });
 
   const notice = resolveEssaySaveNotice("draft", values.status);
-  redirect(`/admin/essays/${data.id}?notice=${notice}`);
+  redirectAdminEssayEdit(data.id, notice);
 }
 
 export async function updateEssay(
@@ -143,14 +146,14 @@ export async function updateEssay(
   });
 
   const notice = resolveEssaySaveNotice(existing.status, values.status);
-  redirect(`/admin/essays/${essayId}?notice=${notice}`);
+  redirectAdminEssayEdit(essayId, notice);
 }
 
 export async function restoreDeletedEssay(essayId: string) {
   const existing = await getAdminEssayById(essayId);
 
   if (!existing || existing.status !== "deleted") {
-    redirect("/admin/essays?status=deleted");
+    redirectAdminEssaysList({ status: "deleted" });
   }
 
   const { supabase } = await requireEditorSupabase();
@@ -168,14 +171,14 @@ export async function restoreDeletedEssay(essayId: string) {
     seriesSlug: existing.series_slug,
   });
 
-  redirect(`/admin/essays?status=deleted&notice=restored`);
+  redirectAdminEssaysList({ status: "deleted", notice: "restored" });
 }
 
 export async function permanentlyDeleteEssay(essayId: string) {
   const existing = await getAdminEssayById(essayId);
 
   if (!existing || existing.status !== "deleted") {
-    redirect("/admin/essays?status=deleted");
+    redirectAdminEssaysList({ status: "deleted" });
   }
 
   const { supabase } = await requireEditorSupabase();
@@ -190,5 +193,5 @@ export async function permanentlyDeleteEssay(essayId: string) {
     seriesSlug: existing.series_slug,
   });
 
-  redirect("/admin/essays?status=deleted");
+  redirectAdminEssaysList({ status: "deleted" });
 }

@@ -1,5 +1,6 @@
 import type { EssayStatus } from "@/lib/content/db-types";
 
+/** ASCII-only codes for redirect query params — never Korean text in URLs. */
 export type EssaySaveNotice = "saved" | "published" | "updated" | "trashed" | "restored";
 
 export function resolveEssaySaveNotice(
