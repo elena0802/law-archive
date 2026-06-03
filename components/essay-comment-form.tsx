@@ -89,6 +89,25 @@ export function EssayCommentForm({ essaySlug }: EssayCommentFormProps) {
           />
           <FieldError message={state.fieldErrors?.content} />
         </div>
+
+        <div>
+          <label className={labelClassName} htmlFor="password">
+            비밀번호 *
+          </label>
+          <input
+            autoComplete="new-password"
+            className={fieldClassName}
+            id="password"
+            minLength={4}
+            name="password"
+            required
+            type="password"
+          />
+          <p className="text-keep mt-2 text-sm leading-6 text-ink-muted">
+            댓글을 나중에 삭제할 때 사용합니다. 공개되지 않습니다.
+          </p>
+          <FieldError message={state.fieldErrors?.password} />
+        </div>
       </div>
 
       <button

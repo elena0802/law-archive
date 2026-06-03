@@ -58,6 +58,7 @@ export type CommentRow = {
   author_affiliation: string | null;
   content: string;
   status: CommentStatus;
+  password_hash: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -68,4 +69,5 @@ export type CommentInsert = {
   author_affiliation?: string | null;
   content: string;
   status?: CommentStatus;
+  password_hash?: string | null;
 };

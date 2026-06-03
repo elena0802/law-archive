@@ -1,3 +1,4 @@
+import { EssayCommentDelete } from "@/components/essay-comment-delete";
 import { EssayCommentForm } from "@/components/essay-comment-form";
 import {
   formatCommentDate,
@@ -10,7 +11,13 @@ type EssayCommentsSectionProps = {
   essaySlug: string;
 };
 
-function CommentItem({ comment }: { comment: Comment }) {
+function CommentItem({
+  comment,
+  essaySlug,
+}: {
+  comment: Comment;
+  essaySlug: string;
+}) {
   const authorName = getCommentAuthorDisplayName(comment.authorName);
   const affiliation = comment.authorAffiliation?.trim();
 
@@ -26,6 +33,9 @@ function CommentItem({ comment }: { comment: Comment }) {
         <p className="text-sm leading-6 text-ink-muted">
           {formatCommentDate(comment.createdAt)}
         </p>
+        {comment.authorDeleteSupported ? (
+          <EssayCommentDelete commentId={comment.id} essaySlug={essaySlug} />
+        ) : null}
       </div>
       <p className="text-keep mt-4 whitespace-pre-wrap text-base leading-8 text-ink">
         {comment.content}
@@ -49,7 +59,11 @@ export async function EssayCommentsSection({ essaySlug }: EssayCommentsSectionPr
       {comments.length > 0 ? (
         <ul className="mt-6 list-none p-0">
           {comments.map((comment) => (
-            <CommentItem comment={comment} key={comment.id} />
+            <CommentItem
+              comment={comment}
+              essaySlug={essaySlug}
+              key={comment.id}
+            />
           ))}
         </ul>
       ) : (

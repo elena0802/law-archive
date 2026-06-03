@@ -16,9 +16,12 @@ This guide explains how to copy essays from `content/essays/*.mdx` into the Supa
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+COMMENT_PASSWORD_SECRET=your-long-random-secret
 ```
 
 The import script uses the **service role** key (server-only).
+
+For comment author self-delete, set `COMMENT_PASSWORD_SECRET` in production. If it is unset locally, the app uses a fixed development fallback (`criminal-law-archive-comment-password-dev`) so hashes stay consistent in dev only—never rely on that fallback in production.
 
 ---
 
