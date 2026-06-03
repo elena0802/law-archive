@@ -5,6 +5,9 @@ import { getCategoryDescription } from "@/lib/content/category-descriptions";
 import { getAllCategories } from "@/lib/essays";
 import { siteConfig } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "주제",
   description: "공개된 글의 주제별 분류와 글 수를 확인합니다.",
