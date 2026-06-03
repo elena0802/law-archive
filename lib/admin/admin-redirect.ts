@@ -19,7 +19,14 @@ export function redirectAdminEssayEdit(
   assertAsciiQueryValue("id", essayId);
   assertAsciiQueryValue("notice", notice);
   const search = new URLSearchParams({ notice }).toString();
-  redirect(`/admin/essays/${essayId}?${search}`);
+  const target = `/admin/essays/${essayId}?${search}`;
+  console.error("[redirectAdminEssayEdit] before redirect", {
+    essayId,
+    notice,
+    target,
+    targetLength: target.length,
+  });
+  redirect(target);
 }
 
 export function redirectAdminEssaysList(options?: {

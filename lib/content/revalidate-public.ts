@@ -10,13 +10,38 @@ type RevalidateEssayPathsInput = {
 };
 
 /**
+ * Diagnostic: revalidation is OFF by default until ByteString cause is confirmed.
+ * Set ADMIN_ESSAY_REVALIDATION_ENABLED=1 in Vercel to turn revalidatePath back on.
+ */
+function isEssaySaveRevalidationSkipped() {
+  return process.env.ADMIN_ESSAY_REVALIDATION_ENABLED !== "1";
+}
+
+function hasNonAscii(value: string) {
+  for (let i = 0; i < value.length; i += 1) {
+    if (value.charCodeAt(i) > 255) {
+      return { index: i, codePoint: value.charCodeAt(i), char: value[i] };
+    }
+  }
+  return null;
+}
+
+/**
  * On-demand revalidation for public essay and series routes after admin saves.
  */
 function safeRevalidatePath(pathname: string) {
+  const nonAscii = hasNonAscii(pathname);
+  if (nonAscii) {
+    console.error(
+      "[revalidatePublicEssayPaths] skipping path with non-Latin-1 character:",
+      { pathname, ...nonAscii },
+    );
+    return;
+  }
+
   try {
     revalidatePath(pathname);
   } catch (error) {
-    // Non-ASCII path segments (e.g. Korean series slugs) can break cache tag headers.
     console.error("[revalidatePublicEssayPaths] revalidatePath failed:", {
       pathname,
       error,
@@ -24,12 +49,19 @@ function safeRevalidatePath(pathname: string) {
   }
 }
 
-export async function revalidatePublicEssayPaths({
-  slug,
-  seriesSlug,
-  previousSlug,
-  previousSeriesSlug,
-}: RevalidateEssayPathsInput) {
+export async function revalidatePublicEssayPaths(
+  input: RevalidateEssayPathsInput,
+) {
+  if (isEssaySaveRevalidationSkipped()) {
+    console.error(
+      "[revalidatePublicEssayPaths] SKIPPED (set ADMIN_ESSAY_REVALIDATION_ENABLED=1 to enable)",
+      input,
+    );
+    return;
+  }
+
+  const { slug, seriesSlug, previousSlug, previousSeriesSlug } = input;
+
   try {
     safeRevalidatePath("/");
     safeRevalidatePath("/essays");

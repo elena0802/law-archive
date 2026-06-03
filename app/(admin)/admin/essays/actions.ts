@@ -43,6 +43,13 @@ export async function createEssay(
   const { supabase } = await requireEditorSupabase();
   const published_at = resolvePublishedAt(values.status, null);
 
+  console.error("[createEssay] before supabase insert", {
+    slug: values.slug,
+    series_slug: values.series_slug,
+    category: values.category,
+    status: values.status,
+  });
+
   const row: EssayInsert = {
     ...values,
     published_at,
@@ -55,11 +62,14 @@ export async function createEssay(
     .single();
 
   if (error || !data) {
+    console.error("[createEssay] supabase insert failed", { error });
     return {
       status: "error",
       message: "글을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
     };
   }
+
+  console.error("[createEssay] after supabase insert", { essayId: data.id });
 
   await revalidatePublicEssayPaths({
     slug: values.slug,
@@ -67,6 +77,7 @@ export async function createEssay(
   });
 
   const notice = resolveEssaySaveNotice("draft", values.status);
+  console.error("[createEssay] before redirect", { essayId: data.id, notice });
   redirectAdminEssayEdit(data.id, notice);
 }
 
@@ -115,6 +126,16 @@ export async function updateEssay(
   const { supabase } = await requireEditorSupabase();
   const published_at = resolvePublishedAt(values.status, existing.published_at);
 
+  console.error("[updateEssay] before supabase update", {
+    essayId,
+    slug: values.slug,
+    series_slug: values.series_slug,
+    category: values.category,
+    status: values.status,
+    titleChars: values.title.length,
+    contentChars: values.content.length,
+  });
+
   const { error } = await supabase
     .from("essays")
     .update({
@@ -132,11 +153,14 @@ export async function updateEssay(
     .eq("id", essayId);
 
   if (error) {
+    console.error("[updateEssay] supabase update failed", { essayId, error });
     return {
       status: "error",
       message: "변경 내용을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
     };
   }
+
+  console.error("[updateEssay] after supabase update", { essayId });
 
   await revalidatePublicEssayPaths({
     slug: values.slug,
@@ -146,6 +170,7 @@ export async function updateEssay(
   });
 
   const notice = resolveEssaySaveNotice(existing.status, values.status);
+  console.error("[updateEssay] before redirect", { essayId, notice });
   redirectAdminEssayEdit(essayId, notice);
 }
 
