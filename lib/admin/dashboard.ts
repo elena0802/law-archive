@@ -1,5 +1,4 @@
 import { isAdminCommentsAvailable } from "@/lib/admin/comments";
-import { isAdminNewsletterAvailable } from "@/lib/admin/newsletter";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
 import { requireSupabaseServiceRoleClient } from "@/lib/supabase/server";
 import type { EssayStatus } from "@/lib/content/db-types";
@@ -75,12 +74,10 @@ export async function listRecentAdminEssays(
 
 export type DashboardAttention = {
   pendingComments: number | null;
-  activeNewsletterSubscribers: number | null;
 };
 
 export async function getAdminDashboardAttention(): Promise<DashboardAttention> {
   let pendingComments: number | null = null;
-  let activeNewsletterSubscribers: number | null = null;
 
   if (isAdminCommentsAvailable()) {
     try {
@@ -101,24 +98,5 @@ export async function getAdminDashboardAttention(): Promise<DashboardAttention> 
     }
   }
 
-  if (isAdminNewsletterAvailable()) {
-    try {
-      await requireEditorSupabase();
-      const supabase = requireSupabaseServiceRoleClient();
-      const { count, error } = await supabase
-        .from("newsletter_subscribers")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "active");
-
-      if (error) {
-        console.error("Failed to count newsletter subscribers:", error);
-      } else {
-        activeNewsletterSubscribers = count ?? 0;
-      }
-    } catch (error) {
-      console.error("Failed to load newsletter subscriber count:", error);
-    }
-  }
-
-  return { pendingComments, activeNewsletterSubscribers };
+  return { pendingComments };
 }

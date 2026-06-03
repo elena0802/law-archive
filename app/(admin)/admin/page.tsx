@@ -31,35 +31,9 @@ export default async function AdminIndexPage() {
     getAdminDashboardAttention(),
   ]);
 
-  const attentionRows: Array<{
-    label: string;
-    value: string;
-    href: string;
-  }> = [];
-
-  if (attention.pendingComments !== null) {
-    attentionRows.push({
-      label: "댓글 승인 대기",
-      value: `${formatCountLabel(attention.pendingComments)}건`,
-      href: "/admin/comments?status=pending",
-    });
-  }
-
-  if (attention.activeNewsletterSubscribers !== null) {
-    attentionRows.push({
-      label: "뉴스레터 구독자",
-      value: `${formatCountLabel(attention.activeNewsletterSubscribers)}명`,
-      href: "/admin/newsletter",
-    });
-  }
-
+  const commentsAttentionAvailable = attention.pendingComments !== null;
   const pendingCommentCount = attention.pendingComments ?? 0;
-  const showAttentionEmpty =
-    attention.pendingComments !== null && pendingCommentCount === 0;
-  const visibleAttentionRows = attentionRows.filter(
-    (row) =>
-      row.label !== "댓글 승인 대기" || pendingCommentCount > 0,
-  );
+  const hasPendingComments = pendingCommentCount > 0;
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
@@ -100,35 +74,28 @@ export default async function AdminIndexPage() {
         <h2 className="text-sm tracking-[0.14em] text-accent uppercase">
           확인이 필요한 항목
         </h2>
-        {attentionRows.length > 0 ? (
-          <>
-            {showAttentionEmpty ? (
-              <p className="text-keep mt-4 rounded border border-line bg-paper-muted px-4 py-6 text-base leading-8 text-ink-muted">
-                현재 확인이 필요한 항목이 없습니다.
-              </p>
-            ) : null}
-            {visibleAttentionRows.length > 0 ? (
-              <ul
-                className={`mt-4 list-none space-y-2 p-0 ${showAttentionEmpty ? "mt-4" : ""}`}
-              >
-                {visibleAttentionRows.map((row) => (
-                  <li key={row.label}>
-                    <Link
-                      className="flex items-baseline justify-between gap-4 rounded border border-line bg-paper-muted px-4 py-4 transition hover:border-accent/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                      href={row.href}
-                    >
-                      <span className="text-keep text-base text-ink">
-                        {row.label}
-                      </span>
-                      <span className="text-keep text-base text-ink-muted">
-                        {row.value}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </>
+        {commentsAttentionAvailable ? (
+          hasPendingComments ? (
+            <ul className="mt-4 list-none space-y-2 p-0">
+              <li>
+                <Link
+                  className="flex items-baseline justify-between gap-4 rounded border border-line bg-paper-muted px-4 py-4 transition hover:border-accent/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                  href="/admin/comments?status=pending"
+                >
+                  <span className="text-keep text-base text-ink">
+                    댓글 승인 대기
+                  </span>
+                  <span className="text-keep text-base text-ink-muted">
+                    {formatCountLabel(pendingCommentCount)}건
+                  </span>
+                </Link>
+              </li>
+            </ul>
+          ) : (
+            <p className="text-keep mt-4 rounded border border-line bg-paper-muted px-4 py-6 text-base leading-8 text-ink-muted">
+              현재 확인이 필요한 항목이 없습니다.
+            </p>
+          )
         ) : (
           <p className="text-keep mt-4 rounded border border-line bg-paper-muted px-4 py-6 text-base leading-8 text-ink-muted">
             관리 기능을 사용할 수 있으면 이곳에 확인할 항목이 표시됩니다.
