@@ -27,6 +27,9 @@ export function AdminNav() {
   const isSeries = pathname === "/admin/series" || pathname.startsWith("/admin/series/");
   const isComments =
     pathname === "/admin/comments" || pathname.startsWith("/admin/comments/");
+  const isNewsletter =
+    pathname === "/admin/newsletter" ||
+    pathname.startsWith("/admin/newsletter/");
 
   return (
     <nav
@@ -65,6 +68,12 @@ export function AdminNav() {
           href="/admin/comments"
         >
           댓글 관리
+        </Link>
+        <Link
+          className={isNewsletter ? activeLinkClassName : linkClassName}
+          href="/admin/newsletter"
+        >
+          뉴스레터
         </Link>
         <Link className={linkClassName} href="/">
           공개 서재 보기

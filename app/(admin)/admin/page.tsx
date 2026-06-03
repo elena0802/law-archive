@@ -141,6 +141,12 @@ export default async function AdminIndexPage() {
           </Link>
           <Link
             className="rounded border border-line bg-paper px-5 py-3 text-sm text-ink-muted transition hover:border-accent/40 hover:text-ink"
+            href="/admin/newsletter"
+          >
+            뉴스레터
+          </Link>
+          <Link
+            className="rounded border border-line bg-paper px-5 py-3 text-sm text-ink-muted transition hover:border-accent/40 hover:text-ink"
             href="/"
             rel="noopener noreferrer"
             target="_blank"
