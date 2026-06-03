@@ -45,7 +45,15 @@ function CommentItem({
 }
 
 export async function EssayCommentsSection({ essaySlug }: EssayCommentsSectionProps) {
-  const comments = await listApprovedCommentsByEssaySlug(essaySlug);
+  let comments: Comment[] = [];
+  let loadFailed = false;
+
+  try {
+    comments = await listApprovedCommentsByEssaySlug(essaySlug);
+  } catch (error) {
+    console.error(`Failed to load comments for "${essaySlug}":`, error);
+    loadFailed = true;
+  }
 
   return (
     <section aria-labelledby="essay-comments-heading">
@@ -56,7 +64,11 @@ export async function EssayCommentsSection({ essaySlug }: EssayCommentsSectionPr
         댓글
       </h2>
 
-      {comments.length > 0 ? (
+      {loadFailed ? (
+        <p className="text-keep mt-6 text-base leading-8 text-ink-muted">
+          댓글을 불러오지 못했습니다.
+        </p>
+      ) : comments.length > 0 ? (
         <ul className="mt-6 list-none p-0">
           {comments.map((comment) => (
             <CommentItem

@@ -52,9 +52,10 @@ export default async function EssaysPage() {
               />
             ))
           ) : (
-            <p className="border-t border-line py-8 text-base leading-8 text-ink-muted">
-              아직 공개된 에세이가 없습니다. 관리 화면에서 공개된 글이 있으면
-              이 목록에 표시됩니다.
+            <p className="text-keep border-t border-line py-8 text-base leading-8 text-ink-muted">
+              아직 공개된 글이 없습니다.
+              <br />
+              곧 새로운 글이 이곳에 기록됩니다.
             </p>
           )}
         </div>

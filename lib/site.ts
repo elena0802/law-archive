@@ -33,11 +33,6 @@ export const siteConfig = {
   ],
   about: {
     pageTitle: "서재 소개",
-    editorGuide: {
-      heading: "원고 안내",
-      body:
-        "이 서재의 글은 content/essays 폴더의 .mdx 파일로 관리합니다. _template.mdx를 복사해 작성한 뒤 draft: false로 바꾸면 공개됩니다.",
-    },
   },
 } as const;
 

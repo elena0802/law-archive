@@ -10,7 +10,6 @@ import { researchPagePath } from "@/lib/research-record";
 import { buildPersonJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
-const { about } = siteConfig;
 const profile = scholarProfile;
 
 export const metadata: Metadata = {
@@ -37,7 +36,7 @@ export default function AboutPage() {
       <Section size="reading" className="py-page">
       <header>
         <p className="mb-6 text-sm tracking-[0.18em] text-accent uppercase">
-          {about.pageTitle}
+          {siteConfig.about.pageTitle}
         </p>
         <h1 className="text-keep font-serif text-4xl leading-[1.12] text-ink sm:text-5xl">
           {profile.name}
@@ -74,13 +73,6 @@ export default function AboutPage() {
         />
         <ProfileNarrative section={profile.whyArchive} />
       </div>
-
-      <details className="mt-14 border-t border-line pt-8 text-sm leading-7 text-ink-muted">
-        <summary className="cursor-pointer text-ink hover:text-accent">
-          {about.editorGuide.heading}
-        </summary>
-        <p className="text-keep mt-4">{about.editorGuide.body}</p>
-      </details>
     </Section>
     </>
   );
