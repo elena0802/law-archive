@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { updateEssay } from "@/app/(admin)/admin/essays/actions";
+import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
 import { EssayForm } from "@/components/admin/essay-form";
 import { essayStatusLabel } from "@/components/admin/essay-status-badge";
 import { getAdminEssayNoticeMessage } from "@/lib/admin/admin-notices";
@@ -10,21 +11,56 @@ import {
   getAdminEssayById,
   listAdminSeries,
 } from "@/lib/admin/essays";
+import type { SeriesRow } from "@/lib/content/db-types";
+
+export const metadata: Metadata = {
+  title: "글 편집",
+};
 
 type AdminEditEssayPageProps = {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ notice?: string }>;
 };
 
-export async function generateMetadata({
-  params,
-}: AdminEditEssayPageProps): Promise<Metadata> {
-  const { id } = await params;
-  const essay = await getAdminEssayById(id);
+const SERIES_LIST_UNAVAILABLE_MESSAGE =
+  "연재 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
 
-  return {
-    title: essay ? `편집: ${essay.title}` : "글 편집",
-  };
+async function loadSeriesForEdit(seriesSlug: string): Promise<{
+  series: SeriesRow[];
+  seriesLoadWarning?: string;
+}> {
+  try {
+    const series = await listAdminSeries({
+      activeOnly: true,
+      includeSlug: seriesSlug,
+    });
+    return { series };
+  } catch (error) {
+    console.error(
+      "Admin edit: listAdminSeries activeOnly failed:",
+      { seriesSlug },
+      error,
+    );
+  }
+
+  try {
+    const series = await listAdminSeries({ includeSlug: seriesSlug });
+    return { series };
+  } catch (error) {
+    console.error(
+      "Admin edit: listAdminSeries includeSlug fallback failed:",
+      { seriesSlug },
+      error,
+    );
+  }
+
+  try {
+    const series = await listAdminSeries();
+    return { series };
+  } catch (error) {
+    console.error("Admin edit: listAdminSeries full fallback failed:", error);
+    return { series: [], seriesLoadWarning: SERIES_LIST_UNAVAILABLE_MESSAGE };
+  }
 }
 
 export default async function AdminEditEssayPage({
@@ -33,16 +69,22 @@ export default async function AdminEditEssayPage({
 }: AdminEditEssayPageProps) {
   const { id } = await params;
   const { notice } = await searchParams;
-  const essay = await getAdminEssayById(id);
+
+  let essay;
+  try {
+    essay = await getAdminEssayById(id);
+  } catch (error) {
+    console.error("Admin edit: getAdminEssayById failed:", { id }, error);
+    throw error;
+  }
 
   if (!essay) {
     notFound();
   }
 
-  const series = await listAdminSeries({
-    activeOnly: true,
-    includeSlug: essay.series_slug,
-  });
+  const { series, seriesLoadWarning } = await loadSeriesForEdit(
+    essay.series_slug,
+  );
 
   const updateWithId = updateEssay.bind(null, id);
   const noticeMessage = getAdminEssayNoticeMessage(notice);
@@ -79,6 +121,11 @@ export default async function AdminEditEssayPage({
           </Link>
         ) : null}
       </div>
+      {seriesLoadWarning ? (
+        <div className="mt-8">
+          <AdminNoticeBanner message={seriesLoadWarning} />
+        </div>
+      ) : null}
       <EssayForm
         action={updateWithId}
         currentStatus={essay.status}

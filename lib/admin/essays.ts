@@ -106,6 +106,8 @@ export async function listAdminSeries(
     query = query.or(`status.eq.active,slug.eq.${options.includeSlug}`);
   } else if (options.activeOnly) {
     query = query.eq("status", "active");
+  } else if (options.includeSlug) {
+    query = query.eq("slug", options.includeSlug);
   }
 
   const { data, error } = await query
