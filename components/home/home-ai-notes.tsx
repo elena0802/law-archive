@@ -1,21 +1,61 @@
-import { HomeSectionHeader } from "@/components/home/home-section-header";
+import { AiCurrentResearchCard } from "@/components/home/ai-current-research-card";
+import type { AiResearchTrack } from "@/lib/home-ai-research-tracks";
 
-export function HomeAiNotes() {
+type HomeAiNotesProps = {
+  tracks: readonly AiResearchTrack[];
+};
+
+export function HomeAiNotes({ tracks }: HomeAiNotesProps) {
   return (
-    <section aria-labelledby="home-ai-notes-heading">
-      <HomeSectionHeader
-        headingId="home-ai-notes-heading"
-        title="AI와 함께 쓰는 연구 노트"
-      />
-      <div className="text-keep mt-10 max-w-2xl space-y-5 text-base leading-[1.9] text-ink-muted">
-        <p>
-          이 아카이브는 AI를 활용하여 글을 작성하고, 연구를 정리하며, 생각을
-          기록하는 실험이기도 합니다.
-        </p>
-        <p>
-          35년간 형사법을 연구한 경험과 새로운 기술이 만나 지식을 기록하는 새로운
-          방식을 만들어가고 있습니다.
-        </p>
+    <section
+      aria-labelledby="home-ai-notes-heading"
+      className="relative"
+    >
+      <div className="mx-auto w-full max-w-reading">
+        <div className="relative">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(180deg,transparent_0,transparent_1.65rem,var(--line)_1.65rem,var(--line)_calc(1.65rem+1px),transparent_calc(1.65rem+1px))] opacity-[0.22]"
+          />
+
+          <div className="relative border-l-2 border-accent/35 px-6 sm:px-8">
+            <p className="text-xs tracking-[0.14em] text-accent uppercase">
+              디지털 연구 노트
+            </p>
+            <h2
+              id="home-ai-notes-heading"
+              className="text-keep mt-3 font-serif text-3xl leading-tight text-ink sm:text-4xl"
+            >
+              AI와 함께 쓰는 연구 노트
+            </h2>
+
+            <div className="text-keep mt-8 space-y-6 text-base leading-[1.9] text-ink-muted">
+              <p>35년간 형사법을 연구하고 가르쳐 왔습니다.</p>
+              <p>
+                이제는 AI를 활용하여
+                <br />
+                판례를 읽고,
+                <br />
+                생각을 정리하고,
+                <br />
+                새로운 질문을 탐구하고 있습니다.
+              </p>
+              <p>
+                이 공간은 과거 연구를 보관하는 아카이브인 동시에,
+                <br />
+                AI와 함께 새로운 생각을 기록하는 디지털 연구 노트입니다.
+              </p>
+            </div>
+
+            <ul className="mt-10 grid list-none gap-6 p-0 sm:grid-cols-2 sm:gap-8">
+              {tracks.map((track) => (
+                <li key={track.title} className="min-w-0">
+                  <AiCurrentResearchCard track={track} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -6,6 +6,7 @@ import { HomeRecentWriting } from "@/components/home/home-recent-writing";
 import { HomeResearchArchiveSummary } from "@/components/home/home-research-archive-summary";
 import { Section } from "@/components/section";
 import { getAllEssays, getAllSeries } from "@/lib/essays";
+import { buildAiResearchTracks } from "@/lib/home-ai-research-tracks";
 import { siteConfig } from "@/lib/site";
 import { researchItems } from "@/src/data/research";
 import {
@@ -51,6 +52,7 @@ export default async function Home() {
     allSeries.find((series) => series.title === title),
   ).filter((series): series is NonNullable<typeof series> => Boolean(series));
   const researchStats = getResearchSummaryStats(researchItems);
+  const aiResearchTracks = buildAiResearchTracks(allSeries);
 
   return (
     <>
@@ -61,10 +63,10 @@ export default async function Home() {
       </Section>
 
       <Section
-        size="reading"
-        className={`${HOME_SECTION_CLASS} bg-paper-muted/35`}
+        size="wide"
+        className={`${HOME_SECTION_CLASS} border-y border-line/70 bg-paper-muted/45`}
       >
-        <HomeAiNotes />
+        <HomeAiNotes tracks={aiResearchTracks} />
       </Section>
 
       <Section size="wide" className={HOME_SECTION_CLASS}>
