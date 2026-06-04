@@ -1,157 +1,86 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { AboutSection } from "@/components/about-section";
-import { SeriesVolumeLink } from "@/components/series-volume-link";
 import { Section } from "@/components/section";
-import { getAllCategories, getAllSeries } from "@/lib/essays";
+import { ChronologicalArchive } from "@/src/components/research/chronological-archive";
+import { FeaturedPublications } from "@/src/components/research/featured-publications";
+import { PublicationList } from "@/src/components/research/publication-list";
+import { ResearchAreas } from "@/src/components/research/research-areas";
+import { ResearchSummary } from "@/src/components/research/research-summary";
+import { researchItems } from "@/src/data/research";
 import {
-  formatResearchPaperLine,
-  researchMap,
-  researchPagePath,
-} from "@/lib/research-record";
+  getResearchAreaCounts,
+  getResearchSummaryStats,
+  groupResearchByYear,
+  sortByPublicationNumber,
+} from "@/src/lib/research";
+import { researchPagePath } from "@/lib/research-record";
 import { siteConfig } from "@/lib/site";
 
-const { overview, sectionHeadings } = researchMap;
+const pageTitle = "연구업적";
+const pageLead =
+  "형사법, 형사소송법, 증거법과 형사정책을 중심으로 이어온 연구의 기록입니다.";
+const pageDescription =
+  "1991년부터 2019년까지 이어진 연구 성과를 정리하는 학문적 아카이브입니다.";
 
 export const metadata: Metadata = {
-  title: overview.title,
-  description: overview.lead,
+  title: pageTitle,
+  description: pageLead,
   alternates: {
     canonical: researchPagePath,
   },
   openGraph: {
-    title: `${overview.title} | ${siteConfig.name}`,
-    description: overview.lead,
+    title: `${pageTitle} | ${siteConfig.name}`,
+    description: pageLead,
     url: researchPagePath,
+    locale: "ko_KR",
+    siteName: siteConfig.name,
   },
 };
 
-export default async function ResearchPage() {
-  const [categories, series] = await Promise.all([
-    getAllCategories(),
-    getAllSeries(),
-  ]);
-
-  const categoryHrefByName = new Map(
-    categories.map((category) => [
-      category.title,
-      `/categories/${category.slug}`,
-    ]),
-  );
-
-  const featuredSeries = researchMap.featuredSeriesSlugs
-    .map((slug) => series.find((item) => item.slug === slug))
-    .filter((item): item is NonNullable<typeof item> => item !== undefined);
+export default function ResearchPage() {
+  const items = researchItems;
+  const sorted = sortByPublicationNumber(items);
+  const stats = getResearchSummaryStats(items);
+  const areas = getResearchAreaCounts(items);
+  const featured = sorted.filter((item) => item.isRepresentative);
+  const selected = sorted.filter((item) => item.isImportant);
+  const yearGroups = groupResearchByYear(items);
 
   return (
     <>
       <Section size="reading" className="py-page">
         <p className="mb-6 text-sm tracking-[0.18em] text-accent uppercase">
-          {overview.eyebrow}
+          Research Publications
         </p>
         <h1 className="text-keep font-serif text-4xl leading-[1.1] text-ink sm:text-5xl">
-          형사법은 결국 인간과 사회에 대한 질문입니다.
+          {pageTitle}
         </h1>
-        <div className="text-keep mt-7 space-y-5 text-lg leading-9 text-ink-muted">
-          {overview.body.slice(1).map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
-        </div>
+        <p className="text-keep mt-7 text-lg leading-9 text-ink-muted">
+          {pageLead}
+        </p>
+        <p className="text-keep mt-5 text-base leading-[1.85] text-ink-muted">
+          {pageDescription}
+        </p>
       </Section>
 
       <Section size="reading" className="border-t border-line py-page">
-        <div className="space-y-10">
-          <AboutSection heading={sectionHeadings.areas} id="research-areas">
-            <ul className="list-none space-y-0 p-0">
-              {researchMap.areas.map((area) => {
-                const href =
-                  "category" in area && area.category
-                    ? categoryHrefByName.get(area.category)
-                    : undefined;
-
-                return (
-                  <li
-                    key={area.label}
-                    className="border-t border-line/70 py-4 first:border-t-0 first:pt-0 last:pb-0"
-                  >
-                    {href ? (
-                      <Link
-                        className="font-serif text-lg leading-snug text-ink underline-offset-4 hover:text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                        href={href}
-                      >
-                        {area.label}
-                      </Link>
-                    ) : (
-                      <span className="font-serif text-lg leading-snug text-ink">
-                        {area.label}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </AboutSection>
-
-          <AboutSection
-            heading={sectionHeadings.featuredPapers}
-            id="featured-papers"
-          >
-            <ol className="list-none space-y-0 p-0" aria-label={sectionHeadings.featuredPapers}>
-              {researchMap.featuredPapers.map((paper, index) => (
-                <li
-                  key={paper.id}
-                  className="flex gap-4 border-t border-line/70 py-5 first:border-t-0 first:pt-0 last:pb-0 sm:gap-6"
-                >
-                  <span
-                    className="shrink-0 font-serif text-lg tabular-nums text-accent"
-                    aria-hidden
-                  >
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-keep font-serif text-lg leading-snug text-ink">
-                      {paper.title}
-                    </p>
-                    <p className="text-keep mt-2 text-base leading-[1.85] text-ink-muted">
-                      {formatResearchPaperLine(paper)}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </AboutSection>
-
-          <AboutSection heading={sectionHeadings.series} id="research-series">
-            {featuredSeries.length > 0 ? (
-              <div>
-                {featuredSeries.map((item) => (
-                  <SeriesVolumeLink key={item.slug} series={item} />
-                ))}
-              </div>
-            ) : (
-              <p className="text-keep text-ink-muted">
-                아직 공개된 연재가 없습니다.
-              </p>
-            )}
-          </AboutSection>
-
-          <AboutSection heading={sectionHeadings.journey} id="research-journey">
-            <ol className="list-none space-y-0 p-0">
-              {researchMap.journey.map((period) => (
-                <li
-                  key={period.era}
-                  className="grid gap-2 border-t border-line/70 py-4 first:border-t-0 first:pt-0 last:pb-0 sm:grid-cols-[5rem_1fr] sm:gap-6"
-                >
-                  <span className="font-serif text-lg tabular-nums text-accent">
-                    {period.era}
-                  </span>
-                  <span className="text-keep text-base leading-[1.85] text-ink-muted">
-                    {period.theme}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </AboutSection>
+        <div className="space-y-14">
+          <ResearchSummary stats={stats} />
+          <FeaturedPublications items={featured} />
+          <ResearchAreas areas={areas} />
+          <PublicationList
+            items={selected}
+            heading="주요 논문"
+            headingId="selected-publications-heading"
+            badgeMode="all"
+          />
+          <PublicationList
+            items={sorted}
+            heading="전체 연구업적"
+            headingId="complete-publications-heading"
+            description="현재 등록된 연구업적 목록입니다. 전체 논문 목록은 순차적으로 확장될 예정입니다."
+            badgeMode="none"
+          />
+          <ChronologicalArchive yearGroups={yearGroups} />
         </div>
       </Section>
     </>
