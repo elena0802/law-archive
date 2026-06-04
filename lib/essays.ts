@@ -7,7 +7,10 @@ import { getEssayRepository } from "@/lib/content/get-repository";
 import {
   sortEssaysByDateAsc,
 } from "@/lib/content/series-aggregation";
-import { sortEssaysForSeries } from "@/lib/content/series-order";
+import {
+  sortEssaysForCategory,
+  sortEssaysForSeries,
+} from "@/lib/content/series-order";
 
 export { archiveSeriesTitles };
 
@@ -281,7 +284,7 @@ export type EssaySeries = {
   latestDate: string;
 };
 
-export { sortEssaysByDateAsc, sortEssaysForSeries };
+export { sortEssaysByDateAsc, sortEssaysForSeries, sortEssaysForCategory };
 
 export function formatEssayDate(date: string) {
   return new Intl.DateTimeFormat("ko-KR", {
@@ -420,13 +423,19 @@ export async function getCategoryBySlug(slug: string) {
   }
 
   const essays = await getAllEssays();
-  const items = essays
-    .filter((essay) => essay.category === category.title)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  const latest = items[0]?.date ?? "";
-  const first = items[items.length - 1]?.date ?? "";
+  const items = essays.filter((essay) => essay.category === category.title);
+  const sorted = sortEssaysForCategory(items);
+  const dateValues = items.map((essay) => new Date(essay.date).getTime());
+  const latest =
+    dateValues.length > 0
+      ? items[dateValues.indexOf(Math.max(...dateValues))]!.date
+      : "";
+  const first =
+    dateValues.length > 0
+      ? items[dateValues.indexOf(Math.min(...dateValues))]!.date
+      : "";
 
-  return { ...category, essays: items, firstDate: first, latestDate: latest };
+  return { ...category, essays: sorted, firstDate: first, latestDate: latest };
 }
 
 export async function searchEssays(query: string): Promise<Essay[]> {

@@ -1,4 +1,5 @@
 import type { Essay } from "@/lib/essays";
+import { getSeriesSlug } from "@/lib/content/series-slug";
 import { parseOptionalSeriesOrder } from "@/lib/content/parse-series-order";
 
 function parsePositiveInt(value: string) {
@@ -77,5 +78,66 @@ export function sortEssaysForSeries(essays: Essay[]) {
     return (
       a.title.localeCompare(b.title, "ko") || a.slug.localeCompare(b.slug)
     );
+  });
+}
+
+function essayDateKey(date: string) {
+  return date.slice(0, 10);
+}
+
+function seriesSlugKey(essay: Essay) {
+  return getSeriesSlug(essay.series);
+}
+
+function compareSeriesInstallmentDesc(a: Essay, b: Essay) {
+  const keyA = getEssaySeriesSortKey(a);
+  const keyB = getEssaySeriesSortKey(b);
+
+  if (keyA !== null && keyB !== null && keyA !== keyB) {
+    return keyB - keyA;
+  }
+
+  if (keyA !== null && keyB === null) {
+    return -1;
+  }
+
+  if (keyA === null && keyB !== null) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function compareUpdatedAtDesc(a: Essay, b: Essay) {
+  const updatedA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+  const updatedB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+
+  if (updatedB !== updatedA) {
+    return updatedB - updatedA;
+  }
+
+  return a.title.localeCompare(b.title, "ko") || a.slug.localeCompare(b.slug);
+}
+
+/** Category topic feeds: newest first; same-day series installments high-to-low. */
+export function sortEssaysForCategory(essays: Essay[]) {
+  return [...essays].sort((a, b) => {
+    const dateDiff =
+      new Date(b.date).getTime() - new Date(a.date).getTime();
+    if (dateDiff !== 0) {
+      return dateDiff;
+    }
+
+    if (
+      essayDateKey(a.date) === essayDateKey(b.date) &&
+      seriesSlugKey(a) === seriesSlugKey(b)
+    ) {
+      const installmentDiff = compareSeriesInstallmentDesc(a, b);
+      if (installmentDiff !== 0) {
+        return installmentDiff;
+      }
+    }
+
+    return compareUpdatedAtDesc(a, b);
   });
 }

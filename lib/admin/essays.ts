@@ -126,16 +126,7 @@ type ListAdminSeriesOptions = {
 export async function listAdminSeries(
   options: ListAdminSeriesOptions = {},
 ): Promise<SeriesRow[]> {
-  let supabase;
-  try {
-    ({ supabase } = await requireEditorSupabase());
-  } catch (error) {
-    console.error("[listAdminSeries] requireEditorSupabase failed", {
-      options,
-      error,
-    });
-    throw error;
-  }
+  const { supabase } = await requireEditorSupabase();
 
   let query = supabase.from("series").select("*");
 
@@ -160,16 +151,7 @@ export async function listAdminSeries(
 }
 
 export async function getAdminEssayById(id: string): Promise<EssayRow | null> {
-  let supabase;
-  try {
-    ({ supabase } = await requireEditorSupabase());
-  } catch (error) {
-    console.error("[getAdminEssayById] requireEditorSupabase failed", {
-      id,
-      error,
-    });
-    throw error;
-  }
+  const { supabase } = await requireEditorSupabase();
 
   const { data, error } = await supabase
     .from("essays")
