@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { formatEssayDate, type EssaySeries } from "@/lib/essays";
+import { getSeriesCoverSrc } from "@/lib/home-images";
 
 type SeriesEditorialCardProps = {
   series: EssaySeries;
@@ -30,26 +32,48 @@ function SeriesVolumeIcon() {
   );
 }
 
+function SeriesCover({ series }: { series: EssaySeries }) {
+  const coverSrc = getSeriesCoverSrc(series.slug);
+
+  if (coverSrc) {
+    return (
+      <div className="relative aspect-[5/2] overflow-hidden border-b border-line/60 bg-paper-muted">
+        <Image
+          alt=""
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+          fill
+          sizes="(min-width: 640px) 320px, 100vw"
+          src={coverSrc}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      aria-hidden
+      className="flex aspect-[5/2] items-center justify-center border-b border-line/60 bg-paper-muted"
+    >
+      <SeriesVolumeIcon />
+    </div>
+  );
+}
+
 export function SeriesEditorialCard({ series }: SeriesEditorialCardProps) {
   return (
     <Link
-      className="group flex h-full gap-5 border border-line/80 bg-paper p-5 transition-colors hover:border-ink-muted/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:p-6"
+      className="group flex h-full flex-col overflow-hidden border border-line/80 bg-paper transition-colors hover:border-ink-muted/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
       href={`/series/${series.slug}`}
     >
-      <div
-        aria-hidden
-        className="flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center border border-line/80 bg-paper-muted"
-      >
-        <SeriesVolumeIcon />
-      </div>
-      <div className="min-w-0 flex-1">
+      <SeriesCover series={series} />
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
         <p className="text-xs tracking-[0.08em] text-ink-muted">
           {series.count}편 · 최근 {formatEssayDate(series.latestDate)}
         </p>
         <h3 className="text-keep mt-2 font-serif text-xl leading-snug text-ink group-hover:text-accent sm:text-[1.35rem]">
           {series.title}
         </h3>
-        <p className="text-keep mt-2 line-clamp-2 text-sm leading-[1.75] text-ink-muted">
+        <p className="text-keep mt-2 line-clamp-2 flex-1 text-sm leading-[1.75] text-ink-muted">
           {series.description}
         </p>
       </div>

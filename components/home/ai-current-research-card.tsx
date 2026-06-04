@@ -1,26 +1,81 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { AiResearchTrack } from "@/lib/home-ai-research-tracks";
+import { getAiResearchCoverSrc } from "@/lib/home-images";
 
 type AiCurrentResearchCardProps = {
   track: AiResearchTrack;
 };
 
+function AiResearchTrackIcon() {
+  return (
+    <svg
+      aria-hidden
+      className="h-6 w-6 text-accent/75"
+      fill="none"
+      viewBox="0 0 32 32"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M6 8h14l4 3v13H6V8z"
+        stroke="currentColor"
+        strokeWidth="1.2"
+      />
+      <path
+        d="M9 14h10M9 17.5h8"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.2"
+      />
+      <circle cx="23" cy="11" fill="currentColor" r="1.25" />
+    </svg>
+  );
+}
+
+function AiResearchVisualHeader({ track }: { track: AiResearchTrack }) {
+  const coverSrc = getAiResearchCoverSrc(track.imageKey);
+
+  if (coverSrc) {
+    return (
+      <div className="relative mb-4 h-14 overflow-hidden border-b border-line/60 bg-paper-muted">
+        <Image
+          alt=""
+          className="h-full w-full object-cover"
+          fill
+          sizes="280px"
+          src={coverSrc}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      aria-hidden
+      className="mb-4 flex h-14 items-center border-b border-line/60 bg-paper-muted/80 px-1"
+    >
+      <AiResearchTrackIcon />
+    </div>
+  );
+}
+
 export function AiCurrentResearchCard({ track }: AiCurrentResearchCardProps) {
   return (
-    <article className="flex h-full flex-col border border-line bg-paper/90 px-6 py-6 sm:px-8 sm:py-7">
+    <article className="flex h-full flex-col border border-line bg-paper/90 px-6 py-5 sm:px-7 sm:py-6">
+      <AiResearchVisualHeader track={track} />
       <p className="text-xs tracking-[0.12em] text-accent uppercase">
         현재 진행 중
       </p>
-      <h3 className="text-keep mt-3 font-serif text-2xl leading-snug text-ink">
+      <h3 className="text-keep mt-2 font-serif text-2xl leading-snug text-ink">
         {track.title}
       </h3>
-      <div className="text-keep mt-4 flex-1 space-y-3 text-sm leading-[1.85] text-ink-muted">
+      <div className="text-keep mt-3 flex-1 space-y-3 text-sm leading-[1.85] text-ink-muted">
         {track.description.map((paragraph) => (
           <p key={paragraph}>{paragraph}</p>
         ))}
       </div>
       <Link
-        className="mt-6 inline-block border-b border-accent/70 pb-0.5 text-sm text-accent transition-colors hover:border-accent hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+        className="mt-5 inline-block border-b border-accent/70 pb-0.5 text-sm text-accent transition-colors hover:border-accent hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         href={track.href}
       >
         연재 보기 →

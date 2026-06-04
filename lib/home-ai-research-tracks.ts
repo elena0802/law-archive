@@ -3,6 +3,7 @@ import type { EssaySeries } from "@/lib/essays";
 export type AiResearchTrack = {
   description: readonly string[];
   href: string;
+  imageKey: string;
   title: string;
 };
 
@@ -15,6 +16,7 @@ const AI_RESEARCH_TRACK_DEFINITIONS = [
     ],
     seriesTitle: "AI와 형사법",
     placeholderHref: "/series/ai-and-criminal-law",
+    imageKey: "ai-and-criminal-law",
   },
   {
     title: "법학교육과 AI",
@@ -24,6 +26,7 @@ const AI_RESEARCH_TRACK_DEFINITIONS = [
     ],
     seriesTitle: "법학교육과 AI",
     placeholderHref: "/series/legal-education-and-ai",
+    imageKey: "legal-education-and-ai",
   },
 ] as const;
 
@@ -38,6 +41,7 @@ export function buildAiResearchTracks(
     return {
       title: definition.title,
       description: definition.description,
+      imageKey: definition.imageKey,
       href: series ? `/series/${series.slug}` : definition.placeholderHref,
     };
   });

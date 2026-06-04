@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { formatEssayDate, type Essay } from "@/lib/essays";
-import { getEssayCoverSrc } from "@/lib/essay-cover";
+import { getEssayCoverSrc } from "@/lib/home-images";
 
 type EssayEditorialCardProps = {
   essay: Essay;
