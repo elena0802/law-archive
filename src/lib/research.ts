@@ -27,7 +27,32 @@ export type ResearchSummaryStats = {
   representativeCount: number;
   importantCount: number;
   areaCount: number;
+  yearRange: string | null;
 };
+
+export function getResearchYearRange(
+  items: readonly ResearchItem[],
+): { min: number; max: number } | null {
+  const years = items
+    .map((item) => item.year)
+    .filter((year): year is number => year !== undefined);
+
+  if (years.length === 0) {
+    return null;
+  }
+
+  return { min: Math.min(...years), max: Math.max(...years) };
+}
+
+export function formatResearchYearRange(
+  range: { min: number; max: number } | null,
+): string | null {
+  if (!range) {
+    return null;
+  }
+
+  return `${range.min}–${range.max}`;
+}
 
 export function getResearchSummaryStats(
   items: readonly ResearchItem[],
@@ -39,7 +64,66 @@ export function getResearchSummaryStats(
     representativeCount: items.filter((item) => item.isRepresentative).length,
     importantCount: items.filter((item) => item.isImportant).length,
     areaCount: categories.size,
+    yearRange: formatResearchYearRange(getResearchYearRange(items)),
   };
+}
+
+/** Representative first, then newest important papers (PR46.5-C.5 preview). */
+export function sortImportantPublicationPreview(
+  items: readonly ResearchItem[],
+): ResearchItem[] {
+  return [...items]
+    .filter((item) => item.isImportant)
+    .sort((a, b) => {
+      if (a.isRepresentative !== b.isRepresentative) {
+        return a.isRepresentative ? -1 : 1;
+      }
+
+      const yearA = a.year ?? 0;
+      const yearB = b.year ?? 0;
+      if (yearB !== yearA) {
+        return yearB - yearA;
+      }
+
+      return b.number - a.number;
+    });
+}
+
+export function sortByPublicationRecency(
+  items: readonly ResearchItem[],
+): ResearchItem[] {
+  return [...items].sort((a, b) => {
+    const yearA = a.year ?? 0;
+    const yearB = b.year ?? 0;
+    if (yearB !== yearA) {
+      return yearB - yearA;
+    }
+
+    const monthA = a.month ?? 0;
+    const monthB = b.month ?? 0;
+    if (monthB !== monthA) {
+      return monthB - monthA;
+    }
+
+    return b.number - a.number;
+  });
+}
+
+/** Career-flow order for the representative milestone timeline. */
+export function sortRepresentativeTimeline(
+  items: readonly ResearchItem[],
+): ResearchItem[] {
+  return [...items]
+    .filter((item) => item.isRepresentative)
+    .sort((a, b) => {
+      const yearA = a.year ?? 0;
+      const yearB = b.year ?? 0;
+      if (yearA !== yearB) {
+        return yearA - yearB;
+      }
+
+      return a.number - b.number;
+    });
 }
 
 export function getResearchAreaCounts(
