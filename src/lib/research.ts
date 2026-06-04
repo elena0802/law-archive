@@ -193,6 +193,36 @@ export function sortByPublicationNumber(
   return [...items].sort((a, b) => a.number - b.number);
 }
 
+export function parseResearchPublicationNumber(
+  param: string,
+): number | null {
+  const value = Number(param);
+  if (!Number.isInteger(value) || value < 1) {
+    return null;
+  }
+
+  return value;
+}
+
+export function getResearchItemByNumber(
+  number: number,
+  items: readonly ResearchItem[],
+): ResearchItem | undefined {
+  return items.find((item) => item.number === number);
+}
+
+export function formatResearchPublicationDescription(
+  item: ResearchItem,
+): string {
+  const parts = [
+    formatResearchDate(item.year, item.month),
+    item.journal,
+    item.publisher,
+  ].filter((part): part is string => Boolean(part));
+
+  return parts.length > 0 ? parts.join(" · ") : item.title;
+}
+
 const fieldToCategory: Partial<Record<string, ResearchCategory>> = {
   형법: "criminal-law-theory",
   형사소송법: "criminal-procedure",
@@ -227,6 +257,14 @@ export function resolveResearchCategory(
   return "other";
 }
 
+export function getRepresentativePaperPdfFileName(number: number): string {
+  return `${String(number).padStart(3, "0")}.pdf`;
+}
+
+export function getResearchPdfUrl(number: number): string {
+  return `/research/papers/${getRepresentativePaperPdfFileName(number)}`;
+}
+
 export function applyResearchFlags(
   items: readonly ResearchItem[],
   options: {
@@ -237,9 +275,20 @@ export function applyResearchFlags(
   const representative = new Set(options.representativeNumbers);
   const important = new Set(options.importantNumbers);
 
-  return items.map((item) => ({
-    ...item,
-    isRepresentative: representative.has(item.number),
-    isImportant: important.has(item.number),
-  }));
+  return items.map((item) => {
+    const isRepresentative = representative.has(item.number);
+
+    return {
+      ...item,
+      isRepresentative,
+      isImportant: important.has(item.number),
+      ...(isRepresentative
+        ? {
+            hasFullText: true,
+            pdfUrl: getResearchPdfUrl(item.number),
+            pdfFileName: getRepresentativePaperPdfFileName(item.number),
+          }
+        : {}),
+    };
+  });
 }

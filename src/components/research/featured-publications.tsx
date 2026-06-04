@@ -1,3 +1,4 @@
+import { ResearchPdfLink } from "@/src/components/research/research-pdf-link";
 import { ResearchPublicationBadges } from "@/src/components/research/research-publication-badges";
 import { ResearchPublicationMeta } from "@/src/components/research/research-publication-meta";
 import { getCategoryLabel } from "@/src/lib/research";
@@ -88,11 +89,7 @@ export function FeaturedPublications({ items }: FeaturedPublicationsProps) {
                   </dd>
                 </div>
               </dl>
-              {/* PR46.5-C: PDF view / download actions */}
-              <div
-                className="mt-4 empty:hidden"
-                data-publication-actions={item.number}
-              />
+              <ResearchPdfLink item={item} />
             </article>
           </li>
         ))}
