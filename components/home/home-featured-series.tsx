@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { SeriesVolumeLink } from "@/components/series-volume-link";
+import { HomeSectionHeader } from "@/components/home/home-section-header";
+import { SeriesEditorialCard } from "@/components/home/series-editorial-card";
 import type { EssaySeries } from "@/lib/essays";
 
 type HomeFeaturedSeriesProps = {
@@ -9,28 +10,26 @@ type HomeFeaturedSeriesProps = {
 export function HomeFeaturedSeries({ series }: HomeFeaturedSeriesProps) {
   return (
     <section aria-labelledby="home-featured-series-heading">
-      <h2
-        id="home-featured-series-heading"
-        className="text-keep font-serif text-3xl leading-tight text-ink sm:text-4xl"
-      >
-        대표 연재
-      </h2>
-      <p className="text-keep mt-4 text-base leading-[1.85] text-ink-muted">
-        오래 이어온 주제와 회고를 연재로 모았습니다.
-      </p>
+      <HomeSectionHeader
+        description="오래 이어온 주제와 회고를 연재로 모았습니다."
+        headingId="home-featured-series-heading"
+        title="대표 연재"
+      />
       {series.length > 0 ? (
-        <div className="mt-8">
+        <ul className="mt-12 grid list-none gap-6 p-0 sm:grid-cols-2 lg:gap-8">
           {series.map((item) => (
-            <SeriesVolumeLink key={item.slug} series={item} />
+            <li key={item.slug} className="min-w-0">
+              <SeriesEditorialCard series={item} />
+            </li>
           ))}
-        </div>
+        </ul>
       ) : (
-        <p className="mt-8 py-8 text-base leading-8 text-ink-muted">
+        <p className="mt-12 border border-line/80 px-6 py-10 text-base leading-8 text-ink-muted">
           아직 공개된 연재가 없습니다.
         </p>
       )}
       <Link
-        className="mt-4 inline-block text-sm text-accent underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+        className="mt-10 inline-block text-sm text-accent underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         href="/series"
       >
         모든 연재 보기

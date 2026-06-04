@@ -3,7 +3,6 @@ import { HomeHero } from "@/components/home-hero";
 import { HomeAiNotes } from "@/components/home/home-ai-notes";
 import { HomeFeaturedSeries } from "@/components/home/home-featured-series";
 import { HomeRecentWriting } from "@/components/home/home-recent-writing";
-import { HomeRepresentativeResearch } from "@/components/home/home-representative-research";
 import { HomeResearchArchiveSummary } from "@/components/home/home-research-archive-summary";
 import { Section } from "@/components/section";
 import { getAllEssays, getAllSeries } from "@/lib/essays";
@@ -30,21 +29,24 @@ export const metadata: Metadata = {
   },
 };
 
-const RECENT_ESSAY_COUNT = 5;
-const REPRESENTATIVE_RESEARCH_COUNT = 3;
+const RECENT_ESSAY_COUNT = 3;
+const REPRESENTATIVE_RESEARCH_PREVIEW_COUNT = 3;
 
 const HOME_FEATURED_SERIES_TITLES = [
   "형사법 교수로 산다는 것",
   "사법시험 출제위원을 하며 느낀 것",
 ] as const;
 
+const HOME_SECTION_CLASS =
+  "border-t border-line !py-[clamp(5.5rem,11vw,9.5rem)]";
+
 export default async function Home() {
   const [allSeries, essays] = await Promise.all([getAllSeries(), getAllEssays()]);
 
   const recentEssays = essays.slice(0, RECENT_ESSAY_COUNT);
-  const representativeResearch = sortByPublicationNumber(researchItems)
+  const representativeResearchPreview = sortByPublicationNumber(researchItems)
     .filter((item) => item.isRepresentative)
-    .slice(0, REPRESENTATIVE_RESEARCH_COUNT);
+    .slice(0, REPRESENTATIVE_RESEARCH_PREVIEW_COUNT);
   const featuredSeries = HOME_FEATURED_SERIES_TITLES.map((title) =>
     allSeries.find((series) => series.title === title),
   ).filter((series): series is NonNullable<typeof series> => Boolean(series));
@@ -54,24 +56,26 @@ export default async function Home() {
     <>
       <HomeHero />
 
-      <Section size="wide" className="border-t border-line py-page">
+      <Section size="wide" className={HOME_SECTION_CLASS}>
         <HomeRecentWriting essays={recentEssays} />
       </Section>
 
-      <Section size="reading" className="border-t border-line py-page">
+      <Section
+        size="reading"
+        className={`${HOME_SECTION_CLASS} bg-paper-muted/35`}
+      >
         <HomeAiNotes />
       </Section>
 
-      <Section size="reading" className="border-t border-line py-page">
-        <HomeRepresentativeResearch items={representativeResearch} />
-      </Section>
-
-      <Section size="reading" className="border-t border-line py-page">
+      <Section size="wide" className={HOME_SECTION_CLASS}>
         <HomeFeaturedSeries series={featuredSeries} />
       </Section>
 
-      <Section size="reading" className="border-t border-line py-page">
-        <HomeResearchArchiveSummary stats={researchStats} />
+      <Section size="reading" className={HOME_SECTION_CLASS}>
+        <HomeResearchArchiveSummary
+          previewItems={representativeResearchPreview}
+          stats={researchStats}
+        />
       </Section>
     </>
   );

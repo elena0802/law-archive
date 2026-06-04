@@ -1,7 +1,14 @@
 import Link from "next/link";
-import type { ResearchSummaryStats } from "@/src/lib/research";
+import { HomeSectionHeader } from "@/components/home/home-section-header";
+import {
+  formatResearchDate,
+  getCategoryLabel,
+  type ResearchSummaryStats,
+} from "@/src/lib/research";
+import type { ResearchItem } from "@/src/types/research";
 
 type HomeResearchArchiveSummaryProps = {
+  previewItems: readonly ResearchItem[];
   stats: ResearchSummaryStats;
 };
 
@@ -19,45 +26,74 @@ const summaryItems: {
 ];
 
 export function HomeResearchArchiveSummary({
+  previewItems,
   stats,
 }: HomeResearchArchiveSummaryProps) {
   return (
     <section aria-labelledby="home-research-summary-heading">
-      <h2
-        id="home-research-summary-heading"
-        className="text-keep font-serif text-3xl leading-tight text-ink sm:text-4xl"
-      >
-        연구 아카이브
-      </h2>
-      <p className="text-keep mt-4 text-base leading-[1.85] text-ink-muted">
-        1991년부터 이어온 형사법 연구의 기록입니다.
-      </p>
-      <dl className="mt-8 grid gap-4 sm:grid-cols-2">
+      <HomeSectionHeader
+        description="1991년부터 이어온 형사법 연구의 기록입니다."
+        headingId="home-research-summary-heading"
+        title="연구 아카이브"
+      />
+
+      <dl className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {summaryItems.map((entry) => (
           <div
             key={entry.key}
-            className="border border-line/80 bg-paper px-5 py-4"
+            className="border border-line/80 bg-paper px-4 py-3"
           >
-            <dt className="text-sm text-ink-muted">{entry.label}</dt>
-            <dd className="mt-2 font-serif text-3xl tabular-nums text-ink">
+            <dt className="text-xs text-ink-muted">{entry.label}</dt>
+            <dd className="mt-1.5 font-serif text-2xl tabular-nums text-ink">
               {stats[entry.key]}
-              <span className="ml-1 text-base font-sans text-ink-muted">
+              <span className="ml-0.5 text-sm font-sans text-ink-muted">
                 {entry.suffix}
               </span>
             </dd>
           </div>
         ))}
         {stats.yearRange ? (
-          <div className="border border-line/80 bg-paper px-5 py-4 sm:col-span-2">
-            <dt className="text-sm text-ink-muted">연구 기간</dt>
-            <dd className="mt-2 font-serif text-3xl tabular-nums text-ink">
+          <div className="border border-line/80 bg-paper px-4 py-3">
+            <dt className="text-xs text-ink-muted">연구 기간</dt>
+            <dd className="mt-1.5 font-serif text-2xl tabular-nums text-ink">
               {stats.yearRange}
             </dd>
           </div>
         ) : null}
       </dl>
+
+      {previewItems.length > 0 ? (
+        <div className="mt-10">
+          <h3 className="text-xs tracking-[0.1em] text-ink-muted uppercase">
+            대표 논문
+          </h3>
+          <ul className="mt-4 list-none divide-y divide-line/80 border-y border-line/80 p-0">
+            {previewItems.map((item) => {
+              const yearLabel = formatResearchDate(item.year, item.month);
+              const fieldLabel = getCategoryLabel(item.category);
+
+              return (
+                <li key={item.number}>
+                  <Link
+                    className="group flex flex-col gap-1.5 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
+                    href={`/research/${item.number}`}
+                  >
+                    <span className="text-keep min-w-0 font-serif text-base leading-snug text-ink group-hover:text-accent">
+                      {item.title}
+                    </span>
+                    <span className="text-keep shrink-0 text-sm text-ink-muted">
+                      {[yearLabel, fieldLabel].filter(Boolean).join(" · ")}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : null}
+
       <Link
-        className="mt-6 inline-block text-sm text-accent underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+        className="mt-8 inline-block text-sm text-accent underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         href="/research"
       >
         연구업적 보기

@@ -1,13 +1,13 @@
+import { HomeSectionHeader } from "@/components/home/home-section-header";
+
 export function HomeAiNotes() {
   return (
     <section aria-labelledby="home-ai-notes-heading">
-      <h2
-        id="home-ai-notes-heading"
-        className="text-keep font-serif text-3xl leading-tight text-ink sm:text-4xl"
-      >
-        AI와 함께 쓰는 연구 노트
-      </h2>
-      <div className="text-keep mt-6 max-w-2xl space-y-5 text-base leading-[1.9] text-ink-muted">
+      <HomeSectionHeader
+        headingId="home-ai-notes-heading"
+        title="AI와 함께 쓰는 연구 노트"
+      />
+      <div className="text-keep mt-10 max-w-2xl space-y-5 text-base leading-[1.9] text-ink-muted">
         <p>
           이 아카이브는 AI를 활용하여 글을 작성하고, 연구를 정리하며, 생각을
           기록하는 실험이기도 합니다.
