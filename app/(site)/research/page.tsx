@@ -11,9 +11,6 @@ import {
   getResearchAreaCounts,
   getResearchSummaryStats,
   sortByPublicationNumber,
-  sortByPublicationRecency,
-  sortImportantPublicationPreview,
-  sortRepresentativeTimeline,
 } from "@/src/lib/research";
 import { researchPagePath } from "@/lib/research-record";
 import { siteConfig } from "@/lib/site";
@@ -44,10 +41,14 @@ export default function ResearchPage() {
   const featured = sortByPublicationNumber(items).filter(
     (item) => item.isRepresentative,
   );
-  const importantPreview = sortImportantPublicationPreview(items);
-  const timeline = sortRepresentativeTimeline(items);
-  const completeByRecency = sortByPublicationRecency(items);
-  const completePreview = completeByRecency.slice(0, 10);
+  const importantPublications = sortByPublicationNumber(
+    items.filter((item) => item.isImportant),
+  );
+  const timeline = sortByPublicationNumber(
+    items.filter((item) => item.isRepresentative),
+  );
+  const completeByNumber = sortByPublicationNumber(items);
+  const completePreview = completeByNumber.slice(0, 10);
 
   return (
     <>
@@ -68,10 +69,10 @@ export default function ResearchPage() {
           <ResearchSummary stats={stats} />
           <FeaturedPublications items={featured} />
           <ResearchAreas areas={areas} />
-          <SelectedImportantPublications items={importantPreview} />
+          <SelectedImportantPublications items={importantPublications} />
           <ResearchTimeline items={timeline} />
           <ExpandablePublicationList
-            items={completeByRecency}
+            items={completeByNumber}
             previewItems={completePreview}
           />
         </div>

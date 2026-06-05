@@ -1,3 +1,4 @@
+import { getResearchPublicationCategory } from "@/src/data/research-publication-categories";
 import { applyResearchFlags, resolveResearchCategory } from "@/src/lib/research";
 import type { ResearchItem } from "@/src/types/research";
 
@@ -1066,7 +1067,10 @@ const researchItemSamples: ResearchItem[] = [
   }];
 
 export const researchItems: ResearchItem[] = applyResearchFlags(
-  researchItemSamples,
+  researchItemSamples.map((item) => ({
+    ...item,
+    category: getResearchPublicationCategory(item.number),
+  })),
   {
     representativeNumbers: representativePaperNumbers,
     importantNumbers: importantPaperNumbers,

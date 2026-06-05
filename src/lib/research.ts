@@ -2,24 +2,25 @@ import type { ResearchCategory, ResearchItem } from "@/src/types/research";
 import { researchCategoryMeta } from "@/src/types/research";
 
 /** Display labels for the research archive UI (PR46.5-B). */
-export const researchCategoryUiLabels: Record<ResearchCategory, string> = {
-  "criminal-law-theory": "형법이론",
+export const researchCategoryUiLabels: Record<
+  Exclude<ResearchCategory, "other">,
+  string
+> = {
+  "criminal-law-theory": "형법 이론",
   "criminal-procedure": "형사소송법",
   "evidence-law": "증거법",
   "criminal-policy": "형사정책",
   "international-criminal-law": "국제형사법",
   "legal-education": "법학교육",
-  other: "기타",
 };
 
-const categoryOrder: ResearchCategory[] = [
+const categoryOrder: Exclude<ResearchCategory, "other">[] = [
   "criminal-law-theory",
   "criminal-procedure",
   "evidence-law",
   "criminal-policy",
   "international-criminal-law",
   "legal-education",
-  "other",
 ];
 
 export type ResearchSummaryStats = {
@@ -57,7 +58,11 @@ export function formatResearchYearRange(
 export function getResearchSummaryStats(
   items: readonly ResearchItem[],
 ): ResearchSummaryStats {
-  const categories = new Set(items.map((item) => item.category));
+  const categories = new Set(
+    items
+      .map((item) => item.category)
+      .filter((category) => category !== "other"),
+  );
 
   return {
     totalPublications: items.length,
@@ -132,16 +137,18 @@ export function getResearchAreaCounts(
   const counts = new Map<ResearchCategory, number>();
 
   for (const item of items) {
+    if (item.category === "other") {
+      continue;
+    }
+
     counts.set(item.category, (counts.get(item.category) ?? 0) + 1);
   }
 
-  return categoryOrder
-    .filter((category) => counts.has(category))
-    .map((category) => ({
-      category,
-      label: researchCategoryUiLabels[category],
-      count: counts.get(category) ?? 0,
-    }));
+  return categoryOrder.map((category) => ({
+    category,
+    label: researchCategoryUiLabels[category],
+    count: counts.get(category) ?? 0,
+  }));
 }
 
 export function groupResearchByYear(
@@ -184,6 +191,10 @@ export function formatResearchDate(year?: number, month?: number): string | null
 }
 
 export function getCategoryLabel(category: ResearchCategory): string {
+  if (category === "other") {
+    return researchCategoryUiLabels["criminal-law-theory"];
+  }
+
   return researchCategoryUiLabels[category];
 }
 
