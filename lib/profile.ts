@@ -25,6 +25,7 @@ export type ProfileBook = {
   year: number;
   pages?: number;
   note?: string;
+  coverImage?: string;
 };
 
 export type ProfileBooksSection = {
