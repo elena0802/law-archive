@@ -30,10 +30,10 @@ export function GuestbookForm() {
   );
 
   return (
-    <form action={formAction} className="border-t border-line pt-8">
+    <form action={formAction}>
       {state.status === "success" || state.status === "error" ? (
         <p
-          className="text-keep mb-6 text-sm leading-7 text-ink-muted"
+          className="text-keep mb-6 whitespace-pre-wrap text-sm leading-7 text-ink-muted"
           role={state.status === "error" ? "alert" : "status"}
         >
           {state.message}

@@ -1,3 +1,4 @@
+import { GuestbookEntryDelete } from "@/components/guestbook-entry-delete";
 import { formatGuestbookDate, type GuestbookEntry } from "@/lib/guestbook";
 
 type GuestbookEntryListProps = {
@@ -16,9 +17,17 @@ function GuestbookEntryItem({ entry }: { entry: GuestbookEntry }) {
       <p className="text-keep mt-4 whitespace-pre-wrap text-base leading-8 text-ink">
         {entry.content}
       </p>
-      <p className="text-keep mt-4 text-sm leading-6 text-ink-muted">
-        {formatGuestbookDate(entry.createdAt)}
-      </p>
+      <div className="text-keep mt-4 text-sm leading-6 text-ink-muted">
+        <span>{formatGuestbookDate(entry.createdAt)}</span>
+        {entry.authorDeleteSupported ? (
+          <>
+            <span aria-hidden className="mx-1.5 text-line">
+              ·
+            </span>
+            <GuestbookEntryDelete entryId={entry.id} />
+          </>
+        ) : null}
+      </div>
     </article>
   );
 }

@@ -1,8 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createGuestbookEntry } from "@/lib/guestbook";
-import type { GuestbookActionState } from "@/lib/guestbook-action-state";
+import {
+  createGuestbookEntry,
+  deleteGuestbookEntryWithPassword,
+} from "@/lib/guestbook";
+import type {
+  GuestbookActionState,
+  GuestbookDeleteActionState,
+} from "@/lib/guestbook-action-state";
 
 export async function submitGuestbookEntry(
   _prevState: GuestbookActionState,
@@ -36,6 +42,35 @@ export async function submitGuestbookEntry(
 
   return {
     status: "success",
-    message: "안부가 등록되었습니다. 확인 후 게시됩니다.",
+    message:
+      "안부가 등록되었습니다.\n\n남겨주신 글이 안부의 글에 게시되었습니다.\n소중한 말씀 감사합니다.",
+  };
+}
+
+export async function deleteGuestbookEntry(
+  _prevState: GuestbookDeleteActionState,
+  formData: FormData,
+): Promise<GuestbookDeleteActionState> {
+  const entryId = String(formData.get("entry_id") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+
+  const result = await deleteGuestbookEntryWithPassword(entryId, password);
+
+  if (!result.ok) {
+    return {
+      status: "error",
+      message: result.error,
+    };
+  }
+
+  try {
+    revalidatePath("/guestbook");
+  } catch (error) {
+    console.error("[deleteGuestbookEntry] revalidatePath failed:", error);
+  }
+
+  return {
+    status: "success",
+    message: "안부가 삭제되었습니다.",
   };
 }

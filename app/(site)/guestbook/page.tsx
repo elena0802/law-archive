@@ -49,9 +49,10 @@ export default async function GuestbookPage() {
         <h1 className="text-keep font-serif text-4xl leading-[1.12] text-ink sm:text-5xl">
           안부의 글
         </h1>
-        <p className="text-keep mt-7 text-lg leading-9 text-ink-muted">
-          오랜 동료, 제자, 법조인, 독자 여러분의 안부와 생각을 남겨주세요.
-        </p>
+        <div className="text-keep mt-7 space-y-3 text-lg leading-9 text-ink-muted">
+          <p>오랜 동료와 제자, 법조인, 그리고 독자 여러분의 안부를 기다립니다.</p>
+          <p>짧은 인사 한마디도 반갑게 읽겠습니다.</p>
+        </div>
       </header>
 
       {!guestbookAvailable ? (
@@ -60,16 +61,12 @@ export default async function GuestbookPage() {
         </p>
       ) : (
         <>
-          <div className="mt-14">
-            <GuestbookForm />
-          </div>
-
           <section aria-labelledby="guestbook-entries-heading" className="mt-14">
             <h2
               className="text-xs tracking-[0.14em] text-accent uppercase"
               id="guestbook-entries-heading"
             >
-              남겨진 안부
+              최근 안부
             </h2>
             {loadFailed ? (
               <p className="text-keep mt-6 text-base leading-8 text-ink-muted">
@@ -78,6 +75,21 @@ export default async function GuestbookPage() {
             ) : (
               <GuestbookEntryList entries={entries} />
             )}
+          </section>
+
+          <section
+            aria-labelledby="guestbook-form-heading"
+            className="mt-14 border-t border-line pt-8"
+          >
+            <h2
+              className="text-xs tracking-[0.14em] text-accent uppercase"
+              id="guestbook-form-heading"
+            >
+              안부 남기기
+            </h2>
+            <div className="mt-6">
+              <GuestbookForm />
+            </div>
           </section>
         </>
       )}
