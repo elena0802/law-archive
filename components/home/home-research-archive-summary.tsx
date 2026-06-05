@@ -93,9 +93,9 @@ export function HomeResearchArchiveSummary({
         </div>
       ) : null}
 
-      <div className="mt-8">
+      <div className="mt-10">
         <p className="text-keep text-base leading-[1.85] text-ink-muted">
-          전체 논문, 연구 연표, 대표 연구를 확인할 수 있습니다.
+          논문별 상세 기록과 전체 아카이브를 이어서 볼 수 있습니다.
         </p>
         <HomeSectionLink className="mt-3" href="/research">
           연구업적 보기 →

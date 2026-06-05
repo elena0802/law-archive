@@ -16,7 +16,7 @@ export function HomeFeaturedSeries({ series }: HomeFeaturedSeriesProps) {
         title="대표 연재"
       />
       {series.length > 0 ? (
-        <ul className="mt-12 grid list-none gap-6 p-0 sm:grid-cols-2 lg:gap-8">
+        <ul className="mt-12 grid list-none gap-6 p-0 sm:grid-cols-2 sm:gap-7 lg:gap-8">
           {series.map((item) => (
             <li key={item.slug} className="min-w-0">
               <SeriesEditorialCard series={item} />

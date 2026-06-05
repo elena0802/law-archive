@@ -16,7 +16,7 @@ export function HomeRecentWriting({ essays }: HomeRecentWritingProps) {
         title="최근 글"
       />
       {essays.length > 0 ? (
-        <ul className="mt-12 grid list-none gap-8 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
+        <ul className="mt-12 grid list-none gap-6 p-0 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3 lg:gap-10">
           {essays.map((essay) => (
             <li key={essay.slug} className="min-w-0">
               <EssayEditorialCard essay={essay} />

@@ -30,7 +30,7 @@ export function HomeAiNotes({ tracks }: HomeAiNotesProps) {
             </h2>
 
             <div className="text-keep mt-8 space-y-6 text-base leading-[1.9] text-ink-muted">
-              <p>35년간 형사법을 연구하고 가르쳐 왔습니다.</p>
+              <p>강의를 마친 뒤에도, 판례와 제도에 대한 질문은 계속됩니다.</p>
               <p>
                 이제는 AI를 활용하여
                 <br />
@@ -41,9 +41,9 @@ export function HomeAiNotes({ tracks }: HomeAiNotesProps) {
                 새로운 질문을 탐구하고 있습니다.
               </p>
               <p>
-                이 공간은 과거 연구를 보관하는 아카이브인 동시에,
+                이 공간은 과거 연구를 보관하는 아카이브이면서,
                 <br />
-                AI와 함께 새로운 생각을 기록하는 디지털 연구 노트입니다.
+                AI와 함께 질문을 이어가는 연구 노트입니다.
               </p>
             </div>
 

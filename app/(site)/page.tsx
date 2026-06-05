@@ -39,7 +39,7 @@ const HOME_FEATURED_SERIES_TITLES = [
 ] as const;
 
 const HOME_SECTION_CLASS =
-  "border-t border-line !py-[clamp(5.5rem,11vw,9.5rem)]";
+  "border-t border-line !py-[clamp(4.75rem,10vw,9.5rem)]";
 
 export default async function Home() {
   const [allSeries, essays] = await Promise.all([getAllSeries(), getAllEssays()]);

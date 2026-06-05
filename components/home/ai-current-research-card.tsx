@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { homeSectionLinkClassName } from "@/components/home/home-section-link";
 import type { AiResearchTrack } from "@/lib/home-ai-research-tracks";
 import { getAiResearchCoverSrc } from "@/lib/home-images";
 
@@ -75,10 +76,7 @@ export function AiCurrentResearchCard({ track }: AiCurrentResearchCardProps) {
             <p key={paragraph}>{paragraph}</p>
           ))}
         </div>
-        <Link
-          className="mt-5 inline-block border-b border-accent/70 pb-0.5 text-sm text-accent transition-colors hover:border-accent hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-          href={track.href}
-        >
+        <Link className={`mt-5 ${homeSectionLinkClassName}`} href={track.href}>
           연재 보기 →
         </Link>
       </div>
