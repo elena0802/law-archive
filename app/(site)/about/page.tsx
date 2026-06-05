@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AboutResearchLink } from "@/components/about-research-link";
 import { AboutContactSection } from "@/components/about-contact-section";
 import { AboutSection } from "@/components/about-section";
 import { JsonLd } from "@/components/json-ld";
@@ -72,6 +73,7 @@ export default function AboutPage() {
           section={profile.selectedBooks}
           intro={profile.selectedBooks.intro}
         />
+        <AboutResearchLink />
         <ProfileNarrative section={profile.whyArchive} />
         <AboutContactSection />
       </div>

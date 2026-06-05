@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Section } from "@/components/section";
 import { ExpandablePublicationList } from "@/src/components/research/expandable-publication-list";
 import { FeaturedPublications } from "@/src/components/research/featured-publications";
+import { ResearchAboutLink } from "@/src/components/research/research-about-link";
 import { ResearchAreas } from "@/src/components/research/research-areas";
 import { ResearchRepresentativeBooks } from "@/src/components/research/research-representative-books";
 import { ResearchSummary } from "@/src/components/research/research-summary";
@@ -64,6 +65,7 @@ export default function ResearchPage() {
       <Section size="reading" className="border-t border-line py-page">
         <div className="space-y-12">
           <ResearchSummary stats={stats} />
+          <ResearchAboutLink />
           <ResearchAreas areas={areas} />
           <ResearchRepresentativeBooks />
           <FeaturedPublications items={featured} />
