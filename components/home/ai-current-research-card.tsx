@@ -37,7 +37,7 @@ function AiResearchVisualHeader({ track }: { track: AiResearchTrack }) {
 
   if (coverSrc) {
     return (
-      <div className="relative -mx-6 mb-5 h-28 overflow-hidden rounded-t-sm bg-paper-muted sm:-mx-7 sm:h-32">
+      <div className="relative h-28 overflow-hidden rounded-t-sm bg-paper-muted sm:h-32">
         <Image
           alt=""
           className="h-full w-full object-cover object-center"
@@ -52,7 +52,7 @@ function AiResearchVisualHeader({ track }: { track: AiResearchTrack }) {
   return (
     <div
       aria-hidden
-      className="mb-5 -mx-6 flex h-28 items-center justify-center bg-paper-muted/80 sm:-mx-7 sm:h-32"
+      className="flex h-28 items-center justify-center rounded-t-sm bg-paper-muted/80 sm:h-32"
     >
       <AiResearchTrackIcon />
     </div>
@@ -61,25 +61,27 @@ function AiResearchVisualHeader({ track }: { track: AiResearchTrack }) {
 
 export function AiCurrentResearchCard({ track }: AiCurrentResearchCardProps) {
   return (
-    <article className="flex h-full flex-col border border-line bg-paper/90 px-6 py-5 sm:px-7 sm:py-6">
+    <article className="flex h-full flex-col overflow-hidden border border-line bg-paper/90">
       <AiResearchVisualHeader track={track} />
-      <p className="text-xs tracking-[0.12em] text-accent uppercase">
-        현재 진행 중
-      </p>
-      <h3 className="text-keep mt-2 font-serif text-2xl leading-snug text-ink">
-        {track.title}
-      </h3>
-      <div className="text-keep mt-3 flex-1 space-y-3 text-sm leading-[1.85] text-ink-muted">
-        {track.description.map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
-        ))}
+      <div className="flex flex-1 flex-col px-6 py-5 sm:px-7 sm:py-6">
+        <p className="text-xs tracking-[0.12em] text-accent uppercase">
+          현재 진행 중
+        </p>
+        <h3 className="text-keep mt-2 font-serif text-2xl leading-snug text-ink">
+          {track.title}
+        </h3>
+        <div className="text-keep mt-3 flex-1 space-y-3 text-sm leading-[1.85] text-ink-muted">
+          {track.description.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </div>
+        <Link
+          className="mt-5 inline-block border-b border-accent/70 pb-0.5 text-sm text-accent transition-colors hover:border-accent hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          href={track.href}
+        >
+          연재 보기 →
+        </Link>
       </div>
-      <Link
-        className="mt-5 inline-block border-b border-accent/70 pb-0.5 text-sm text-accent transition-colors hover:border-accent hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-        href={track.href}
-      >
-        연재 보기 →
-      </Link>
     </article>
   );
 }
