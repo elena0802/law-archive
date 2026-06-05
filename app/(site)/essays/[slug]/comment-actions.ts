@@ -1,7 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { createComment, deleteCommentWithPassword } from "@/lib/comments";
+import { revalidateEssayPath } from "@/lib/content/revalidate-essay-path";
 import type {
   CommentActionState,
   CommentDeleteActionState,
@@ -12,6 +12,7 @@ export async function submitComment(
   formData: FormData,
 ): Promise<CommentActionState> {
   const essaySlug = String(formData.get("essay_slug") ?? "").trim();
+  const parentIdRaw = String(formData.get("parent_id") ?? "").trim();
   const authorName = String(formData.get("author_name") ?? "");
   const authorAffiliation = String(formData.get("author_affiliation") ?? "");
   const content = String(formData.get("content") ?? "");
@@ -19,6 +20,7 @@ export async function submitComment(
 
   const result = await createComment({
     essaySlug,
+    parentId: parentIdRaw || null,
     authorName,
     authorAffiliation,
     content,
@@ -33,7 +35,7 @@ export async function submitComment(
     };
   }
 
-  revalidatePath(`/essays/${essaySlug}`);
+  revalidateEssayPath(essaySlug);
 
   return {
     status: "success",
@@ -62,7 +64,7 @@ export async function deleteComment(
     };
   }
 
-  revalidatePath(`/essays/${essaySlug}`);
+  revalidateEssayPath(essaySlug);
 
   return {
     status: "success",

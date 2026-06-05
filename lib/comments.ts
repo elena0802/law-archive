@@ -4,9 +4,12 @@ import { createSupabaseServerClient } from "@/lib/supabase/server-ssr";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { requireSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
+export const MAX_COMMENT_DEPTH = 3;
+
 export type Comment = {
   id: string;
   essaySlug: string;
+  parentId: string | null;
   authorName: string | null;
   authorAffiliation: string | null;
   content: string;
@@ -16,13 +19,18 @@ export type Comment = {
   authorDeleteSupported: boolean;
 };
 
+export type CommentThread = Comment & {
+  replies: CommentThread[];
+};
+
 const PUBLIC_COMMENT_COLUMNS =
-  "id, essay_slug, author_name, author_affiliation, content, status, created_at, updated_at, password_hash" as const;
+  "id, essay_slug, parent_id, author_name, author_affiliation, content, status, created_at, updated_at, password_hash" as const;
 
 type CommentListRow = Pick<
   CommentRow,
   | "id"
   | "essay_slug"
+  | "parent_id"
   | "author_name"
   | "author_affiliation"
   | "content"
@@ -42,6 +50,7 @@ function mapCommentRow(row: CommentListRow): Comment {
   return {
     id: row.id,
     essaySlug: row.essay_slug,
+    parentId: row.parent_id,
     authorName: row.author_name,
     authorAffiliation: row.author_affiliation,
     content: row.content,
@@ -50,6 +59,64 @@ function mapCommentRow(row: CommentListRow): Comment {
     updatedAt: row.updated_at,
     authorDeleteSupported: Boolean(row.password_hash),
   };
+}
+
+function buildCommentThreads(comments: Comment[]): CommentThread[] {
+  const nodes = new Map<string, CommentThread>(
+    comments.map((comment) => [comment.id, { ...comment, replies: [] }]),
+  );
+  const roots: CommentThread[] = [];
+
+  for (const comment of comments) {
+    const node = nodes.get(comment.id);
+    if (!node) {
+      continue;
+    }
+
+    if (comment.parentId) {
+      const parent = nodes.get(comment.parentId);
+      if (parent) {
+        parent.replies.push(node);
+        continue;
+      }
+    }
+
+    roots.push(node);
+  }
+
+  const sortByCreatedAt = (left: CommentThread, right: CommentThread) =>
+    left.createdAt.localeCompare(right.createdAt);
+
+  const sortReplies = (thread: CommentThread[]) => {
+    thread.sort(sortByCreatedAt);
+    for (const node of thread) {
+      sortReplies(node.replies);
+    }
+  };
+
+  sortReplies(roots);
+  return roots;
+}
+
+async function listApprovedCommentRowsByEssaySlug(essaySlug: string) {
+  const supabase = await createSupabaseServerClient();
+
+  if (!supabase) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("comments")
+    .select(PUBLIC_COMMENT_COLUMNS)
+    .eq("essay_slug", essaySlug)
+    .eq("status", "approved")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to load comments for "${essaySlug}": ${error.message}`);
+  }
+
+  return (data ?? []).map(mapCommentRow);
 }
 
 export function formatCommentDate(isoDate: string) {
@@ -74,28 +141,20 @@ export { hashCommentPassword, verifyCommentPassword } from "@/lib/comment-passwo
 export async function listApprovedCommentsByEssaySlug(
   essaySlug: string,
 ): Promise<Comment[]> {
-  const supabase = await createSupabaseServerClient();
+  const comments = await listApprovedCommentRowsByEssaySlug(essaySlug);
+  return comments.filter((comment) => comment.parentId === null);
+}
 
-  if (!supabase) {
-    return [];
-  }
-
-  const { data, error } = await supabase
-    .from("comments")
-    .select(PUBLIC_COMMENT_COLUMNS)
-    .eq("essay_slug", essaySlug)
-    .eq("status", "approved")
-    .order("created_at", { ascending: true });
-
-  if (error) {
-    throw new Error(`Failed to load comments for "${essaySlug}": ${error.message}`);
-  }
-
-  return (data ?? []).map(mapCommentRow);
+export async function listApprovedCommentThreadsByEssaySlug(
+  essaySlug: string,
+): Promise<CommentThread[]> {
+  const comments = await listApprovedCommentRowsByEssaySlug(essaySlug);
+  return buildCommentThreads(comments);
 }
 
 export type CreateCommentInput = {
   essaySlug: string;
+  parentId?: string | null;
   authorName?: string;
   authorAffiliation?: string;
   content: string;
@@ -107,7 +166,7 @@ export type CreateCommentResult =
   | {
       ok: false;
       error: string;
-      fieldErrors?: { content?: string; password?: string };
+      fieldErrors?: { content?: string; password?: string; parentId?: string };
     };
 
 export type DeleteCommentWithPasswordResult =
@@ -121,6 +180,47 @@ function normalizeOptionalText(value: string | undefined, maxLength: number) {
   }
 
   return trimmed.slice(0, maxLength);
+}
+
+async function fetchApprovedParentId(
+  supabase: NonNullable<Awaited<ReturnType<typeof createSupabaseServerClient>>>,
+  commentId: string,
+): Promise<string | null | undefined> {
+  const { data, error } = await supabase
+    .from("comments")
+    .select("parent_id")
+    .eq("id", commentId)
+    .eq("status", "approved")
+    .maybeSingle();
+
+  if (error || !data) {
+    return undefined;
+  }
+
+  return data.parent_id;
+}
+
+async function getApprovedCommentDepth(
+  supabase: NonNullable<Awaited<ReturnType<typeof createSupabaseServerClient>>>,
+  commentId: string,
+): Promise<number | null> {
+  let currentId: string | null = commentId;
+
+  for (let depth = 1; depth <= MAX_COMMENT_DEPTH; depth += 1) {
+    const parentId = await fetchApprovedParentId(supabase, currentId);
+
+    if (parentId === undefined) {
+      return null;
+    }
+
+    if (!parentId) {
+      return depth;
+    }
+
+    currentId = parentId;
+  }
+
+  return MAX_COMMENT_DEPTH;
 }
 
 export async function createComment(
@@ -138,6 +238,7 @@ export async function createComment(
   const essaySlug = input.essaySlug.trim();
   const content = input.content.trim();
   const password = input.password;
+  const parentId = input.parentId?.trim() || null;
 
   if (!essaySlug) {
     return { ok: false, error: "글 정보를 확인할 수 없습니다." };
@@ -177,8 +278,60 @@ export async function createComment(
     };
   }
 
+  if (parentId) {
+    const { data: parent, error: parentError } = await supabase
+      .from("comments")
+      .select("id, essay_slug, status")
+      .eq("id", parentId)
+      .maybeSingle();
+
+    if (parentError || !parent) {
+      return {
+        ok: false,
+        error: "답글 대상 댓글을 찾을 수 없습니다.",
+        fieldErrors: { parentId: "답글 대상 댓글을 찾을 수 없습니다." },
+      };
+    }
+
+    if (parent.essay_slug !== essaySlug) {
+      return {
+        ok: false,
+        error: "같은 글에 속한 댓글에만 답글을 달 수 있습니다.",
+        fieldErrors: { parentId: "같은 글에 속한 댓글에만 답글을 달 수 있습니다." },
+      };
+    }
+
+    if (parent.status !== "approved") {
+      return {
+        ok: false,
+        error: "승인된 댓글에만 답글을 달 수 있습니다.",
+        fieldErrors: { parentId: "승인된 댓글에만 답글을 달 수 있습니다." },
+      };
+    }
+
+    const parentDepth = await getApprovedCommentDepth(supabase, parentId);
+    if (parentDepth === null) {
+      return {
+        ok: false,
+        error: "답글 대상 댓글을 확인할 수 없습니다.",
+        fieldErrors: { parentId: "답글 대상 댓글을 확인할 수 없습니다." },
+      };
+    }
+
+    if (parentDepth >= MAX_COMMENT_DEPTH) {
+      return {
+        ok: false,
+        error: `답글은 최대 ${MAX_COMMENT_DEPTH}단계까지만 작성할 수 있습니다.`,
+        fieldErrors: {
+          parentId: `답글은 최대 ${MAX_COMMENT_DEPTH}단계까지만 작성할 수 있습니다.`,
+        },
+      };
+    }
+  }
+
   const row: CommentInsert = {
     essay_slug: essaySlug,
+    parent_id: parentId,
     author_name: normalizeOptionalText(input.authorName, MAX_NAME_LENGTH),
     author_affiliation: normalizeOptionalText(
       input.authorAffiliation,

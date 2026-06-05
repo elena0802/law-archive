@@ -8,6 +8,7 @@ export type CommentListFilter = "all" | CommentStatus;
 export type AdminComment = {
   id: string;
   essaySlug: string;
+  parentId: string | null;
   essayTitle: string | null;
   authorName: string | null;
   authorAffiliation: string | null;
@@ -24,6 +25,7 @@ function mapCommentRow(
   return {
     id: row.id,
     essaySlug: row.essay_slug,
+    parentId: row.parent_id,
     essayTitle: essayTitleBySlug.get(row.essay_slug) ?? null,
     authorName: row.author_name,
     authorAffiliation: row.author_affiliation,

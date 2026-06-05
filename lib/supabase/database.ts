@@ -47,7 +47,15 @@ export type Database = {
         Row: CommentRow;
         Insert: CommentInsert;
         Update: Partial<CommentInsert>;
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "comments_parent_id_fkey";
+            columns: ["parent_id"];
+            isOneToOne: false;
+            referencedRelation: "comments";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       newsletter_subscribers: {
         Row: NewsletterSubscriberRow;

@@ -56,6 +56,7 @@ export type CommentStatus = "pending" | "approved" | "rejected";
 export type CommentRow = {
   id: string;
   essay_slug: string;
+  parent_id: string | null;
   author_name: string | null;
   author_affiliation: string | null;
   content: string;
@@ -67,6 +68,7 @@ export type CommentRow = {
 
 export type CommentInsert = {
   essay_slug: string;
+  parent_id?: string | null;
   author_name?: string | null;
   author_affiliation?: string | null;
   content: string;
