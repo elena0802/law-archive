@@ -37,12 +37,12 @@ function AiResearchVisualHeader({ track }: { track: AiResearchTrack }) {
 
   if (coverSrc) {
     return (
-      <div className="relative mb-4 h-14 overflow-hidden border-b border-line/60 bg-paper-muted">
+      <div className="relative -mx-6 mb-5 h-28 overflow-hidden rounded-t-sm bg-paper-muted sm:-mx-7 sm:h-32">
         <Image
           alt=""
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover object-center"
           fill
-          sizes="280px"
+          sizes="(min-width: 640px) 320px, 100vw"
           src={coverSrc}
         />
       </div>
@@ -52,7 +52,7 @@ function AiResearchVisualHeader({ track }: { track: AiResearchTrack }) {
   return (
     <div
       aria-hidden
-      className="mb-4 flex h-14 items-center border-b border-line/60 bg-paper-muted/80 px-1"
+      className="mb-5 -mx-6 flex h-28 items-center justify-center bg-paper-muted/80 sm:-mx-7 sm:h-32"
     >
       <AiResearchTrackIcon />
     </div>

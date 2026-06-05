@@ -21,6 +21,18 @@ function resolveHomeImageSrc(
   return null;
 }
 
+const SERIES_COVER_BASENAME_OVERRIDES: Record<string, string> = {
+  // Supabase/MDX series slugs are generated from Korean titles, but some
+  // image assets use stable English basenames.
+  "형사법-교수로-산다는-것": "life-as-criminal-law-professor",
+  "사법시험-출제위원을-하며-느낀-것": "ai-and-criminal-law",
+};
+
+const AI_RESEARCH_COVER_BASENAME_OVERRIDES: Record<string, string> = {
+  // Expected asset might be missing; fall back to an existing real cover.
+  "ai-and-criminal-law": "legal-education-and-ai",
+};
+
 /** `public/images/essays/{slug}.{jpg|jpeg|png|webp}` */
 export function getEssayCoverSrc(slug: string): string | null {
   return resolveHomeImageSrc("essays", slug);
@@ -28,10 +40,22 @@ export function getEssayCoverSrc(slug: string): string | null {
 
 /** `public/images/series/{slug}.{jpg|jpeg|png|webp}` */
 export function getSeriesCoverSrc(slug: string): string | null {
-  return resolveHomeImageSrc("series", slug);
+  const direct = resolveHomeImageSrc("series", slug);
+  if (direct) {
+    return direct;
+  }
+
+  const override = SERIES_COVER_BASENAME_OVERRIDES[slug];
+  return override ? resolveHomeImageSrc("series", override) : null;
 }
 
 /** `public/images/ai-research/{imageKey}.{jpg|jpeg|png|webp}` */
 export function getAiResearchCoverSrc(imageKey: string): string | null {
-  return resolveHomeImageSrc("ai-research", imageKey);
+  const direct = resolveHomeImageSrc("ai-research", imageKey);
+  if (direct) {
+    return direct;
+  }
+
+  const override = AI_RESEARCH_COVER_BASENAME_OVERRIDES[imageKey];
+  return override ? resolveHomeImageSrc("ai-research", override) : null;
 }
