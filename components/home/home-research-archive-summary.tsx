@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HomeSectionHeader } from "@/components/home/home-section-header";
+import { HomeSectionLink } from "@/components/home/home-section-link";
 import {
   formatResearchDate,
   getCategoryLabel,
@@ -32,7 +33,7 @@ export function HomeResearchArchiveSummary({
   return (
     <section aria-labelledby="home-research-summary-heading">
       <HomeSectionHeader
-        description="1991년부터 이어온 형사법 연구의 기록입니다."
+        description="1991년부터 이어온 형사법 연구의 기록입니다. 대표 논문, 연구 연표, 전체 연구업적을 살펴볼 수 있습니다."
         headingId="home-research-summary-heading"
         title="연구 아카이브"
       />
@@ -75,13 +76,13 @@ export function HomeResearchArchiveSummary({
               return (
                 <li key={item.number}>
                   <Link
-                    className="group flex flex-col gap-1.5 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
+                    className="group block py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
                     href={`/research/${item.number}`}
                   >
-                    <span className="text-keep min-w-0 font-serif text-base leading-snug text-ink group-hover:text-accent">
+                    <span className="text-keep font-serif text-base leading-snug text-ink group-hover:text-accent">
                       {item.title}
                     </span>
-                    <span className="text-keep shrink-0 text-sm text-ink-muted">
+                    <span className="text-keep mt-1.5 block text-sm text-ink-muted">
                       {[yearLabel, fieldLabel].filter(Boolean).join(" · ")}
                     </span>
                   </Link>
@@ -92,12 +93,14 @@ export function HomeResearchArchiveSummary({
         </div>
       ) : null}
 
-      <Link
-        className="mt-8 inline-block text-sm text-accent underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-        href="/research"
-      >
-        연구업적 보기
-      </Link>
+      <div className="mt-8">
+        <p className="text-keep text-base leading-[1.85] text-ink-muted">
+          전체 논문, 연구 연표, 대표 연구를 확인할 수 있습니다.
+        </p>
+        <HomeSectionLink className="mt-3" href="/research">
+          연구업적 보기 →
+        </HomeSectionLink>
+      </div>
     </section>
   );
 }

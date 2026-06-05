@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { HomeSectionHeader } from "@/components/home/home-section-header";
+import { HomeSectionLink } from "@/components/home/home-section-link";
 import { SeriesEditorialCard } from "@/components/home/series-editorial-card";
 import type { EssaySeries } from "@/lib/essays";
 
@@ -28,12 +28,7 @@ export function HomeFeaturedSeries({ series }: HomeFeaturedSeriesProps) {
           아직 공개된 연재가 없습니다.
         </p>
       )}
-      <Link
-        className="mt-10 inline-block text-sm text-accent underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-        href="/series"
-      >
-        모든 연재 보기
-      </Link>
+      <HomeSectionLink href="/series">모든 연재 보기 →</HomeSectionLink>
     </section>
   );
 }

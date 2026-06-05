@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { EssayEditorialCard } from "@/components/home/essay-editorial-card";
+import { HomeSectionLink } from "@/components/home/home-section-link";
 import { HomeSectionHeader } from "@/components/home/home-section-header";
 import type { Essay } from "@/lib/essays";
 
@@ -28,12 +28,7 @@ export function HomeRecentWriting({ essays }: HomeRecentWritingProps) {
           아직 공개된 글이 없습니다.
         </p>
       )}
-      <Link
-        className="mt-10 inline-block text-sm text-accent underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-        href="/essays"
-      >
-        모든 글 보기
-      </Link>
+      <HomeSectionLink href="/essays">모든 글 보기 →</HomeSectionLink>
     </section>
   );
 }
