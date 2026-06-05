@@ -1,55 +1,20 @@
-import { EssayCommentDelete } from "@/components/essay-comment-delete";
 import { EssayCommentForm } from "@/components/essay-comment-form";
+import { EssayCommentThreadList } from "@/components/essay-comment-thread-list";
 import {
-  formatCommentDate,
-  getCommentAuthorDisplayName,
-  listApprovedCommentsByEssaySlug,
-  type Comment,
+  listApprovedCommentThreadsByEssaySlug,
+  type CommentThread,
 } from "@/lib/comments";
 
 type EssayCommentsSectionProps = {
   essaySlug: string;
 };
 
-function CommentItem({
-  comment,
-  essaySlug,
-}: {
-  comment: Comment;
-  essaySlug: string;
-}) {
-  const authorName = getCommentAuthorDisplayName(comment.authorName);
-  const affiliation = comment.authorAffiliation?.trim();
-
-  return (
-    <li className="border-t border-line py-6 first:border-t-0">
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <p className="text-keep font-serif text-lg leading-snug text-ink">
-          {authorName}
-        </p>
-        {affiliation ? (
-          <p className="text-sm leading-6 text-ink-muted">{affiliation}</p>
-        ) : null}
-        <p className="text-sm leading-6 text-ink-muted">
-          {formatCommentDate(comment.createdAt)}
-        </p>
-        {comment.authorDeleteSupported ? (
-          <EssayCommentDelete commentId={comment.id} essaySlug={essaySlug} />
-        ) : null}
-      </div>
-      <p className="text-keep mt-4 whitespace-pre-wrap text-base leading-8 text-ink">
-        {comment.content}
-      </p>
-    </li>
-  );
-}
-
 export async function EssayCommentsSection({ essaySlug }: EssayCommentsSectionProps) {
-  let comments: Comment[] = [];
+  let threads: CommentThread[] = [];
   let loadFailed = false;
 
   try {
-    comments = await listApprovedCommentsByEssaySlug(essaySlug);
+    threads = await listApprovedCommentThreadsByEssaySlug(essaySlug);
   } catch (error) {
     console.error(`Failed to load comments for "${essaySlug}":`, error);
     loadFailed = true;
@@ -68,19 +33,11 @@ export async function EssayCommentsSection({ essaySlug }: EssayCommentsSectionPr
         <p className="text-keep mt-6 text-base leading-8 text-ink-muted">
           댓글을 불러오지 못했습니다.
         </p>
-      ) : comments.length > 0 ? (
-        <ul className="mt-6 list-none p-0">
-          {comments.map((comment) => (
-            <CommentItem
-              comment={comment}
-              essaySlug={essaySlug}
-              key={comment.id}
-            />
-          ))}
-        </ul>
+      ) : threads.length > 0 ? (
+        <EssayCommentThreadList essaySlug={essaySlug} threads={threads} />
       ) : (
         <p className="text-keep mt-6 text-base leading-8 text-ink-muted">
-          아직 댓글이 없습니다.
+          아직 댓글이 없습니다. 첫 번째 의견을 남겨 주세요.
         </p>
       )}
 

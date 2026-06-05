@@ -1,19 +1,24 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { submitComment } from "@/app/(site)/essays/[slug]/comment-actions";
 import {
   commentActionIdleState,
   type CommentActionState,
 } from "@/lib/comment-action-state";
 
-const fieldClassName =
+export const commentFieldClassName =
   "mt-3 w-full rounded border border-line bg-paper px-4 py-3 text-base text-ink outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/25";
 
-const labelClassName = "text-keep block text-sm font-medium text-ink";
+export const commentLabelClassName = "text-keep block text-sm font-medium text-ink";
 
 type EssayCommentFormProps = {
   essaySlug: string;
+  parentId?: string | null;
+  formId?: string;
+  variant?: "top-level" | "reply";
+  onCancel?: () => void;
+  onSuccess?: () => void;
 };
 
 function FieldError({ message }: { message?: string }) {
@@ -28,15 +33,34 @@ function FieldError({ message }: { message?: string }) {
   );
 }
 
-export function EssayCommentForm({ essaySlug }: EssayCommentFormProps) {
+export function EssayCommentForm({
+  essaySlug,
+  parentId = null,
+  formId = "comment",
+  variant = "top-level",
+  onCancel,
+  onSuccess,
+}: EssayCommentFormProps) {
   const [state, formAction, isPending] = useActionState(
     submitComment,
     commentActionIdleState satisfies CommentActionState,
   );
+  const isReply = variant === "reply";
+
+  useEffect(() => {
+    if (state.status === "success") {
+      onSuccess?.();
+    }
+  }, [state.status, onSuccess]);
+
+  const formClassName = isReply
+    ? "mt-3 border-t border-line/50 pt-3"
+    : "mt-8 border-t border-line pt-8";
 
   return (
-    <form action={formAction} className="mt-8 border-t border-line pt-8">
+    <form action={formAction} className={formClassName}>
       <input name="essay_slug" type="hidden" value={essaySlug} />
+      {parentId ? <input name="parent_id" type="hidden" value={parentId} /> : null}
 
       {state.status === "success" || state.status === "error" ? (
         <p
@@ -49,13 +73,13 @@ export function EssayCommentForm({ essaySlug }: EssayCommentFormProps) {
 
       <div className="space-y-6">
         <div>
-          <label className={labelClassName} htmlFor="author_name">
+          <label className={commentLabelClassName} htmlFor={`${formId}-author_name`}>
             이름 (선택)
           </label>
           <input
             autoComplete="name"
-            className={fieldClassName}
-            id="author_name"
+            className={commentFieldClassName}
+            id={`${formId}-author_name`}
             maxLength={80}
             name="author_name"
             type="text"
@@ -63,12 +87,15 @@ export function EssayCommentForm({ essaySlug }: EssayCommentFormProps) {
         </div>
 
         <div>
-          <label className={labelClassName} htmlFor="author_affiliation">
+          <label
+            className={commentLabelClassName}
+            htmlFor={`${formId}-author_affiliation`}
+          >
             소속 (선택)
           </label>
           <input
-            className={fieldClassName}
-            id="author_affiliation"
+            className={commentFieldClassName}
+            id={`${formId}-author_affiliation`}
             maxLength={120}
             name="author_affiliation"
             type="text"
@@ -76,28 +103,28 @@ export function EssayCommentForm({ essaySlug }: EssayCommentFormProps) {
         </div>
 
         <div>
-          <label className={labelClassName} htmlFor="content">
-            댓글 *
+          <label className={commentLabelClassName} htmlFor={`${formId}-content`}>
+            {isReply ? "답글 *" : "댓글 *"}
           </label>
           <textarea
-            className={`${fieldClassName} min-h-32 resize-y`}
-            id="content"
+            className={`${commentFieldClassName} min-h-32 resize-y`}
+            id={`${formId}-content`}
             maxLength={5000}
             name="content"
             required
-            rows={5}
+            rows={isReply ? 4 : 5}
           />
           <FieldError message={state.fieldErrors?.content} />
         </div>
 
         <div>
-          <label className={labelClassName} htmlFor="password">
+          <label className={commentLabelClassName} htmlFor={`${formId}-password`}>
             비밀번호 *
           </label>
           <input
             autoComplete="new-password"
-            className={fieldClassName}
-            id="password"
+            className={commentFieldClassName}
+            id={`${formId}-password`}
             minLength={4}
             name="password"
             required
@@ -110,13 +137,24 @@ export function EssayCommentForm({ essaySlug }: EssayCommentFormProps) {
         </div>
       </div>
 
-      <button
-        className="mt-6 border border-line px-4 py-2 text-sm text-ink transition hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-60"
-        disabled={isPending}
-        type="submit"
-      >
-        {isPending ? "등록 중…" : "댓글 등록"}
-      </button>
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <button
+          className="border border-line px-4 py-2 text-sm text-ink transition hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={isPending}
+          type="submit"
+        >
+          {isPending ? "등록 중…" : isReply ? "답글 등록" : "댓글 등록"}
+        </button>
+        {onCancel ? (
+          <button
+            className="text-sm text-ink-muted underline-offset-4 transition hover:text-ink hover:underline"
+            onClick={onCancel}
+            type="button"
+          >
+            취소
+          </button>
+        ) : null}
+      </div>
     </form>
   );
 }

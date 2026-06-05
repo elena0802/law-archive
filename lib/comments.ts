@@ -1,27 +1,24 @@
 import type { CommentInsert, CommentRow } from "@/lib/content/db-types";
 import { hashCommentPassword, verifyCommentPassword } from "@/lib/comment-password";
+import {
+  MAX_COMMENT_DEPTH,
+  type Comment,
+  type CommentThread,
+} from "@/lib/comment-types";
 import { createSupabaseServerClient } from "@/lib/supabase/server-ssr";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { requireSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
-export const MAX_COMMENT_DEPTH = 3;
-
-export type Comment = {
-  id: string;
-  essaySlug: string;
-  parentId: string | null;
-  authorName: string | null;
-  authorAffiliation: string | null;
-  content: string;
-  status: CommentRow["status"];
-  createdAt: string;
-  updatedAt: string;
-  authorDeleteSupported: boolean;
-};
-
-export type CommentThread = Comment & {
-  replies: CommentThread[];
-};
+export {
+  MAX_COMMENT_DEPTH,
+  type Comment,
+  type CommentThread,
+} from "@/lib/comment-types";
+export {
+  formatCommentDate,
+  getCommentAuthorDisplayName,
+  isArchiveAuthorComment,
+} from "@/lib/comment-display";
 
 const PUBLIC_COMMENT_COLUMNS =
   "id, essay_slug, parent_id, author_name, author_affiliation, content, status, created_at, updated_at, password_hash" as const;
@@ -117,19 +114,6 @@ async function listApprovedCommentRowsByEssaySlug(essaySlug: string) {
   }
 
   return (data ?? []).map(mapCommentRow);
-}
-
-export function formatCommentDate(isoDate: string) {
-  return new Intl.DateTimeFormat("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(new Date(isoDate));
-}
-
-export function getCommentAuthorDisplayName(authorName: string | null) {
-  const trimmed = authorName?.trim();
-  return trimmed ? trimmed : "익명";
 }
 
 export function isCommentsAvailable() {

@@ -15,11 +15,15 @@ const labelClassName = "text-keep block text-sm text-ink-muted";
 type EssayCommentDeleteProps = {
   commentId: string;
   essaySlug: string;
+  inline?: boolean;
+  className?: string;
 };
 
 export function EssayCommentDelete({
   commentId,
   essaySlug,
+  inline = false,
+  className,
 }: EssayCommentDeleteProps) {
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState(
@@ -27,10 +31,14 @@ export function EssayCommentDelete({
     commentDeleteActionIdleState satisfies CommentDeleteActionState,
   );
 
+  const buttonClassName =
+    className ??
+    "text-sm text-ink-muted underline-offset-4 transition hover:text-accent hover:underline";
+
   if (!open) {
     return (
       <button
-        className="text-sm text-ink-muted underline-offset-4 transition hover:text-accent hover:underline"
+        className={buttonClassName}
         onClick={() => setOpen(true)}
         type="button"
       >
@@ -40,7 +48,7 @@ export function EssayCommentDelete({
   }
 
   return (
-    <form action={formAction} className="mt-3 max-w-xs">
+    <form action={formAction} className={inline ? "mt-2 max-w-xs" : "mt-3 max-w-xs"}>
       <input name="comment_id" type="hidden" value={commentId} />
       <input name="essay_slug" type="hidden" value={essaySlug} />
 
