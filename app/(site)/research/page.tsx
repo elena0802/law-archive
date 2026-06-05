@@ -3,6 +3,7 @@ import { Section } from "@/components/section";
 import { ExpandablePublicationList } from "@/src/components/research/expandable-publication-list";
 import { FeaturedPublications } from "@/src/components/research/featured-publications";
 import { ResearchAreas } from "@/src/components/research/research-areas";
+import { ResearchRepresentativeBooks } from "@/src/components/research/research-representative-books";
 import { ResearchSummary } from "@/src/components/research/research-summary";
 import { ResearchTimeline } from "@/src/components/research/research-timeline";
 import { SelectedImportantPublications } from "@/src/components/research/selected-important-publications";
@@ -69,6 +70,7 @@ export default function ResearchPage() {
           <ResearchSummary stats={stats} />
           <FeaturedPublications items={featured} />
           <ResearchAreas areas={areas} />
+          <ResearchRepresentativeBooks />
           <SelectedImportantPublications items={importantPublications} />
           <ResearchTimeline items={timeline} />
           <ExpandablePublicationList
