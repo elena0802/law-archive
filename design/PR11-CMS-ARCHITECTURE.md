@@ -1,6 +1,6 @@
 # PR11 — CMS Architecture (Final, Pre-Implementation)
 
-**Project:** Criminal Law Archive · jinhocheon.com  
+**Project:** Criminal Law Archive · jurachun.com  
 **Phase:** 3 — CMS Foundation (PR11)  
 **Status:** **Approval document — no code in this PR**  
 **Date:** 2026-06-02  

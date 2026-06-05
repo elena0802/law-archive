@@ -36,10 +36,10 @@ Copy root `.env.example` to `.env.local` and set Supabase keys before admin or `
 
 In Supabase Dashboard → **Authentication** → **URL configuration**:
 
-- **Site URL:** your production origin (e.g. `https://jinhocheon.com`) or `http://localhost:3000` for local dev
+- **Site URL:** your production origin (e.g. `https://jurachun.com`) or `http://localhost:3000` for local dev
 - **Redirect URLs:** add  
   `http://localhost:3000/admin/auth/callback`  
-  `https://<your-domain>/admin/auth/callback`
+  `https://jurachun.com/admin/auth/callback`
 
 Set `ALLOWED_EDITOR_EMAIL` to the single admin address. Magic link login: `/admin/login`.
 

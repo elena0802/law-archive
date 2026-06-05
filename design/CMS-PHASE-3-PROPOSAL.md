@@ -1,6 +1,6 @@
 # Phase 3: CMS Foundation — Design Proposal
 
-**Project:** Criminal Law Archive (jinhocheon.com)  
+**Project:** Criminal Law Archive (jurachun.com)  
 **Audience:** Professor Cheon Jin-ho (sole author)  
 **Status:** Architecture proposal — **no implementation in this document**  
 **Date:** 2026-06-02  
