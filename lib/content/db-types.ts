@@ -76,6 +76,27 @@ export type CommentInsert = {
   password_hash?: string | null;
 };
 
+export type GuestbookEntryStatus = "pending" | "approved" | "rejected";
+
+export type GuestbookEntryRow = {
+  id: string;
+  name: string;
+  affiliation: string | null;
+  content: string;
+  password_hash: string | null;
+  status: GuestbookEntryStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+export type GuestbookEntryInsert = {
+  name: string;
+  affiliation?: string | null;
+  content: string;
+  status?: GuestbookEntryStatus;
+  password_hash?: string | null;
+};
+
 export type NewsletterSubscriberStatus = "active" | "unsubscribed";
 
 export type NewsletterSubscriberRow = {

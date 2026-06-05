@@ -5,6 +5,8 @@ import type {
   EssayRow,
   EssayStatus,
   EssayUpdate,
+  GuestbookEntryInsert,
+  GuestbookEntryRow,
   NewsletterSubscriberInsert,
   NewsletterSubscriberRow,
   SeriesRow,
@@ -56,6 +58,12 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      guestbook_entries: {
+        Row: GuestbookEntryRow;
+        Insert: GuestbookEntryInsert;
+        Update: Partial<GuestbookEntryInsert>;
+        Relationships: [];
       };
       newsletter_subscribers: {
         Row: NewsletterSubscriberRow;

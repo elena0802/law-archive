@@ -8,6 +8,7 @@ export const publicSitemapStaticPaths = [
   "/essays",
   "/series",
   "/categories",
+  "/guestbook",
   "/about",
 ] as const;
 
