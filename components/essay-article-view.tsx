@@ -145,6 +145,11 @@ export async function EssayArticleView({
             <MDXRemote source={essay.content} />
           </div>
 
+          <p className="text-keep mt-6 text-xs font-normal text-ink-muted">
+            이 글은 저자의 생각과 연구를 바탕으로 작성되었으며, AI는 편집 및
+            정리 과정에 활용되었습니다.
+          </p>
+
           {previousEssay || nextEssay ? (
             <nav
               aria-label="연재 이전 다음 글"
