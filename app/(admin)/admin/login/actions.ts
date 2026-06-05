@@ -1,9 +1,12 @@
 "use server";
 
 import { ADMIN_LOGIN_CONFIG_ERROR } from "@/lib/admin/admin-messages";
-import { normalizeEditorEmail } from "@/lib/auth/editor";
+import {
+  isAllowedEditorEmail,
+  isEditorAllowlistConfigured,
+  normalizeEditorEmail,
+} from "@/lib/auth/editor";
 import { getSiteOrigin } from "@/lib/site";
-import { getAllowedEditorEmail } from "@/lib/supabase/config";
 import { requireSupabaseServerClient } from "@/lib/supabase/server-ssr";
 
 export type LoginActionState = {
@@ -25,16 +28,15 @@ export async function sendMagicLink(
   }
 
   const email = normalizeEditorEmail(rawEmail);
-  const allowed = getAllowedEditorEmail();
 
-  if (!allowed) {
+  if (!isEditorAllowlistConfigured()) {
     return {
       status: "error",
       message: ADMIN_LOGIN_CONFIG_ERROR,
     };
   }
 
-  if (email !== allowed) {
+  if (!isAllowedEditorEmail(email)) {
     return {
       status: "error",
       message: "등록된 관리자 이메일만 로그인할 수 있습니다.",

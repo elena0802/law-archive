@@ -41,6 +41,8 @@ In Supabase Dashboard → **Authentication** → **URL configuration**:
   `http://localhost:3000/admin/auth/callback`  
   `https://jurachun.com/admin/auth/callback`
 
-Set `ALLOWED_EDITOR_EMAIL` to the single admin address. Magic link login: `/admin/login`.
+Set `ALLOWED_EDITOR_EMAILS` to allowed admin addresses (comma-separated). The legacy
+`ALLOWED_EDITOR_EMAIL` variable is still supported when the list is unset. Magic link
+login: `/admin/login`.
 
 **Essay import:** see [`IMPORT_GUIDE.md`](../IMPORT_GUIDE.md) — `npm run import:mdx`.

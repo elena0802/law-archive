@@ -60,6 +60,30 @@ export function isSupabaseServiceRoleConfigured() {
   return Boolean(getSupabaseUrl() && getSupabaseServiceRoleKey());
 }
 
+function parseEditorEmailList(value: string | undefined): string[] {
+  if (!value?.trim()) {
+    return [];
+  }
+
+  return value
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+/** CMS admin allowlist. Prefer ALLOWED_EDITOR_EMAILS; ALLOWED_EDITOR_EMAIL still supported. */
+export function getAllowedEditorEmails(): readonly string[] {
+  const fromList = parseEditorEmailList(process.env.ALLOWED_EDITOR_EMAILS);
+
+  if (fromList.length > 0) {
+    return fromList;
+  }
+
+  const legacy = process.env.ALLOWED_EDITOR_EMAIL?.trim().toLowerCase();
+  return legacy ? [legacy] : [];
+}
+
+/** @deprecated Use getAllowedEditorEmails() */
 export function getAllowedEditorEmail() {
-  return process.env.ALLOWED_EDITOR_EMAIL?.trim().toLowerCase() ?? "";
+  return getAllowedEditorEmails()[0] ?? "";
 }
