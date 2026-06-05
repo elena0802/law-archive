@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Section } from "@/components/section";
 import { SeriesToc } from "@/components/series-toc";
 import { SeriesVolumeStats } from "@/components/series-volume-stats";
-import { getAllSeries, getSeriesBySlug } from "@/lib/essays";
+import { getSeriesBySlug } from "@/lib/essays";
 import { siteConfig } from "@/lib/site";
 
 type SeriesPageProps = {
@@ -16,14 +16,6 @@ type SeriesPageProps = {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  const series = await getAllSeries();
-
-  return series.map((item) => ({
-    slug: item.slug,
-  }));
-}
 
 export async function generateMetadata({
   params,

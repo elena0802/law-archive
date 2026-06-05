@@ -12,6 +12,7 @@ import {
 import type { EssayRow, SeriesRow } from "@/lib/content/db-types";
 import { isPublishedEssayStatus } from "@/lib/content/essay-status";
 import { getSeriesSlug } from "@/lib/content/series-slug";
+import { formatSupabaseLoadError } from "@/lib/supabase/query-error";
 import { requireSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
 function decodeSlug(slug: string) {
@@ -49,7 +50,7 @@ async function loadSeriesRows(options: { activeOnly?: boolean } = {}): Promise<S
   }
 
   if (error) {
-    throw new Error(`Failed to load series: ${error.message}`);
+    throw formatSupabaseLoadError("series", error);
   }
 
   return (data ?? []).map((row) => ({
@@ -70,7 +71,7 @@ async function loadEssayRows(options: EssayRepositoryOptions = {}) {
   const { data, error } = await query.order("essay_date", { ascending: false });
 
   if (error) {
-    throw new Error(`Failed to load essays: ${error.message}`);
+    throw formatSupabaseLoadError("essays", error);
   }
 
   return data ?? [];
@@ -112,7 +113,7 @@ export function createSupabaseEssayRepository(): EssayRepository {
         .maybeSingle();
 
       if (error) {
-        throw new Error(`Failed to load essay "${slug}": ${error.message}`);
+        throw formatSupabaseLoadError(`essay "${slug}"`, error);
       }
 
       if (!row) {

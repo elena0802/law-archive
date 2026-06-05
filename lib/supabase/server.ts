@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import {
+  assertSupabaseUrlForDataAccess,
   getSupabaseServiceRoleKey,
   getSupabaseUrl,
   isSupabaseServiceRoleConfigured,
@@ -20,8 +21,11 @@ export function createSupabaseServiceRoleClient(): SupabaseClient<Database> | nu
   }
 
   if (!serviceRoleClient) {
+    const supabaseUrl = getSupabaseUrl();
+    assertSupabaseUrlForDataAccess(supabaseUrl);
+
     serviceRoleClient = createClient<Database>(
-      getSupabaseUrl(),
+      supabaseUrl,
       getSupabaseServiceRoleKey(),
       {
         auth: {

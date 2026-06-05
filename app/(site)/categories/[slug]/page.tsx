@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleCard } from "@/components/article-card";
 import { Section } from "@/components/section";
-import { formatEssayDate, getAllCategories, getCategoryBySlug } from "@/lib/essays";
+import { formatEssayDate, getCategoryBySlug } from "@/lib/essays";
 import { resolveCategorySlugParam } from "@/lib/content/category-slug";
 import { siteConfig } from "@/lib/site";
 
@@ -13,11 +13,6 @@ type CategoryPageProps = {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  const categories = await getAllCategories();
-  return categories.map((category) => ({ slug: category.slug }));
-}
 
 export async function generateMetadata({
   params,
