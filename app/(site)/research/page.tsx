@@ -6,7 +6,6 @@ import { ResearchAreas } from "@/src/components/research/research-areas";
 import { ResearchRepresentativeBooks } from "@/src/components/research/research-representative-books";
 import { ResearchSummary } from "@/src/components/research/research-summary";
 import { ResearchTimeline } from "@/src/components/research/research-timeline";
-import { SelectedImportantPublications } from "@/src/components/research/selected-important-publications";
 import { researchItems } from "@/src/data/research";
 import {
   getResearchAreaCounts,
@@ -42,9 +41,6 @@ export default function ResearchPage() {
   const featured = sortByPublicationNumber(items).filter(
     (item) => item.isRepresentative,
   );
-  const importantPublications = sortByPublicationNumber(
-    items.filter((item) => item.isImportant),
-  );
   const timeline = sortByPublicationNumber(
     items.filter((item) => item.isRepresentative),
   );
@@ -68,10 +64,9 @@ export default function ResearchPage() {
       <Section size="reading" className="border-t border-line py-page">
         <div className="space-y-12">
           <ResearchSummary stats={stats} />
-          <FeaturedPublications items={featured} />
           <ResearchAreas areas={areas} />
           <ResearchRepresentativeBooks />
-          <SelectedImportantPublications items={importantPublications} />
+          <FeaturedPublications items={featured} />
           <ResearchTimeline items={timeline} />
           <ExpandablePublicationList
             items={completeByNumber}
