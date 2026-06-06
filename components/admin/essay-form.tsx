@@ -24,6 +24,21 @@ const fieldClassName =
 
 const labelClassName = "text-keep block text-base font-medium text-ink";
 
+const sectionPanelClassName =
+  "space-y-10 rounded border border-line px-5 py-6";
+
+const sectionHeadingClassName = "text-keep text-base font-medium text-ink";
+
+const collapsibleSummaryClassName =
+  "text-keep cursor-pointer list-none text-base font-medium text-ink marker:content-none [&::-webkit-details-marker]:hidden";
+
+const WRITING_GUIDE = `# 큰 제목
+## 소제목
+- 목록
+> 인용문
+---
+구분선`;
+
 type EssayFormProps = {
   mode: "create" | "edit";
   initialValues: EssayFormValues;
@@ -547,94 +562,139 @@ export function EssayForm({
           type="text"
         />
         <FieldError message={fieldErrors.title} />
+        <label className={`${labelClassName} mt-6`} htmlFor="content">
+          본문
+        </label>
+        <textarea
+          className={`${fieldClassName} min-h-[40rem] resize-y px-5 py-4 text-[1.08rem] leading-9`}
+          id="content"
+          name="content"
+          placeholder="여기에 본문을 작성합니다."
+          value={content}
+          onChange={(event) => setContent(event.target.value)}
+          rows={32}
+        />
+        <p className="text-keep text-sm leading-7 text-ink-muted">
+          {characterCount}자 · 약 {readingMinutes}분 읽기
+          {hasUnsavedChanges && !isPending ? " · 저장되지 않은 변경" : ""}
+        </p>
+        <FieldError message={fieldErrors.content} />
       </div>
 
-      <div className="grid gap-10 sm:grid-cols-2">
-        <div>
-          <label className={labelClassName} htmlFor="essay_date">
-            글 날짜
-          </label>
-          <input
-            className={fieldClassName}
-            defaultValue={initialValues.essay_date}
-            id="essay_date"
-            name="essay_date"
-            type="date"
-          />
-          <FieldError message={fieldErrors.essay_date} />
-        </div>
+      <details className="rounded border border-line bg-paper-muted px-5 py-4">
+        <summary className={collapsibleSummaryClassName}>작성 가이드 보기</summary>
+        <pre className="text-keep mt-4 whitespace-pre-wrap text-sm leading-7 text-ink-muted">
+          {WRITING_GUIDE}
+        </pre>
+      </details>
 
-        <div>
-          <label className={labelClassName} htmlFor="category">
-            분류
-          </label>
-          <input
-            className={fieldClassName}
-            defaultValue={initialValues.category}
-            id="category"
-            name="category"
-            placeholder="예: 형벌론"
-            type="text"
-          />
-          <FieldError message={fieldErrors.category} />
-        </div>
+      <div>
+        <label className={labelClassName} htmlFor="description">
+          한 줄 소개
+        </label>
+        <textarea
+          className={`${fieldClassName} min-h-[6rem] resize-y leading-8`}
+          defaultValue={initialValues.description}
+          id="description"
+          name="description"
+          placeholder="글의 요지를 한 줄로 적습니다."
+          rows={3}
+        />
+        <FieldError message={fieldErrors.description} />
       </div>
 
-      <div className="grid gap-10 sm:grid-cols-2">
-        <div>
-          <label className={labelClassName} htmlFor="series_slug">
-            연재
-          </label>
-          <select
-            className={fieldClassName}
-            defaultValue={initialValues.series_slug}
-            id="series_slug"
-            name="series_slug"
-          >
-            <option disabled value="">
-              연재 선택
-            </option>
-            {series.map((item) => (
-              <option key={item.slug} value={item.slug}>
-                {item.title}
+      <div className={sectionPanelClassName}>
+        <p className={sectionHeadingClassName}>출판 정보</p>
+
+        <div className="grid gap-10 sm:grid-cols-2">
+          <div>
+            <label className={labelClassName} htmlFor="essay_date">
+              글 날짜
+            </label>
+            <input
+              className={fieldClassName}
+              defaultValue={initialValues.essay_date}
+              id="essay_date"
+              name="essay_date"
+              type="date"
+            />
+            <FieldError message={fieldErrors.essay_date} />
+          </div>
+
+          <div>
+            <label className={labelClassName} htmlFor="category">
+              분류
+            </label>
+            <input
+              className={fieldClassName}
+              defaultValue={initialValues.category}
+              id="category"
+              name="category"
+              placeholder="예: 형벌론"
+              type="text"
+            />
+            <FieldError message={fieldErrors.category} />
+          </div>
+        </div>
+
+        <div className="grid gap-10 sm:grid-cols-2">
+          <div>
+            <label className={labelClassName} htmlFor="series_slug">
+              연재
+            </label>
+            <select
+              className={fieldClassName}
+              defaultValue={initialValues.series_slug}
+              id="series_slug"
+              name="series_slug"
+            >
+              <option disabled value="">
+                연재 선택
               </option>
-            ))}
-          </select>
-          <FieldError message={fieldErrors.series_slug} />
-        </div>
+              {series.map((item) => (
+                <option key={item.slug} value={item.slug}>
+                  {item.title}
+                </option>
+              ))}
+            </select>
+            <FieldError message={fieldErrors.series_slug} />
+          </div>
 
-        <div>
-          <label className={labelClassName} htmlFor="series_order">
-            연재 순서
-          </label>
-          <input
-            className={fieldClassName}
-            defaultValue={
-              initialValues.series_order === null
-                ? ""
-                : String(initialValues.series_order)
-            }
-            id="series_order"
-            inputMode="numeric"
-            min={1}
-            name="series_order"
-            placeholder="예: 1"
-            type="number"
-          />
-          <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
-            연재 안에서 읽히는 순서입니다. 비워두면 제목 번호를 기준으로
-            정렬됩니다.
-          </p>
+          <div>
+            <label className={labelClassName} htmlFor="series_order">
+              연재 순서
+            </label>
+            <input
+              className={fieldClassName}
+              defaultValue={
+                initialValues.series_order === null
+                  ? ""
+                  : String(initialValues.series_order)
+              }
+              id="series_order"
+              inputMode="numeric"
+              min={1}
+              name="series_order"
+              placeholder="예: 1"
+              type="number"
+            />
+            <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+              연재 안에서 읽히는 순서입니다. 비워두면 제목 번호를 기준으로
+              정렬됩니다.
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-10 sm:grid-cols-2">
+      <div className={sectionPanelClassName}>
+        <p className={sectionHeadingClassName}>고급 설정</p>
+
         <div>
           <label className={labelClassName} htmlFor="slug">
             주소 (slug)
           </label>
           <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
-            /essays/주소 형태입니다.
+            주소는 글 제목을 바탕으로 정리할 수 있습니다. /essays/주소 형태입니다.
             {slugLocked ? " 공개된 글은 주소를 바꿀 수 없습니다." : null}
           </p>
           {slugLocked ? (
@@ -647,85 +707,41 @@ export function EssayForm({
             id="slug"
             name={slugLocked ? undefined : "slug"}
             pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+            placeholder="예: criminal-law-essay"
             readOnly={slugLocked}
             type="text"
           />
           <FieldError message={fieldErrors.slug} />
         </div>
-      </div>
 
-      <div>
-        <label className={labelClassName} htmlFor="description">
-          한 줄 소개
-        </label>
-        <textarea
-          className={`${fieldClassName} min-h-[6rem] resize-y leading-8`}
-          defaultValue={initialValues.description}
-          id="description"
-          name="description"
-          rows={3}
-        />
-        <FieldError message={fieldErrors.description} />
-      </div>
-
-      <div className="flex items-start gap-3">
-        <input
-          className="mt-1.5 size-4 accent-accent"
-          defaultChecked={initialValues.featured}
-          id="featured"
-          name="featured"
-          type="checkbox"
-        />
-        <div>
-          <label className={labelClassName} htmlFor="featured">
-            대표 글
-          </label>
-          <p className="text-keep mt-1 text-sm leading-7 text-ink-muted">
-            나중에 홈이나 추천 영역에 쓰일 수 있습니다.
-          </p>
+        <div className="flex items-start gap-3">
+          <input
+            className="mt-1.5 size-4 accent-accent"
+            defaultChecked={initialValues.featured}
+            id="featured"
+            name="featured"
+            type="checkbox"
+          />
+          <div>
+            <label className={labelClassName} htmlFor="featured">
+              대표 글
+            </label>
+            <p className="text-keep mt-1 text-sm leading-7 text-ink-muted">
+              나중에 홈이나 추천 영역에 쓰일 수 있습니다.
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="space-y-3">
-        <label className={labelClassName} htmlFor="content">
-          본문
-        </label>
-        <p className="text-keep text-sm leading-7 text-ink-muted">
-          {characterCount}자 · 약 {readingMinutes}분 읽기
-          {hasUnsavedChanges && !isPending ? " · 저장되지 않은 변경" : ""}
-        </p>
-        <p className="text-keep text-sm leading-7 text-ink-muted">
-          평소 글쓰기처럼 작성하시면 됩니다.
-        </p>
-        <div className="rounded border border-line bg-paper-muted px-4 py-4">
-          <p className="text-sm tracking-[0.12em] text-accent uppercase">
-            작성 가이드
+      <details className="rounded border border-line bg-paper-muted px-5 py-5">
+        <summary className={collapsibleSummaryClassName}>미리보기</summary>
+        <div className="mt-4 space-y-4">
+          <p className="text-keep text-sm leading-7 text-ink-muted">
+            저장 후 공개 화면에서 다시 확인할 수 있습니다.
           </p>
-          <pre className="text-keep mt-3 whitespace-pre-wrap text-sm leading-7 text-ink-muted">{`# 큰 제목
-## 소제목
-- 목록
-> 인용문
----
-구분선`}</pre>
+          <MarkdownPreview source={content} />
         </div>
-        <textarea
-          className={`${fieldClassName} min-h-[40rem] resize-y px-5 py-4 text-[1.08rem] leading-9`}
-          id="content"
-          name="content"
-          placeholder="여기에 본문을 작성합니다."
-          value={content}
-          onChange={(event) => setContent(event.target.value)}
-          rows={32}
-        />
-        <FieldError message={fieldErrors.content} />
-      </div>
-
-      <div className="space-y-3 rounded border border-line bg-paper-muted px-5 py-5">
-        <p className="text-sm tracking-[0.12em] text-accent uppercase">
-          미리보기
-        </p>
-        <MarkdownPreview source={content} />
-      </div>
+      </details>
 
       <div className="mt-10 rounded border border-line px-5 py-6">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
