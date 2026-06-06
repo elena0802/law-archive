@@ -19,13 +19,15 @@ export default async function AdminNewEssayPage() {
         새 글 작성
       </h1>
       <p className="text-keep mt-5 max-w-2xl text-base leading-8 text-ink-muted">
-        제목과 본문을 작성한 뒤, 아래의 공개 상태를 선택하고 저장하세요. 처음에는
-        보통 「임시 저장」으로 두고, 준비가 되면 「공개」로 바꿔 저장하면 공개
-        서재에 표시됩니다.
+        제목만 입력해도 「임시 저장」이 가능합니다. 본문을 이어 쓴 뒤, 준비가
+        되면 「공개하기」로 공개 서재에 올릴 수 있습니다.
       </p>
       {series.length === 0 ? (
         <div className="text-keep mt-8 rounded border border-line bg-paper-muted px-4 py-6 text-base leading-8 text-ink-muted">
-          <p>먼저 연재를 만들어 주세요.</p>
+          <p>
+            연재가 없어도 임시 저장은 가능합니다. 공개하려면 먼저 연재를
+            만들어 주세요.
+          </p>
           <Link
             className="mt-3 inline-block text-sm text-accent underline-offset-4 hover:underline"
             href="/admin/series/new"

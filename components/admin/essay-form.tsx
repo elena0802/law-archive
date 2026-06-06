@@ -9,10 +9,10 @@ import {
   useState,
   type FormEvent,
 } from "react";
-import { flushSync } from "react-dom";
-import { EssayStatusSelector } from "@/components/admin/essay-status-selector";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
-import { PublishConfirmDialog } from "@/components/admin/publish-confirm-dialog";
+import { EssayStatusBadge } from "@/components/admin/essay-status-badge";
+import type { SaveIntent } from "@/lib/admin/save-intent";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
 import { essayActionIdleState } from "@/lib/admin/essay-action-state";
 import type { EssayFormValues } from "@/lib/admin/parse-essay-form";
@@ -47,7 +47,6 @@ type EssayFormSnapshot = {
   series_slug: string;
   series_order: string;
   featured: boolean;
-  essay_status: EssayStatus;
 };
 
 function FieldError({ message }: { message?: string }) {
@@ -85,6 +84,9 @@ function FormBanner({
 
 const primaryButtonClassName =
   "rounded border border-accent bg-accent px-5 py-3 text-base font-medium text-paper transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60";
+
+const secondaryButtonClassName =
+  "rounded border border-line bg-paper px-5 py-3 text-base font-medium text-ink transition hover:border-accent/40 disabled:cursor-not-allowed disabled:opacity-60";
 
 function formatCharacterCount(text: string) {
   return new Intl.NumberFormat("ko-KR").format(
@@ -259,15 +261,6 @@ function readSnapshotFromForm(form: HTMLFormElement): EssayFormSnapshot {
     const value = formData.get(name);
     return typeof value === "string" ? value : "";
   };
-  const statusValue =
-    formData.get("essay_status") ?? formData.get("current_status");
-  const essay_status =
-    statusValue === "published" ||
-    statusValue === "archived" ||
-    statusValue === "deleted"
-      ? statusValue
-      : "draft";
-
   return {
     title: read("title"),
     slug: read("slug"),
@@ -278,7 +271,6 @@ function readSnapshotFromForm(form: HTMLFormElement): EssayFormSnapshot {
     series_slug: read("series_slug"),
     series_order: read("series_order"),
     featured: formData.get("featured") === "on",
-    essay_status,
   };
 }
 
@@ -292,8 +284,7 @@ function snapshotsEqual(a: EssayFormSnapshot, b: EssayFormSnapshot) {
     a.category === b.category &&
     a.series_slug === b.series_slug &&
     a.series_order === b.series_order &&
-    a.featured === b.featured &&
-    a.essay_status === b.essay_status
+    a.featured === b.featured
   );
 }
 
@@ -335,12 +326,19 @@ export function EssayForm({
     essayActionIdleState,
   );
   const formRef = useRef<HTMLFormElement>(null);
+  const draftButtonRef = useRef<HTMLButtonElement>(null);
+  const publishButtonRef = useRef<HTMLButtonElement>(null);
+  const archiveButtonRef = useRef<HTMLButtonElement>(null);
+  const trashButtonRef = useRef<HTMLButtonElement>(null);
   const publishConfirmedRef = useRef(false);
+  const archiveConfirmedRef = useRef(false);
+  const trashConfirmedRef = useRef(false);
   const [content, setContent] = useState(initialValues.content);
-  const [essayStatus, setEssayStatus] = useState<EssayStatus>(currentStatus);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
+  const [archiveConfirmOpen, setArchiveConfirmOpen] = useState(false);
+  const [trashConfirmOpen, setTrashConfirmOpen] = useState(false);
   const isGuardEnabled = hasUnsavedChanges && !isSubmitting;
 
   const fieldErrors = state.fieldErrors ?? {};
@@ -360,9 +358,8 @@ export function EssayForm({
           ? ""
           : String(initialValues.series_order),
       featured: initialValues.featured,
-      essay_status: essayStatus,
     }),
-    [essayStatus, initialValues],
+    [initialValues],
   );
 
   const refreshDirtyState = useCallback(() => {
@@ -424,35 +421,98 @@ export function EssayForm({
     setHasUnsavedChanges(false);
   }, []);
 
+  const readSubmitIntent = useCallback((event: FormEvent<HTMLFormElement>) => {
+    const submitter = (event.nativeEvent as SubmitEvent)
+      .submitter as HTMLButtonElement | null;
+    const value = submitter?.getAttribute("value");
+
+    if (
+      value === "publish" ||
+      value === "archive" ||
+      value === "trash" ||
+      value === "draft"
+    ) {
+      return value as SaveIntent;
+    }
+
+    return "draft" as SaveIntent;
+  }, []);
+
+  const submitWithIntent = useCallback((intent: SaveIntent) => {
+    const buttonRef =
+      intent === "publish"
+        ? publishButtonRef
+        : intent === "archive"
+          ? archiveButtonRef
+          : intent === "trash"
+            ? trashButtonRef
+            : draftButtonRef;
+
+    formRef.current?.requestSubmit(buttonRef.current ?? undefined);
+  }, []);
+
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
-      const isPublishing =
-        essayStatus === "published" && currentStatus !== "published";
+      const intent = readSubmitIntent(event);
 
-      if (isPublishing && !publishConfirmedRef.current) {
+      if (
+        intent === "publish" &&
+        currentStatus !== "published" &&
+        !publishConfirmedRef.current
+      ) {
         event.preventDefault();
         setPublishConfirmOpen(true);
         return;
       }
 
+      if (intent === "archive" && !archiveConfirmedRef.current) {
+        event.preventDefault();
+        setArchiveConfirmOpen(true);
+        return;
+      }
+
+      if (intent === "trash" && !trashConfirmedRef.current) {
+        event.preventDefault();
+        setTrashConfirmOpen(true);
+        return;
+      }
+
       publishConfirmedRef.current = false;
+      archiveConfirmedRef.current = false;
+      trashConfirmedRef.current = false;
       beginSubmit();
     },
-    [beginSubmit, currentStatus, essayStatus],
+    [beginSubmit, currentStatus, readSubmitIntent],
   );
 
   const handlePublishConfirm = useCallback(() => {
     setPublishConfirmOpen(false);
     publishConfirmedRef.current = true;
-    flushSync(() => {
-      setEssayStatus("published");
-    });
-    beginSubmit();
-    formRef.current?.requestSubmit();
-  }, [beginSubmit]);
+    submitWithIntent("publish");
+  }, [submitWithIntent]);
 
   const handlePublishCancel = useCallback(() => {
     setPublishConfirmOpen(false);
+  }, []);
+
+  const handleArchiveConfirm = useCallback(() => {
+    setArchiveConfirmOpen(false);
+    archiveConfirmedRef.current = true;
+    submitWithIntent("archive");
+  }, [submitWithIntent]);
+
+  const handleArchiveCancel = useCallback(() => {
+    setArchiveConfirmOpen(false);
+  }, []);
+
+  const handleTrashConfirm = useCallback(() => {
+    setTrashConfirmOpen(false);
+    trashConfirmedRef.current = true;
+    submitWithIntent("trash");
+  }, [submitWithIntent]);
+
+  const handleTrashCancel = useCallback(() => {
+    setTrashConfirmOpen(false);
   }, []);
 
   return (
@@ -465,7 +525,6 @@ export function EssayForm({
       ref={formRef}
     >
       <input name="current_status" type="hidden" value={currentStatus} />
-      <input name="essay_status" type="hidden" value={essayStatus} />
 
       {noticeMessage ? <AdminNoticeBanner message={noticeMessage} /> : null}
 
@@ -474,7 +533,8 @@ export function EssayForm({
       ) : null}
 
       <div className="space-y-3 border-b border-line pb-10">
-        <label className={labelClassName} htmlFor="title">
+        <EssayStatusBadge showHelper={false} status={currentStatus} />
+        <label className={`${labelClassName} mt-6`} htmlFor="title">
           제목
         </label>
         <input
@@ -499,7 +559,6 @@ export function EssayForm({
             defaultValue={initialValues.essay_date}
             id="essay_date"
             name="essay_date"
-            required
             type="date"
           />
           <FieldError message={fieldErrors.essay_date} />
@@ -515,7 +574,6 @@ export function EssayForm({
             id="category"
             name="category"
             placeholder="예: 형벌론"
-            required
             type="text"
           />
           <FieldError message={fieldErrors.category} />
@@ -532,7 +590,6 @@ export function EssayForm({
             defaultValue={initialValues.series_slug}
             id="series_slug"
             name="series_slug"
-            required
           >
             <option disabled value="">
               연재 선택
@@ -591,7 +648,6 @@ export function EssayForm({
             name={slugLocked ? undefined : "slug"}
             pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
             readOnly={slugLocked}
-            required={!slugLocked}
             type="text"
           />
           <FieldError message={fieldErrors.slug} />
@@ -607,7 +663,6 @@ export function EssayForm({
           defaultValue={initialValues.description}
           id="description"
           name="description"
-          required
           rows={3}
         />
         <FieldError message={fieldErrors.description} />
@@ -672,13 +727,6 @@ export function EssayForm({
         <MarkdownPreview source={content} />
       </div>
 
-      <div className="border-t border-line border-dashed pt-10">
-        <EssayStatusSelector
-          onStatusChange={setEssayStatus}
-          selectedStatus={essayStatus}
-        />
-      </div>
-
       <div className="mt-10 rounded border border-line px-5 py-6">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0 space-y-2">
@@ -692,31 +740,95 @@ export function EssayForm({
               </p>
             ) : null}
             <p className="text-keep text-sm leading-7 text-ink-muted">
+              {currentStatus === "published"
+                ? "공개된 글의 변경은 「공개하기」로 저장합니다."
+                : "임시 저장으로 작성을 이어가고, 준비가 되면 공개하기를 사용하세요."}
+            </p>
+            <p className="text-keep text-sm leading-7 text-ink-muted">
               변경사항을 저장한 뒤 미리보기에서 공개 전 모습을 확인할 수 있습니다.
             </p>
           </div>
-          <div className="shrink-0">
+          <div className="flex shrink-0 flex-wrap gap-3">
+            <button
+              className={secondaryButtonClassName}
+              disabled={isPending}
+              name="intent"
+              ref={draftButtonRef}
+              type="submit"
+              value="draft"
+            >
+              {isPending ? "저장 중…" : "임시 저장"}
+            </button>
             <button
               className={primaryButtonClassName}
               disabled={isPending}
               name="intent"
+              ref={publishButtonRef}
               type="submit"
-              value="save"
+              value="publish"
             >
-              {isPending
-                ? "저장 중…"
-                : mode === "create"
-                  ? "글 저장"
-                  : "변경 저장"}
+              {isPending ? "저장 중…" : "공개하기"}
             </button>
           </div>
         </div>
       </div>
 
-      <PublishConfirmDialog
+      {mode === "edit" && currentStatus !== "deleted" ? (
+        <div className="rounded border border-line bg-paper-muted px-5 py-5">
+          <p className="text-keep text-base font-medium text-ink">글 관리</p>
+          <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+            보관하거나 휴지통으로 옮기면 공개 서재에서 보이지 않습니다.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            {currentStatus !== "archived" ? (
+              <button
+                className={secondaryButtonClassName}
+                disabled={isPending}
+                name="intent"
+                ref={archiveButtonRef}
+                type="submit"
+                value="archive"
+              >
+                보관
+              </button>
+            ) : null}
+            <button
+              className={secondaryButtonClassName}
+              disabled={isPending}
+              name="intent"
+              ref={trashButtonRef}
+              type="submit"
+              value="trash"
+            >
+              휴지통으로 이동
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      <AdminConfirmDialog
+        confirmLabel="공개하기"
+        message="이 글은 공개 서재에 즉시 노출됩니다."
         onCancel={handlePublishCancel}
         onConfirm={handlePublishConfirm}
         open={publishConfirmOpen}
+        title="글을 공개하시겠습니까?"
+      />
+      <AdminConfirmDialog
+        confirmLabel="보관"
+        message="이 글을 보관하시겠습니까?"
+        onCancel={handleArchiveCancel}
+        onConfirm={handleArchiveConfirm}
+        open={archiveConfirmOpen}
+        title="글을 보관하시겠습니까?"
+      />
+      <AdminConfirmDialog
+        confirmLabel="휴지통으로 이동"
+        message="이 글을 휴지통으로 이동하시겠습니까?"
+        onCancel={handleTrashCancel}
+        onConfirm={handleTrashConfirm}
+        open={trashConfirmOpen}
+        title="글을 휴지통으로 이동하시겠습니까?"
       />
     </form>
   );

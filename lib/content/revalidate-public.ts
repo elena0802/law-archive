@@ -5,9 +5,9 @@ import { isAsciiPathSafe, isAsciiSlug } from "@/lib/content/ascii-path";
 
 type RevalidateEssayPathsInput = {
   slug: string;
-  seriesSlug: string;
+  seriesSlug?: string | null;
   previousSlug?: string;
-  previousSeriesSlug?: string;
+  previousSeriesSlug?: string | null;
 };
 
 const STATIC_LIST_PATHS = [

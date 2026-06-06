@@ -35,6 +35,10 @@ export function mapEssayRowToEssayWithSeries(
   row: EssayRow,
   seriesBySlug: Map<string, SeriesRow>,
 ): Essay | null {
+  if (!row.series_slug) {
+    return null;
+  }
+
   const series = seriesBySlug.get(row.series_slug);
 
   if (!series) {

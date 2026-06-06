@@ -114,7 +114,10 @@ export async function listAdminEssays(
 
   return (essays ?? []).map((essay) => ({
     ...essay,
-    series_title: seriesBySlug.get(essay.series_slug) ?? essay.series_slug,
+    series_title:
+      essay.series_slug === null
+        ? "—"
+        : (seriesBySlug.get(essay.series_slug) ?? essay.series_slug),
   }));
 }
 
@@ -222,7 +225,7 @@ export function essayRowToFormValues(essay: EssayRow) {
     content: essay.content,
     essay_date: essay.essay_date.slice(0, 10),
     category: essay.category,
-    series_slug: essay.series_slug,
+    series_slug: essay.series_slug ?? "",
     series_order: essay.series_order,
     status: essay.status,
     featured: essay.featured,

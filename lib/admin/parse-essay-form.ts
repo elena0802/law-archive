@@ -1,5 +1,5 @@
 import type { EssayStatus } from "@/lib/content/db-types";
-import { resolveStatusFromForm } from "@/lib/admin/save-intent";
+import { readSaveIntent, resolveStatusFromForm } from "@/lib/admin/save-intent";
 import { parseOptionalSeriesOrder } from "@/lib/content/parse-series-order";
 
 export type EssayFormValues = {
@@ -15,10 +15,14 @@ export type EssayFormValues = {
   featured: boolean;
 };
 
+export type EssayParsedValues = Omit<EssayFormValues, "series_slug"> & {
+  series_slug: string | null;
+};
+
 export type EssayFormFieldErrors = Partial<Record<keyof EssayFormValues, string>>;
 
 export type ParsedEssayForm =
-  | { ok: true; values: EssayFormValues }
+  | { ok: true; values: EssayParsedValues }
   | { ok: false; errors: EssayFormFieldErrors; message: string };
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -37,9 +41,56 @@ function readString(formData: FormData, name: string) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function buildDraftSlug(title: string, rawSlug: string) {
+  const fromInput = normalizeEssaySlug(rawSlug);
+  if (fromInput) {
+    return fromInput;
+  }
+
+  const fromTitle = normalizeEssaySlug(title);
+  if (fromTitle) {
+    return fromTitle;
+  }
+
+  return `draft-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function resolveDraftDefaults({
+  title,
+  slug,
+  description,
+  content,
+  essay_date,
+  category,
+  series_slug,
+}: {
+  title: string;
+  slug: string;
+  description: string;
+  content: string;
+  essay_date: string;
+  category: string;
+  series_slug: string;
+}) {
+  const today = new Date().toISOString().slice(0, 10);
+
+  return {
+    title,
+    slug: buildDraftSlug(title, slug),
+    description,
+    content,
+    essay_date: essay_date || today,
+    category,
+    series_slug: series_slug || null,
+  };
+}
+
 export function parseEssayForm(formData: FormData): ParsedEssayForm {
+  const intent = readSaveIntent(formData);
+  const isPublish = intent === "publish";
+
   const title = readString(formData, "title");
-  const slug = normalizeEssaySlug(readString(formData, "slug"));
+  const rawSlug = readString(formData, "slug");
   const description = readString(formData, "description");
   const content = readString(formData, "content");
   const essay_date = readString(formData, "essay_date");
@@ -57,31 +108,59 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
     errors.title = "제목을 입력해 주세요.";
   }
 
-  if (!slug) {
-    errors.slug = "주소(slug)를 입력해 주세요.";
-  } else if (!SLUG_PATTERN.test(slug)) {
-    errors.slug =
-      "주소는 영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.";
-  }
+  if (isPublish) {
+    const slug = normalizeEssaySlug(rawSlug);
 
-  if (!description) {
-    errors.description = "한 줄 소개를 입력해 주세요.";
-  }
+    if (!slug) {
+      errors.slug = "주소(slug)를 입력해 주세요.";
+    } else if (!SLUG_PATTERN.test(slug)) {
+      errors.slug =
+        "주소는 영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.";
+    }
 
-  if (!content) {
-    errors.content = "본문을 입력해 주세요.";
-  }
+    if (!description) {
+      errors.description = "한 줄 소개를 입력해 주세요.";
+    }
 
-  if (!essay_date) {
-    errors.essay_date = "글 날짜를 선택해 주세요.";
-  }
+    if (!content) {
+      errors.content = "본문을 입력해 주세요.";
+    }
 
-  if (!category) {
-    errors.category = "분류를 입력해 주세요.";
-  }
+    if (!essay_date) {
+      errors.essay_date = "글 날짜를 선택해 주세요.";
+    }
 
-  if (!series_slug) {
-    errors.series_slug = "연재를 선택해 주세요.";
+    if (!category) {
+      errors.category = "분류를 입력해 주세요.";
+    }
+
+    if (!series_slug) {
+      errors.series_slug = "연재를 선택해 주세요.";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      return {
+        ok: false,
+        errors,
+        message: "공개하기 전에 입력 내용을 확인해 주세요.",
+      };
+    }
+
+    return {
+      ok: true,
+      values: {
+        title,
+        slug,
+        description,
+        content,
+        essay_date,
+        category,
+        series_slug: series_slug || null,
+        series_order,
+        status,
+        featured,
+      },
+    };
   }
 
   if (Object.keys(errors).length > 0) {
@@ -92,16 +171,36 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
     };
   }
 
+  const draftDefaults = resolveDraftDefaults({
+    title,
+    slug: rawSlug,
+    description,
+    content,
+    essay_date,
+    category,
+    series_slug,
+  });
+
+  if (!SLUG_PATTERN.test(draftDefaults.slug)) {
+    return {
+      ok: false,
+      errors: {
+        slug: "주소는 영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.",
+      },
+      message: "입력 내용을 확인해 주세요.",
+    };
+  }
+
   return {
     ok: true,
     values: {
-      title,
-      slug,
-      description,
-      content,
-      essay_date,
-      category,
-      series_slug,
+      title: draftDefaults.title,
+      slug: draftDefaults.slug,
+      description: draftDefaults.description,
+      content: draftDefaults.content,
+      essay_date: draftDefaults.essay_date,
+      category: draftDefaults.category,
+      series_slug: draftDefaults.series_slug,
       series_order,
       status,
       featured,
@@ -109,7 +208,9 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
   };
 }
 
-export function emptyEssayFormValues(): EssayFormValues {
+export function emptyEssayFormValues(): Omit<EssayFormValues, "status"> & {
+  status: EssayStatus;
+} {
   const today = new Date().toISOString().slice(0, 10);
 
   return {

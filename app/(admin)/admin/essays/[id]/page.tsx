@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { updateEssay } from "@/app/(admin)/admin/essays/actions";
 import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
 import { EssayForm } from "@/components/admin/essay-form";
-import { essayStatusLabel } from "@/components/admin/essay-status-badge";
 import { getAdminEssayNoticeMessage } from "@/lib/admin/admin-notices";
 import {
   essayRowToFormValues,
@@ -73,7 +72,7 @@ export default async function AdminEditEssayPage({
   }
 
   const { series, seriesLoadWarning } = await loadSeriesForEdit(
-    essay.series_slug,
+    essay.series_slug ?? "",
   );
 
   const updateWithId = updateEssay.bind(null, id);
@@ -89,17 +88,20 @@ export default async function AdminEditEssayPage({
         <p className="text-keep text-base leading-8 text-ink-muted">
           {essay.title}
         </p>
-        <span className="text-sm text-ink-muted">
-          현재 상태: {essayStatusLabel(essay.status)}
-        </span>
-        <Link
-          className="text-sm text-accent underline-offset-4 hover:underline"
-          href={`/preview/${essay.slug}`}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          미리보기
-        </Link>
+        {essay.series_slug ? (
+          <Link
+            className="text-sm text-accent underline-offset-4 hover:underline"
+            href={`/preview/${essay.slug}`}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            미리보기
+          </Link>
+        ) : (
+          <span className="text-keep text-sm leading-7 text-ink-muted">
+            연재를 선택하면 미리보기를 사용할 수 있습니다.
+          </span>
+        )}
         {essay.status === "published" ? (
           <Link
             className="text-sm text-ink-muted underline-offset-4 hover:text-ink hover:underline"

@@ -58,6 +58,10 @@ export async function listAdminSeriesWithCounts(
 
   const counts = new Map<string, number>();
   for (const row of essayRows ?? []) {
+    if (!row.series_slug) {
+      continue;
+    }
+
     counts.set(row.series_slug, (counts.get(row.series_slug) ?? 0) + 1);
   }
 

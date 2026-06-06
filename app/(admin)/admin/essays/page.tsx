@@ -267,14 +267,20 @@ export default async function AdminEssaysPage({
                           >
                             수정
                           </Link>
-                          <Link
-                            className="text-keep text-ink-muted underline-offset-4 hover:text-ink hover:underline"
-                            href={`/preview/${essay.slug}`}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            미리보기
-                          </Link>
+                          {essay.series_slug ? (
+                            <Link
+                              className="text-keep text-ink-muted underline-offset-4 hover:text-ink hover:underline"
+                              href={`/preview/${essay.slug}`}
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              미리보기
+                            </Link>
+                          ) : (
+                            <span className="text-keep text-sm leading-6 text-ink-muted">
+                              연재를 선택하면 미리보기를 사용할 수 있습니다.
+                            </span>
+                          )}
                           {essay.status === "published" ? (
                             <Link
                               className="text-keep text-ink-muted underline-offset-4 hover:text-ink hover:underline"
