@@ -30,7 +30,8 @@ export async function subscribeNewsletter(
 
   return {
     status: "success",
-    message: "구독 신청이 완료되었습니다.",
+    message:
+      "구독이 등록되었습니다.\n\n새로운 글이 발행되면 알려드리겠습니다.",
     submittedEmail: email.trim().toLowerCase(),
   };
 }

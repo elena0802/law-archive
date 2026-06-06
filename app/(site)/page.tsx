@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { HomeHero } from "@/components/home-hero";
 import { HomeAiNotes } from "@/components/home/home-ai-notes";
 import { HomeFeaturedSeries } from "@/components/home/home-featured-series";
+import { HomeNewsletter } from "@/components/home/home-newsletter";
 import { HomeRecentWriting } from "@/components/home/home-recent-writing";
 import { HomeResearchArchiveSummary } from "@/components/home/home-research-archive-summary";
 import { Section } from "@/components/section";
@@ -78,6 +79,10 @@ export default async function Home() {
           previewItems={representativeResearchPreview}
           stats={researchStats}
         />
+      </Section>
+
+      <Section size="reading" className={HOME_SECTION_CLASS}>
+        <HomeNewsletter />
       </Section>
     </>
   );
