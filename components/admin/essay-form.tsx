@@ -12,7 +12,7 @@ import {
 import { AdminCollapsibleSection } from "@/components/admin/admin-collapsible-section";
 import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
-import { EssayStatusBadge } from "@/components/admin/essay-status-badge";
+import { essayStatusLabel } from "@/components/admin/essay-status-badge";
 import type { SaveIntent } from "@/lib/admin/save-intent";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
 import { essayActionIdleState } from "@/lib/admin/essay-action-state";
@@ -28,10 +28,10 @@ const fieldClassName =
 
 const labelClassName = "text-keep block text-base font-medium text-ink";
 
-const sectionPanelClassName =
-  "space-y-10 rounded border border-line px-5 py-6";
+const metadataSectionClassName = "space-y-8 border-t border-line/70 pt-8";
 
-const sectionHeadingClassName = "text-keep text-base font-medium text-ink";
+const metadataHeadingClassName =
+  "text-keep text-sm tracking-[0.12em] text-accent uppercase";
 
 const WRITING_GUIDE = `# 큰 제목
 ## 소제목
@@ -74,6 +74,18 @@ function FieldError({ message }: { message?: string }) {
   return (
     <p className="text-keep mt-2 text-sm leading-6 text-accent" role="alert">
       {message}
+    </p>
+  );
+}
+
+function EssayStatusRow({ status }: { status: EssayStatus }) {
+  return (
+    <p className="text-keep text-sm leading-7 text-ink-muted">
+      <span className="tracking-[0.08em] text-accent uppercase">상태</span>
+      <span aria-hidden="true" className="mx-2 text-line">
+        ·
+      </span>
+      <span className="font-medium text-ink">{essayStatusLabel(status)}</span>
     </p>
   );
 }
@@ -374,6 +386,12 @@ export function EssayForm({
   const fieldErrors = state.fieldErrors ?? {};
   const characterCount = formatCharacterCount(content);
   const readingMinutes = estimateReadingMinutesFromChars(content);
+  const hasSubstantialBody = content.replace(/\s+/g, "").length > 400;
+  const bodyTextareaMinHeightClass =
+    mode === "create" && !hasSubstantialBody
+      ? "min-h-[34rem]"
+      : "min-h-[40rem]";
+  const bodyTextareaRows = mode === "create" && !hasSubstantialBody ? 20 : 32;
   const initialSnapshot = useMemo<EssayFormSnapshot>(
     () => ({
       title: initialValues.title,
@@ -570,7 +588,7 @@ export function EssayForm({
   return (
     <form
       action={formAction}
-      className="mx-auto mt-10 max-w-reading space-y-10"
+      className="mx-auto mt-10 max-w-reading space-y-8"
       onChangeCapture={refreshDirtyState}
       onInputCapture={refreshDirtyState}
       onSubmit={handleSubmit}
@@ -584,9 +602,9 @@ export function EssayForm({
         <FormBanner message={state.message} tone="error" />
       ) : null}
 
-      <div className="space-y-3 border-b border-line pb-10">
-        <EssayStatusBadge showHelper={false} status={currentStatus} />
-        <label className={`${labelClassName} mt-6`} htmlFor="title">
+      <div className="space-y-3 border-b border-line/70 pb-8">
+        <EssayStatusRow status={currentStatus} />
+        <label className={`${labelClassName} mt-4`} htmlFor="title">
           제목
         </label>
         <input
@@ -604,13 +622,13 @@ export function EssayForm({
           본문
         </label>
         <textarea
-          className={`${fieldClassName} min-h-[40rem] resize-y px-5 py-4 text-[1.08rem] leading-9`}
+          className={`${fieldClassName} ${bodyTextareaMinHeightClass} resize-y px-5 py-4 text-[1.08rem] leading-9`}
           id="content"
           name="content"
           placeholder="여기에 본문을 작성합니다."
           value={content}
           onChange={(event) => setContent(event.target.value)}
-          rows={32}
+          rows={bodyTextareaRows}
         />
         <p className="text-keep text-sm leading-7 text-ink-muted">
           {characterCount}자 · 약 {readingMinutes}분 읽기
@@ -640,10 +658,10 @@ export function EssayForm({
         <FieldError message={fieldErrors.description} />
       </div>
 
-      <div className={sectionPanelClassName}>
-        <p className={sectionHeadingClassName}>출판 정보</p>
+      <div className={metadataSectionClassName}>
+        <p className={metadataHeadingClassName}>출판 정보</p>
 
-        <div className="grid gap-10 sm:grid-cols-2">
+        <div className="grid gap-8 sm:grid-cols-2">
           <div>
             <label className={labelClassName} htmlFor="essay_date">
               글 날짜
@@ -720,8 +738,8 @@ export function EssayForm({
       </div>
 
       <AdminCollapsibleSection
-        className="rounded border border-line bg-paper"
-        contentClassName="space-y-10 px-5 pb-6"
+        className="rounded border border-line/70 bg-paper"
+        contentClassName="space-y-8 px-5 pb-5"
         label="고급 설정"
       >
         <div>
@@ -775,7 +793,10 @@ export function EssayForm({
           </div>
       </AdminCollapsibleSection>
 
-      <AdminCollapsibleSection label="미리보기">
+      <AdminCollapsibleSection
+        className="rounded border border-line/60 bg-paper-muted/50"
+        label="미리보기"
+      >
         <div className="space-y-4">
           <p className="text-keep text-sm leading-7 text-ink-muted">
             저장 후 공개 화면에서 다시 확인할 수 있습니다.
@@ -784,9 +805,9 @@ export function EssayForm({
         </div>
       </AdminCollapsibleSection>
 
-      <div className="mt-10 rounded border border-line px-5 py-6">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0 space-y-2">
+      <div className="border-t border-line/70 pt-8">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0 space-y-1.5">
             {hasUnsavedChanges && !isPending ? (
               <p className="text-keep text-sm font-medium leading-7 text-ink">
                 저장하지 않은 변경사항이 있습니다.
@@ -800,9 +821,6 @@ export function EssayForm({
               {currentStatus === "published"
                 ? "공개된 글의 변경은 「공개하기」로 저장합니다."
                 : "임시 저장으로 작성을 이어가고, 준비가 되면 공개하기를 사용하세요."}
-            </p>
-            <p className="text-keep text-sm leading-7 text-ink-muted">
-              변경사항을 저장한 뒤 미리보기에서 공개 전 모습을 확인할 수 있습니다.
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-3">
@@ -831,8 +849,8 @@ export function EssayForm({
       </div>
 
       {mode === "edit" && currentStatus !== "deleted" ? (
-        <div className="rounded border border-line bg-paper-muted px-5 py-5">
-          <p className="text-keep text-base font-medium text-ink">글 관리</p>
+        <div className="border-t border-line/70 pt-8">
+          <p className="text-keep text-sm font-medium text-ink-muted">글 관리</p>
           <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
             보관하거나 휴지통으로 옮기면 공개 서재에서 보이지 않습니다.
           </p>
