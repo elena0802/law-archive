@@ -11,8 +11,20 @@ import {
 } from "react";
 import { AdminCollapsibleSection } from "@/components/admin/admin-collapsible-section";
 import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
+import { AdminFieldError } from "@/components/admin/admin-field-error";
+import {
+  adminFieldClassName,
+  adminLabelClassName,
+  adminPrimaryButtonClassName,
+  adminSecondaryButtonClassName,
+} from "@/components/admin/admin-form-styles";
+import {
+  EssayMarkdownPreview,
+  estimateEssayReadingMinutes,
+  formatEssayCharacterCount,
+} from "@/components/admin/essay-markdown-preview";
+import { EssayStatusRow } from "@/components/admin/essay-status-row";
 import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
-import { essayStatusLabel } from "@/components/admin/essay-status-badge";
 import type { SaveIntent } from "@/lib/admin/save-intent";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
 import { essayActionIdleState } from "@/lib/admin/essay-action-state";
@@ -22,11 +34,6 @@ import {
 } from "@/lib/admin/parse-essay-form";
 import type { EssayStatus } from "@/lib/content/db-types";
 import type { SeriesRow } from "@/lib/content/db-types";
-
-const fieldClassName =
-  "mt-3 w-full rounded border border-line bg-paper px-4 py-3.5 text-base text-ink outline-none transition focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/25";
-
-const labelClassName = "text-keep block text-base font-medium text-ink";
 
 const metadataSectionClassName = "space-y-8 border-t border-line/70 pt-8";
 
@@ -66,30 +73,6 @@ type EssayFormSnapshot = {
   featured: boolean;
 };
 
-function FieldError({ message }: { message?: string }) {
-  if (!message) {
-    return null;
-  }
-
-  return (
-    <p className="text-keep mt-2 text-sm leading-6 text-accent" role="alert">
-      {message}
-    </p>
-  );
-}
-
-function EssayStatusRow({ status }: { status: EssayStatus }) {
-  return (
-    <p className="text-keep text-sm leading-7 text-ink-muted">
-      <span className="tracking-[0.08em] text-accent uppercase">상태</span>
-      <span aria-hidden="true" className="mx-2 text-line">
-        ·
-      </span>
-      <span className="font-medium text-ink">{essayStatusLabel(status)}</span>
-    </p>
-  );
-}
-
 function FormBanner({
   message,
   tone,
@@ -108,179 +91,6 @@ function FormBanner({
     >
       {message}
     </p>
-  );
-}
-
-const primaryButtonClassName =
-  "rounded border border-accent bg-accent px-5 py-3 text-base font-medium text-paper transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60";
-
-const secondaryButtonClassName =
-  "rounded border border-line bg-paper px-5 py-3 text-base font-medium text-ink transition hover:border-accent/40 disabled:cursor-not-allowed disabled:opacity-60";
-
-function formatCharacterCount(text: string) {
-  return new Intl.NumberFormat("ko-KR").format(
-    text.replace(/\s+/g, "").length,
-  );
-}
-
-function estimateReadingMinutesFromChars(text: string) {
-  const chars = text.replace(/\s+/g, "").length;
-  return Math.max(1, Math.ceil(chars / 600));
-}
-
-type MarkdownNode =
-  | { type: "h1" | "h2" | "p" | "quote"; content: string; key: string }
-  | { type: "hr"; key: string }
-  | { type: "list"; items: string[]; key: string };
-
-function markdownToNodes(source: string): MarkdownNode[] {
-  const lines = source.split("\n");
-  const nodes: MarkdownNode[] = [];
-  let idx = 0;
-
-  while (idx < lines.length) {
-    const line = lines[idx]?.trimEnd() ?? "";
-
-    if (!line.trim()) {
-      idx += 1;
-      continue;
-    }
-
-    if (line === "---") {
-      nodes.push({ type: "hr", key: `hr-${idx}` });
-      idx += 1;
-      continue;
-    }
-
-    if (line.startsWith("# ")) {
-      nodes.push({
-        type: "h1",
-        content: line.slice(2).trim(),
-        key: `h1-${idx}`,
-      });
-      idx += 1;
-      continue;
-    }
-
-    if (line.startsWith("## ")) {
-      nodes.push({
-        type: "h2",
-        content: line.slice(3).trim(),
-        key: `h2-${idx}`,
-      });
-      idx += 1;
-      continue;
-    }
-
-    if (line.startsWith("- ")) {
-      const items: string[] = [];
-      while (idx < lines.length && lines[idx].trimStart().startsWith("- ")) {
-        items.push(lines[idx].trimStart().slice(2).trim());
-        idx += 1;
-      }
-      nodes.push({ type: "list", items, key: `list-${idx}` });
-      continue;
-    }
-
-    if (line.startsWith("> ")) {
-      const quoteLines: string[] = [];
-      while (idx < lines.length && lines[idx].trimStart().startsWith("> ")) {
-        quoteLines.push(lines[idx].trimStart().slice(2).trim());
-        idx += 1;
-      }
-      nodes.push({
-        type: "quote",
-        content: quoteLines.join(" "),
-        key: `quote-${idx}`,
-      });
-      continue;
-    }
-
-    const paragraphLines: string[] = [line.trim()];
-    idx += 1;
-    while (idx < lines.length && lines[idx].trim()) {
-      const next = lines[idx].trim();
-      if (
-        next.startsWith("# ") ||
-        next.startsWith("## ") ||
-        next.startsWith("- ") ||
-        next.startsWith("> ") ||
-        next === "---"
-      ) {
-        break;
-      }
-      paragraphLines.push(next);
-      idx += 1;
-    }
-    nodes.push({
-      type: "p",
-      content: paragraphLines.join(" "),
-      key: `p-${idx}`,
-    });
-  }
-
-  return nodes;
-}
-
-function MarkdownPreview({ source }: { source: string }) {
-  const nodes = useMemo(() => markdownToNodes(source), [source]);
-
-  if (!source.trim()) {
-    return (
-      <p className="text-keep text-base leading-8 text-ink-muted">
-        본문을 입력하면 여기에 미리보기가 표시됩니다.
-      </p>
-    );
-  }
-
-  return (
-    <div className="archive-prose">
-      {nodes.map((node) => {
-        if (node.type === "h1") {
-          return (
-            <h1 className="text-keep mt-8 font-serif text-3xl text-ink" key={node.key}>
-              {node.content}
-            </h1>
-          );
-        }
-        if (node.type === "h2") {
-          return (
-            <h2 className="text-keep mt-8 font-serif text-2xl text-ink" key={node.key}>
-              {node.content}
-            </h2>
-          );
-        }
-        if (node.type === "list") {
-          return (
-            <ul className="mt-4 list-disc space-y-2 pl-6" key={node.key}>
-              {node.items.map((item, itemIdx) => (
-                <li className="text-keep text-ink" key={`${node.key}-${itemIdx}`}>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          );
-        }
-        if (node.type === "quote") {
-          return (
-            <blockquote
-              className="text-keep mt-4 border-l-2 border-line pl-4 italic text-ink-muted"
-              key={node.key}
-            >
-              {node.content}
-            </blockquote>
-          );
-        }
-        if (node.type === "hr") {
-          return <hr className="my-8 border-line" key={node.key} />;
-        }
-        return (
-          <p className="text-keep mt-4 leading-8 text-ink" key={node.key}>
-            {node.content}
-          </p>
-        );
-      })}
-    </div>
   );
 }
 
@@ -384,8 +194,8 @@ export function EssayForm({
   const isGuardEnabled = hasUnsavedChanges && !isSubmitting;
 
   const fieldErrors = state.fieldErrors ?? {};
-  const characterCount = formatCharacterCount(content);
-  const readingMinutes = estimateReadingMinutesFromChars(content);
+  const characterCount = formatEssayCharacterCount(content);
+  const readingMinutes = estimateEssayReadingMinutes(content);
   const hasSubstantialBody = content.replace(/\s+/g, "").length > 400;
   const bodyTextareaMinHeightClass =
     mode === "create" && !hasSubstantialBody
@@ -604,11 +414,11 @@ export function EssayForm({
 
       <div className="space-y-3 border-b border-line/70 pb-8">
         <EssayStatusRow status={currentStatus} />
-        <label className={`${labelClassName} mt-4`} htmlFor="title">
+        <label className={`${adminLabelClassName} mt-4`} htmlFor="title">
           제목
         </label>
         <input
-          className={`${fieldClassName} font-serif text-2xl leading-snug`}
+          className={`${adminFieldClassName} font-serif text-2xl leading-snug`}
           defaultValue={initialValues.title}
           id="title"
           name="title"
@@ -617,12 +427,12 @@ export function EssayForm({
           required
           type="text"
         />
-        <FieldError message={fieldErrors.title} />
-        <label className={`${labelClassName} mt-6`} htmlFor="content">
+        <AdminFieldError message={fieldErrors.title} />
+        <label className={`${adminLabelClassName} mt-6`} htmlFor="content">
           본문
         </label>
         <textarea
-          className={`${fieldClassName} ${bodyTextareaMinHeightClass} resize-y px-5 py-4 text-[1.08rem] leading-9`}
+          className={`${adminFieldClassName} ${bodyTextareaMinHeightClass} resize-y px-5 py-4 text-[1.08rem] leading-9`}
           id="content"
           name="content"
           placeholder="여기에 본문을 작성합니다."
@@ -634,7 +444,7 @@ export function EssayForm({
           {characterCount}자 · 약 {readingMinutes}분 읽기
           {hasUnsavedChanges && !isPending ? " · 저장되지 않은 변경" : ""}
         </p>
-        <FieldError message={fieldErrors.content} />
+        <AdminFieldError message={fieldErrors.content} />
       </div>
 
       <AdminCollapsibleSection label="작성 가이드">
@@ -644,18 +454,18 @@ export function EssayForm({
       </AdminCollapsibleSection>
 
       <div>
-        <label className={labelClassName} htmlFor="description">
+        <label className={adminLabelClassName} htmlFor="description">
           한 줄 소개
         </label>
         <textarea
-          className={`${fieldClassName} min-h-[6rem] resize-y leading-8`}
+          className={`${adminFieldClassName} min-h-[6rem] resize-y leading-8`}
           defaultValue={initialValues.description}
           id="description"
           name="description"
           placeholder="글의 요지를 한 줄로 적습니다."
           rows={3}
         />
-        <FieldError message={fieldErrors.description} />
+        <AdminFieldError message={fieldErrors.description} />
       </div>
 
       <div className={metadataSectionClassName}>
@@ -663,41 +473,41 @@ export function EssayForm({
 
         <div className="grid gap-8 sm:grid-cols-2">
           <div>
-            <label className={labelClassName} htmlFor="essay_date">
+            <label className={adminLabelClassName} htmlFor="essay_date">
               글 날짜
             </label>
             <input
-              className={fieldClassName}
+              className={adminFieldClassName}
               defaultValue={initialValues.essay_date}
               id="essay_date"
               name="essay_date"
               type="date"
             />
-            <FieldError message={fieldErrors.essay_date} />
+            <AdminFieldError message={fieldErrors.essay_date} />
           </div>
 
           <div>
-            <label className={labelClassName} htmlFor="category">
+            <label className={adminLabelClassName} htmlFor="category">
               분류
             </label>
             <input
-              className={fieldClassName}
+              className={adminFieldClassName}
               defaultValue={initialValues.category}
               id="category"
               name="category"
               placeholder="예: 형벌론"
               type="text"
             />
-            <FieldError message={fieldErrors.category} />
+            <AdminFieldError message={fieldErrors.category} />
           </div>
         </div>
 
         <div>
-          <label className={labelClassName} htmlFor="series_slug">
+          <label className={adminLabelClassName} htmlFor="series_slug">
             연재
           </label>
           <select
-            className={fieldClassName}
+            className={adminFieldClassName}
             id="series_slug"
             name="series_slug"
             onChange={(event) => handleSeriesSlugChange(event.target.value)}
@@ -710,16 +520,16 @@ export function EssayForm({
               </option>
             ))}
           </select>
-          <FieldError message={fieldErrors.series_slug} />
+          <AdminFieldError message={fieldErrors.series_slug} />
         </div>
 
         {selectedSeriesSlug ? (
           <div>
-            <label className={labelClassName} htmlFor="series_order">
+            <label className={adminLabelClassName} htmlFor="series_order">
               연재 순서
             </label>
             <input
-              className={fieldClassName}
+              className={adminFieldClassName}
               id="series_order"
               inputMode="numeric"
               min={1}
@@ -743,7 +553,7 @@ export function EssayForm({
         label="고급 설정"
       >
         <div>
-          <label className={labelClassName} htmlFor="slug">
+          <label className={adminLabelClassName} htmlFor="slug">
               주소 (slug)
             </label>
             <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
@@ -757,7 +567,7 @@ export function EssayForm({
               <input name="slug" type="hidden" value={initialValues.slug} />
             ) : null}
             <input
-              className={fieldClassName}
+              className={adminFieldClassName}
               disabled={slugLocked}
               id="slug"
               name={slugLocked ? undefined : "slug"}
@@ -771,7 +581,7 @@ export function EssayForm({
               type="text"
               value={slugLocked ? initialValues.slug : slug}
             />
-            <FieldError message={fieldErrors.slug} />
+            <AdminFieldError message={fieldErrors.slug} />
           </div>
 
           <div className="flex items-start gap-3">
@@ -783,7 +593,7 @@ export function EssayForm({
               type="checkbox"
             />
             <div>
-              <label className={labelClassName} htmlFor="featured">
+              <label className={adminLabelClassName} htmlFor="featured">
                 홈페이지 추천 글
               </label>
               <p className="text-keep mt-1 text-sm leading-7 text-ink-muted">
@@ -801,7 +611,7 @@ export function EssayForm({
           <p className="text-keep text-sm leading-7 text-ink-muted">
             저장 후 공개 화면에서 다시 확인할 수 있습니다.
           </p>
-          <MarkdownPreview source={content} />
+          <EssayMarkdownPreview source={content} />
         </div>
       </AdminCollapsibleSection>
 
@@ -825,7 +635,7 @@ export function EssayForm({
           </div>
           <div className="flex shrink-0 flex-wrap gap-3">
             <button
-              className={secondaryButtonClassName}
+              className={adminSecondaryButtonClassName}
               disabled={isPending}
               name="intent"
               ref={draftButtonRef}
@@ -835,7 +645,7 @@ export function EssayForm({
               {isPending ? "저장 중…" : "임시 저장"}
             </button>
             <button
-              className={primaryButtonClassName}
+              className={adminPrimaryButtonClassName}
               disabled={isPending}
               name="intent"
               ref={publishButtonRef}
@@ -857,7 +667,7 @@ export function EssayForm({
           <div className="mt-5 flex flex-wrap gap-3">
             {currentStatus !== "archived" ? (
               <button
-                className={secondaryButtonClassName}
+                className={adminSecondaryButtonClassName}
                 disabled={isPending}
                 name="intent"
                 ref={archiveButtonRef}
@@ -868,7 +678,7 @@ export function EssayForm({
               </button>
             ) : null}
             <button
-              className={secondaryButtonClassName}
+              className={adminSecondaryButtonClassName}
               disabled={isPending}
               name="intent"
               ref={trashButtonRef}

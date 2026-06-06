@@ -1,56 +1,19 @@
-import type { GuestbookEntryRow } from "@/lib/content/db-types";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
 import { isSupabaseServiceRoleConfigured } from "@/lib/supabase/config";
 import { requireSupabaseServiceRoleClient } from "@/lib/supabase/server";
 import { scholarProfile } from "@/lib/profile";
-import type { GuestbookEntry, GuestbookEntryReply } from "@/lib/guestbook";
+import {
+  mapGuestbookEntryFromRow,
+  type GuestbookEntry,
+  type GuestbookListRow,
+} from "@/lib/guestbook";
 
 const ADMIN_GUESTBOOK_COLUMNS =
   "id, name, affiliation, content, status, reply_content, replied_at, replied_by, created_at, updated_at, password_hash" as const;
 
 const MAX_REPLY_LENGTH = 2000;
 
-type AdminGuestbookRow = Pick<
-  GuestbookEntryRow,
-  | "id"
-  | "name"
-  | "affiliation"
-  | "content"
-  | "status"
-  | "reply_content"
-  | "replied_at"
-  | "replied_by"
-  | "created_at"
-  | "updated_at"
-> & {
-  password_hash: string | null;
-};
-
 export type AdminGuestbookEntry = GuestbookEntry;
-
-function mapAdminGuestbookRow(row: AdminGuestbookRow): AdminGuestbookEntry {
-  const replyContent = row.reply_content?.trim();
-  const reply: GuestbookEntryReply | null =
-    replyContent && row.replied_at && row.replied_by
-      ? {
-          content: replyContent,
-          repliedAt: row.replied_at,
-          repliedBy: row.replied_by,
-        }
-      : null;
-
-  return {
-    id: row.id,
-    name: row.name,
-    affiliation: row.affiliation,
-    content: row.content,
-    status: row.status,
-    reply,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    authorDeleteSupported: Boolean(row.password_hash),
-  };
-}
 
 export function isAdminGuestbookAvailable() {
   return isSupabaseServiceRoleConfigured();
@@ -69,7 +32,9 @@ export async function listAdminGuestbookEntries(): Promise<AdminGuestbookEntry[]
     throw new Error(`Failed to load guestbook entries: ${error.message}`);
   }
 
-  return (data ?? []).map(mapAdminGuestbookRow);
+  return (data ?? []).map((row) =>
+    mapGuestbookEntryFromRow(row as GuestbookListRow),
+  );
 }
 
 export type SaveGuestbookReplyResult =

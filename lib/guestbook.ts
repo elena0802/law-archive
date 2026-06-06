@@ -29,7 +29,7 @@ export type GuestbookEntry = {
 const PUBLIC_GUESTBOOK_COLUMNS =
   "id, name, affiliation, content, status, reply_content, replied_at, replied_by, created_at, updated_at, password_hash" as const;
 
-type GuestbookListRow = Pick<
+export type GuestbookListRow = Pick<
   GuestbookEntryRow,
   | "id"
   | "name"
@@ -63,7 +63,7 @@ function mapGuestbookReply(row: GuestbookListRow): GuestbookEntryReply | null {
   };
 }
 
-function mapGuestbookRow(row: GuestbookListRow): GuestbookEntry {
+export function mapGuestbookEntryFromRow(row: GuestbookListRow): GuestbookEntry {
   return {
     id: row.id,
     name: row.name,
@@ -111,7 +111,7 @@ export async function listApprovedGuestbookEntries(): Promise<GuestbookEntry[]> 
     throw new Error(`Failed to load guestbook entries: ${error.message}`);
   }
 
-  return (data ?? []).map(mapGuestbookRow);
+  return (data ?? []).map(mapGuestbookEntryFromRow);
 }
 
 export type CreateGuestbookEntryInput = {

@@ -1,6 +1,6 @@
 import { GuestbookEntryDelete } from "@/components/guestbook-entry-delete";
+import { GuestbookEntryReplyDisplay } from "@/components/guestbook-entry-reply";
 import { formatGuestbookDate, type GuestbookEntry } from "@/lib/guestbook";
-import { siteConfig } from "@/lib/site";
 
 type GuestbookEntryListProps = {
   entries: GuestbookEntry[];
@@ -19,21 +19,7 @@ function GuestbookEntryItem({ entry }: { entry: GuestbookEntry }) {
         {entry.content}
       </p>
 
-      {entry.reply ? (
-        <div className="mt-4 border-l border-line/50 pl-3 sm:pl-4">
-          <p className="text-keep text-sm leading-6 text-ink-muted">
-            <span aria-hidden className="mr-1.5 text-line">
-              ㄴ
-            </span>
-            <span className="font-medium text-ink">
-              {entry.reply.repliedBy || siteConfig.authorName}
-            </span>
-          </p>
-          <p className="text-keep mt-1.5 whitespace-pre-wrap text-[0.9375rem] leading-7 text-ink">
-            {entry.reply.content}
-          </p>
-        </div>
-      ) : null}
+      {entry.reply ? <GuestbookEntryReplyDisplay reply={entry.reply} /> : null}
 
       <div className="text-keep mt-4 text-sm leading-6 text-ink-muted">
         <span>{formatGuestbookDate(entry.createdAt)}</span>
