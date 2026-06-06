@@ -9,6 +9,7 @@ import {
   useState,
   type FormEvent,
 } from "react";
+import { AdminCollapsibleSection } from "@/components/admin/admin-collapsible-section";
 import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
 import { EssayStatusBadge } from "@/components/admin/essay-status-badge";
@@ -31,9 +32,6 @@ const sectionPanelClassName =
   "space-y-10 rounded border border-line px-5 py-6";
 
 const sectionHeadingClassName = "text-keep text-base font-medium text-ink";
-
-const collapsibleSummaryClassName =
-  "text-keep cursor-pointer list-none text-base font-medium text-ink marker:content-none [&::-webkit-details-marker]:hidden";
 
 const WRITING_GUIDE = `# 큰 제목
 ## 소제목
@@ -621,12 +619,11 @@ export function EssayForm({
         <FieldError message={fieldErrors.content} />
       </div>
 
-      <details className="rounded border border-line bg-paper-muted px-5 py-4">
-        <summary className={collapsibleSummaryClassName}>작성 가이드 보기</summary>
-        <pre className="text-keep mt-4 whitespace-pre-wrap text-sm leading-7 text-ink-muted">
+      <AdminCollapsibleSection label="작성 가이드">
+        <pre className="text-keep whitespace-pre-wrap text-sm leading-7 text-ink-muted">
           {WRITING_GUIDE}
         </pre>
-      </details>
+      </AdminCollapsibleSection>
 
       <div>
         <label className={labelClassName} htmlFor="description">
@@ -722,11 +719,13 @@ export function EssayForm({
         ) : null}
       </div>
 
-      <details className="rounded border border-line px-5 py-6">
-        <summary className={collapsibleSummaryClassName}>고급 설정</summary>
-        <div className="mt-6 space-y-10">
-          <div>
-            <label className={labelClassName} htmlFor="slug">
+      <AdminCollapsibleSection
+        className="rounded border border-line bg-paper"
+        contentClassName="space-y-10 px-5 pb-6"
+        label="고급 설정"
+      >
+        <div>
+          <label className={labelClassName} htmlFor="slug">
               주소 (slug)
             </label>
             <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
@@ -774,18 +773,16 @@ export function EssayForm({
               </p>
             </div>
           </div>
-        </div>
-      </details>
+      </AdminCollapsibleSection>
 
-      <details className="rounded border border-line bg-paper-muted px-5 py-5">
-        <summary className={collapsibleSummaryClassName}>미리보기</summary>
-        <div className="mt-4 space-y-4">
+      <AdminCollapsibleSection label="미리보기">
+        <div className="space-y-4">
           <p className="text-keep text-sm leading-7 text-ink-muted">
             저장 후 공개 화면에서 다시 확인할 수 있습니다.
           </p>
           <MarkdownPreview source={content} />
         </div>
-      </details>
+      </AdminCollapsibleSection>
 
       <div className="mt-10 rounded border border-line px-5 py-6">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
