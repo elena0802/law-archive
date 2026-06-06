@@ -36,6 +36,11 @@ export function normalizeEssaySlug(raw: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+/** Client-side slug hint from title (ASCII). Server fills in on save if empty. */
+export function generateEssaySlugFromTitle(title: string) {
+  return normalizeEssaySlug(title);
+}
+
 function readString(formData: FormData, name: string) {
   const value = formData.get(name);
   return typeof value === "string" ? value.trim() : "";
@@ -109,7 +114,7 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
   }
 
   if (isPublish) {
-    const slug = normalizeEssaySlug(rawSlug);
+    const slug = normalizeEssaySlug(rawSlug) || buildDraftSlug(title, "");
 
     if (!slug) {
       errors.slug = "주소(slug)를 입력해 주세요.";

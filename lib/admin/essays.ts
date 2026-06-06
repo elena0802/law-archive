@@ -231,3 +231,45 @@ export function essayRowToFormValues(essay: EssayRow) {
     featured: essay.featured,
   };
 }
+
+/** Next suggested `series_order` per series slug (excludes one essay on edit). */
+export async function getSeriesOrderHints(
+  excludeEssayId?: string,
+): Promise<Record<string, number>> {
+  const { supabase } = await requireEditorSupabase();
+
+  let query = supabase
+    .from("essays")
+    .select("series_slug, series_order")
+    .not("series_slug", "is", null);
+
+  if (excludeEssayId) {
+    query = query.neq("id", excludeEssayId);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const maxBySeries = new Map<string, number>();
+
+  for (const row of data ?? []) {
+    if (!row.series_slug || row.series_order == null) {
+      continue;
+    }
+
+    maxBySeries.set(
+      row.series_slug,
+      Math.max(maxBySeries.get(row.series_slug) ?? 0, row.series_order),
+    );
+  }
+
+  const hints: Record<string, number> = {};
+  for (const [slug, max] of maxBySeries) {
+    hints[slug] = max + 1;
+  }
+
+  return hints;
+}

@@ -15,7 +15,10 @@ import { EssayStatusBadge } from "@/components/admin/essay-status-badge";
 import type { SaveIntent } from "@/lib/admin/save-intent";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
 import { essayActionIdleState } from "@/lib/admin/essay-action-state";
-import type { EssayFormValues } from "@/lib/admin/parse-essay-form";
+import {
+  generateEssaySlugFromTitle,
+  type EssayFormValues,
+} from "@/lib/admin/parse-essay-form";
 import type { EssayStatus } from "@/lib/content/db-types";
 import type { SeriesRow } from "@/lib/content/db-types";
 
@@ -44,6 +47,7 @@ type EssayFormProps = {
   initialValues: EssayFormValues;
   currentStatus: EssayStatus;
   series: Pick<SeriesRow, "slug" | "title">[];
+  seriesOrderHints?: Record<string, number>;
   slugLocked: boolean;
   action: (
     prevState: EssayActionState,
@@ -332,6 +336,7 @@ export function EssayForm({
   initialValues,
   currentStatus,
   series,
+  seriesOrderHints = {},
   slugLocked,
   action,
   noticeMessage,
@@ -349,6 +354,18 @@ export function EssayForm({
   const archiveConfirmedRef = useRef(false);
   const trashConfirmedRef = useRef(false);
   const [content, setContent] = useState(initialValues.content);
+  const [slug, setSlug] = useState(initialValues.slug);
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(
+    mode === "edit" && Boolean(initialValues.slug),
+  );
+  const [selectedSeriesSlug, setSelectedSeriesSlug] = useState(
+    initialValues.series_slug,
+  );
+  const [seriesOrder, setSeriesOrder] = useState(
+    initialValues.series_order === null
+      ? ""
+      : String(initialValues.series_order),
+  );
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
@@ -530,6 +547,28 @@ export function EssayForm({
     setTrashConfirmOpen(false);
   }, []);
 
+  const handleTitleInput = useCallback(
+    (title: string) => {
+      if (slugLocked || slugManuallyEdited) {
+        return;
+      }
+      setSlug(generateEssaySlugFromTitle(title));
+    },
+    [slugLocked, slugManuallyEdited],
+  );
+
+  const handleSeriesSlugChange = useCallback(
+    (next: string) => {
+      setSelectedSeriesSlug(next);
+      if (!next) {
+        setSeriesOrder("");
+        return;
+      }
+      setSeriesOrder(String(seriesOrderHints[next] ?? 1));
+    },
+    [seriesOrderHints],
+  );
+
   return (
     <form
       action={formAction}
@@ -557,6 +596,7 @@ export function EssayForm({
           defaultValue={initialValues.title}
           id="title"
           name="title"
+          onInput={(event) => handleTitleInput(event.currentTarget.value)}
           placeholder="글 제목을 입력합니다"
           required
           type="text"
@@ -637,101 +677,105 @@ export function EssayForm({
           </div>
         </div>
 
-        <div className="grid gap-10 sm:grid-cols-2">
-          <div>
-            <label className={labelClassName} htmlFor="series_slug">
-              연재
-            </label>
-            <select
-              className={fieldClassName}
-              defaultValue={initialValues.series_slug}
-              id="series_slug"
-              name="series_slug"
-            >
-              <option disabled value="">
-                연재 선택
+        <div>
+          <label className={labelClassName} htmlFor="series_slug">
+            연재
+          </label>
+          <select
+            className={fieldClassName}
+            id="series_slug"
+            name="series_slug"
+            onChange={(event) => handleSeriesSlugChange(event.target.value)}
+            value={selectedSeriesSlug}
+          >
+            <option value="">연재 선택</option>
+            {series.map((item) => (
+              <option key={item.slug} value={item.slug}>
+                {item.title}
               </option>
-              {series.map((item) => (
-                <option key={item.slug} value={item.slug}>
-                  {item.title}
-                </option>
-              ))}
-            </select>
-            <FieldError message={fieldErrors.series_slug} />
-          </div>
+            ))}
+          </select>
+          <FieldError message={fieldErrors.series_slug} />
+        </div>
 
+        {selectedSeriesSlug ? (
           <div>
             <label className={labelClassName} htmlFor="series_order">
               연재 순서
             </label>
             <input
               className={fieldClassName}
-              defaultValue={
-                initialValues.series_order === null
-                  ? ""
-                  : String(initialValues.series_order)
-              }
               id="series_order"
               inputMode="numeric"
               min={1}
               name="series_order"
+              onChange={(event) => setSeriesOrder(event.target.value)}
               placeholder="예: 1"
               type="number"
+              value={seriesOrder}
             />
             <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
-              연재 안에서 읽히는 순서입니다. 비워두면 제목 번호를 기준으로
-              정렬됩니다.
+              현재 연재의 다음 순서가 자동 제안됩니다. 비워두면 제목 번호를
+              기준으로 정렬됩니다.
             </p>
           </div>
-        </div>
+        ) : null}
       </div>
 
-      <div className={sectionPanelClassName}>
-        <p className={sectionHeadingClassName}>고급 설정</p>
-
-        <div>
-          <label className={labelClassName} htmlFor="slug">
-            주소 (slug)
-          </label>
-          <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
-            주소는 글 제목을 바탕으로 정리할 수 있습니다. /essays/주소 형태입니다.
-            {slugLocked ? " 공개된 글은 주소를 바꿀 수 없습니다." : null}
-          </p>
-          {slugLocked ? (
-            <input name="slug" type="hidden" value={initialValues.slug} />
-          ) : null}
-          <input
-            className={fieldClassName}
-            defaultValue={initialValues.slug}
-            disabled={slugLocked}
-            id="slug"
-            name={slugLocked ? undefined : "slug"}
-            pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-            placeholder="예: criminal-law-essay"
-            readOnly={slugLocked}
-            type="text"
-          />
-          <FieldError message={fieldErrors.slug} />
-        </div>
-
-        <div className="flex items-start gap-3">
-          <input
-            className="mt-1.5 size-4 accent-accent"
-            defaultChecked={initialValues.featured}
-            id="featured"
-            name="featured"
-            type="checkbox"
-          />
+      <details className="rounded border border-line px-5 py-6">
+        <summary className={collapsibleSummaryClassName}>고급 설정</summary>
+        <div className="mt-6 space-y-10">
           <div>
-            <label className={labelClassName} htmlFor="featured">
-              대표 글
+            <label className={labelClassName} htmlFor="slug">
+              주소 (slug)
             </label>
-            <p className="text-keep mt-1 text-sm leading-7 text-ink-muted">
-              나중에 홈이나 추천 영역에 쓰일 수 있습니다.
+            <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+              주소는 글 제목을 바탕으로 정리할 수 있습니다. /essays/주소
+              형태입니다.
+              {slugLocked
+                ? " 공개된 글은 주소를 바꿀 수 없습니다."
+                : " 비워두면 저장 시 제목을 바탕으로 자동 생성됩니다."}
             </p>
+            {slugLocked ? (
+              <input name="slug" type="hidden" value={initialValues.slug} />
+            ) : null}
+            <input
+              className={fieldClassName}
+              disabled={slugLocked}
+              id="slug"
+              name={slugLocked ? undefined : "slug"}
+              onChange={(event) => {
+                setSlugManuallyEdited(true);
+                setSlug(event.target.value);
+              }}
+              pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+              placeholder="제목에서 자동 생성"
+              readOnly={slugLocked}
+              type="text"
+              value={slugLocked ? initialValues.slug : slug}
+            />
+            <FieldError message={fieldErrors.slug} />
+          </div>
+
+          <div className="flex items-start gap-3">
+            <input
+              className="mt-1.5 size-4 accent-accent"
+              defaultChecked={initialValues.featured}
+              id="featured"
+              name="featured"
+              type="checkbox"
+            />
+            <div>
+              <label className={labelClassName} htmlFor="featured">
+                홈페이지 추천 글
+              </label>
+              <p className="text-keep mt-1 text-sm leading-7 text-ink-muted">
+                홈페이지 주요 영역에 노출할 글로 추천합니다.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      </details>
 
       <details className="rounded border border-line bg-paper-muted px-5 py-5">
         <summary className={collapsibleSummaryClassName}>미리보기</summary>

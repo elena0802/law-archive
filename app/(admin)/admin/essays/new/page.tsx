@@ -3,14 +3,17 @@ import Link from "next/link";
 import { createEssay } from "@/app/(admin)/admin/essays/actions";
 import { EssayForm } from "@/components/admin/essay-form";
 import { emptyEssayFormValues } from "@/lib/admin/parse-essay-form";
-import { listAdminSeries } from "@/lib/admin/essays";
+import { getSeriesOrderHints, listAdminSeries } from "@/lib/admin/essays";
 
 export const metadata: Metadata = {
   title: "새 글",
 };
 
 export default async function AdminNewEssayPage() {
-  const series = await listAdminSeries({ activeOnly: true });
+  const [series, seriesOrderHints] = await Promise.all([
+    listAdminSeries({ activeOnly: true }),
+    getSeriesOrderHints(),
+  ]);
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
@@ -42,6 +45,7 @@ export default async function AdminNewEssayPage() {
         initialValues={emptyEssayFormValues()}
         mode="create"
         series={series}
+        seriesOrderHints={seriesOrderHints}
         slugLocked={false}
       />
     </div>

@@ -8,6 +8,7 @@ import { getAdminEssayNoticeMessage } from "@/lib/admin/admin-notices";
 import {
   essayRowToFormValues,
   getAdminEssayById,
+  getSeriesOrderHints,
   listAdminSeries,
 } from "@/lib/admin/essays";
 import type { SeriesRow } from "@/lib/content/db-types";
@@ -71,9 +72,10 @@ export default async function AdminEditEssayPage({
     notFound();
   }
 
-  const { series, seriesLoadWarning } = await loadSeriesForEdit(
-    essay.series_slug ?? "",
-  );
+  const [{ series, seriesLoadWarning }, seriesOrderHints] = await Promise.all([
+    loadSeriesForEdit(essay.series_slug ?? ""),
+    getSeriesOrderHints(id),
+  ]);
 
   const updateWithId = updateEssay.bind(null, id);
   const noticeMessage = getAdminEssayNoticeMessage(notice);
@@ -126,6 +128,7 @@ export default async function AdminEditEssayPage({
         mode="edit"
         noticeMessage={noticeMessage}
         series={series}
+        seriesOrderHints={seriesOrderHints}
         slugLocked={essay.status === "published"}
       />
     </div>
