@@ -8,23 +8,39 @@ import { createSupabaseServerClient } from "@/lib/supabase/server-ssr";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { requireSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
+export type GuestbookEntryReply = {
+  content: string;
+  repliedAt: string;
+  repliedBy: string;
+};
+
 export type GuestbookEntry = {
   id: string;
   name: string;
   affiliation: string | null;
   content: string;
   status: GuestbookEntryRow["status"];
+  reply: GuestbookEntryReply | null;
   createdAt: string;
   updatedAt: string;
   authorDeleteSupported: boolean;
 };
 
 const PUBLIC_GUESTBOOK_COLUMNS =
-  "id, name, affiliation, content, status, created_at, updated_at, password_hash" as const;
+  "id, name, affiliation, content, status, reply_content, replied_at, replied_by, created_at, updated_at, password_hash" as const;
 
 type GuestbookListRow = Pick<
   GuestbookEntryRow,
-  "id" | "name" | "affiliation" | "content" | "status" | "created_at" | "updated_at"
+  | "id"
+  | "name"
+  | "affiliation"
+  | "content"
+  | "status"
+  | "reply_content"
+  | "replied_at"
+  | "replied_by"
+  | "created_at"
+  | "updated_at"
 > & {
   password_hash: string | null;
 };
@@ -34,6 +50,19 @@ const MAX_NAME_LENGTH = 80;
 const MAX_AFFILIATION_LENGTH = 120;
 const MIN_PASSWORD_LENGTH = 4;
 
+function mapGuestbookReply(row: GuestbookListRow): GuestbookEntryReply | null {
+  const content = row.reply_content?.trim();
+  if (!content || !row.replied_at || !row.replied_by) {
+    return null;
+  }
+
+  return {
+    content,
+    repliedAt: row.replied_at,
+    repliedBy: row.replied_by,
+  };
+}
+
 function mapGuestbookRow(row: GuestbookListRow): GuestbookEntry {
   return {
     id: row.id,
@@ -41,6 +70,7 @@ function mapGuestbookRow(row: GuestbookListRow): GuestbookEntry {
     affiliation: row.affiliation,
     content: row.content,
     status: row.status,
+    reply: mapGuestbookReply(row),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     authorDeleteSupported: Boolean(row.password_hash),

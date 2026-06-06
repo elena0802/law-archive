@@ -85,6 +85,9 @@ export type GuestbookEntryRow = {
   content: string;
   password_hash: string | null;
   status: GuestbookEntryStatus;
+  reply_content: string | null;
+  replied_at: string | null;
+  replied_by: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -95,6 +98,9 @@ export type GuestbookEntryInsert = {
   content: string;
   status?: GuestbookEntryStatus;
   password_hash?: string | null;
+  reply_content?: string | null;
+  replied_at?: string | null;
+  replied_by?: string | null;
 };
 
 export type NewsletterSubscriberStatus = "active" | "unsubscribed";

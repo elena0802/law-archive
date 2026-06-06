@@ -11,3 +11,6 @@ export const ADMIN_COMMENTS_UNAVAILABLE =
 
 export const ADMIN_NEWSLETTER_UNAVAILABLE =
   "뉴스레터 관리 기능이 아직 사용할 수 없습니다. 사이트 관리자에게 문의해 주세요.";
+
+export const ADMIN_GUESTBOOK_UNAVAILABLE =
+  "안부의 글 관리 기능이 아직 사용할 수 없습니다. 사이트 관리자에게 문의해 주세요.";
