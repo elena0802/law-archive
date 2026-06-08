@@ -1,3 +1,5 @@
+import "server-only";
+
 import { isAllowedEditorEmail } from "@/lib/auth/editor";
 import {
   createSupabaseServerClient,

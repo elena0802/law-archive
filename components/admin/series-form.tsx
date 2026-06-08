@@ -10,7 +10,7 @@ import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
 import { essayActionIdleState } from "@/lib/admin/essay-action-state";
 import type { SeriesFormValues } from "@/lib/admin/parse-series-form";
-import { generateSeriesSlugFromTitle } from "@/lib/admin/series";
+import { generateSeriesSlugFromTitle } from "@/lib/admin/series-slug";
 import type { SeriesStatus } from "@/lib/content/db-types";
 
 type SeriesFormProps = {

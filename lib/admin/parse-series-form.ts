@@ -3,7 +3,7 @@ import {
   isValidSeriesSlug,
   parseSeriesStatus,
   resolveSeriesSlug,
-} from "@/lib/admin/series";
+} from "@/lib/admin/series-slug";
 
 export type SeriesFormValues = {
   title: string;
