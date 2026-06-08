@@ -31,7 +31,7 @@ export function SeriesSiblings({
         className="text-xs tracking-[0.14em] text-accent uppercase"
         id="essay-siblings-heading"
       >
-        같은 연재
+        이 연재의 다른 글
       </h2>
       <ol className="mt-3 list-none space-y-2 p-0">
         {essays.map((essay, index) => (

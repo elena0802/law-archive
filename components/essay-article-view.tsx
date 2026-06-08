@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { CitationBlock } from "@/components/citation-block";
 import { EssayCommentsSection } from "@/components/essay-comments-section";
 import { EssayPreviewBanner } from "@/components/essay-preview-banner";
 import { EssayShareButton } from "@/components/essay-share-button";
@@ -13,25 +12,19 @@ import type { Essay } from "@/lib/essays";
 import { isPublishedEssayStatus } from "@/lib/content/essay-status";
 import {
   estimateReadingMinutes,
-  formatEssayDate,
-  getRelatedEssays,
   getSeriesBySlug,
   getSeriesPartLabel,
   getSeriesSlug,
   sortEssaysForSeries,
 } from "@/lib/essays";
 import { isCommentsAvailable } from "@/lib/comments";
-import { formatEssayCitation, getSiteOrigin } from "@/lib/site";
+import { getSiteOrigin } from "@/lib/site";
 
 type EssayArticleViewProps = {
   essay: Essay;
   mode?: "public" | "preview";
   editHref?: string;
 };
-
-function essayHref(slug: string, previewMode: boolean) {
-  return previewMode ? `/preview/${slug}` : `/essays/${slug}`;
-}
 
 export async function EssayArticleView({
   essay,
@@ -46,23 +39,12 @@ export async function EssayArticleView({
   const essaysInSeries = series ? sortEssaysForSeries(series.essays) : [];
   const readingMinutes = estimateReadingMinutes(essay.content);
   const partLabel = getSeriesPartLabel(essaysInSeries, essay.slug);
-  const currentIndex = essaysInSeries.findIndex((item) => item.slug === essay.slug);
-  const previousEssay = currentIndex > 0 ? essaysInSeries[currentIndex - 1] : null;
-  const nextEssay =
-    currentIndex >= 0 && currentIndex < essaysInSeries.length - 1
-      ? essaysInSeries[currentIndex + 1]
-      : null;
   const isPublic =
     essay.status !== undefined
       ? isPublishedEssayStatus(essay.status)
       : !essay.draft;
-  const citation = formatEssayCitation({
-    title: essay.title,
-    slug: essay.slug,
-    date: essay.date,
-    siteOrigin: getSiteOrigin(),
-  });
-  const relatedEssays = isPreview ? [] : await getRelatedEssays(essay, 3);
+  const showComments = !isPreview && isCommentsAvailable();
+  const showSeriesSiblings = essaysInSeries.length > 0;
 
   return (
     <>
@@ -167,95 +149,20 @@ export async function EssayArticleView({
             </div>
           ) : null}
 
-          {previousEssay || nextEssay ? (
-            <nav
-              aria-label="연재 이전 다음 글"
-              className="mt-12 border-t border-line pt-8"
-            >
-              <div className="grid gap-6 sm:grid-cols-2">
-                <div>
-                  {previousEssay ? (
-                    <>
-                      <p className="text-xs tracking-[0.14em] text-ink-muted uppercase">
-                        이전 글
-                      </p>
-                      <Link
-                        className="text-keep mt-2 block font-serif text-lg leading-8 text-ink underline-offset-4 hover:text-accent hover:underline"
-                        href={essayHref(previousEssay.slug, isPreview)}
-                      >
-                        ← {previousEssay.title}
-                      </Link>
-                    </>
-                  ) : null}
-                </div>
-                <div className="text-left sm:text-right">
-                  {nextEssay ? (
-                    <>
-                      <p className="text-xs tracking-[0.14em] text-ink-muted uppercase">
-                        다음 글
-                      </p>
-                      <Link
-                        className="text-keep mt-2 block font-serif text-lg leading-8 text-ink underline-offset-4 hover:text-accent hover:underline"
-                        href={essayHref(nextEssay.slug, isPreview)}
-                      >
-                        {nextEssay.title} →
-                      </Link>
-                    </>
-                  ) : null}
-                </div>
-              </div>
-            </nav>
+          {showComments || showSeriesSiblings ? (
+            <div className="mt-12 space-y-10 border-t border-line pt-10">
+              {showComments ? (
+                <EssayCommentsSection essaySlug={essay.slug} />
+              ) : null}
+              {showSeriesSiblings ? (
+                <SeriesSiblings
+                  currentSlug={essay.slug}
+                  essays={essaysInSeries}
+                  previewMode={isPreview}
+                />
+              ) : null}
+            </div>
           ) : null}
-
-          <footer className="mt-10 space-y-10 border-t border-line pt-10">
-            <CitationBlock citation={citation} />
-            {essaysInSeries.length > 0 ? (
-              <SeriesSiblings
-                currentSlug={essay.slug}
-                essays={essaysInSeries}
-                previewMode={isPreview}
-              />
-            ) : null}
-            {relatedEssays.length > 0 ? (
-              <section aria-labelledby="related-reading-heading">
-                <h2
-                  className="text-xs tracking-[0.14em] text-accent uppercase"
-                  id="related-reading-heading"
-                >
-                  함께 읽으면 좋은 글
-                </h2>
-                <ul className="mt-3 list-none space-y-5 p-0">
-                  {relatedEssays.map((item) => (
-                    <li key={item.slug}>
-                      <Link
-                        className="block border-t border-line pt-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                        href={`/essays/${item.slug}`}
-                      >
-                        <p className="font-serif text-[1.125rem] leading-snug text-ink underline-offset-4 hover:text-accent hover:underline">
-                          {item.title}
-                        </p>
-                        {item.description.trim() ? (
-                          <p className="text-keep mt-2 text-base leading-8 text-ink-muted">
-                            {item.description}
-                          </p>
-                        ) : null}
-                        <p className="mt-3 text-sm leading-6 text-ink-muted">
-                          {formatEssayDate(item.date)} · {item.category}
-                          <span aria-hidden="true" className="mx-2 text-line">
-                            ·
-                          </span>
-                          연재: {item.series}
-                        </p>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ) : null}
-            {!isPreview && isCommentsAvailable() ? (
-              <EssayCommentsSection essaySlug={essay.slug} />
-            ) : null}
-          </footer>
         </article>
       </div>
     </>

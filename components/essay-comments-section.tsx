@@ -36,9 +36,14 @@ export async function EssayCommentsSection({ essaySlug }: EssayCommentsSectionPr
       ) : threads.length > 0 ? (
         <EssayCommentThreadList essaySlug={essaySlug} threads={threads} />
       ) : (
-        <p className="text-keep mt-6 text-base leading-8 text-ink-muted">
-          아직 댓글이 없습니다. 첫 번째 의견을 남겨 주세요.
-        </p>
+        <>
+          <p className="text-keep mt-6 text-base leading-8 text-ink-muted">
+            이 글에 대한 생각을 남겨 주세요.
+          </p>
+          <p className="text-keep mt-2 text-base leading-8 text-ink-muted">
+            아직 댓글이 없습니다. 첫 번째 의견을 남겨 주세요.
+          </p>
+        </>
       )}
 
       <EssayCommentForm essaySlug={essaySlug} />
