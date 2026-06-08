@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { GoogleAnalytics } from "@/components/google-analytics";
+import { MicrosoftClarity } from "@/components/microsoft-clarity";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -37,6 +38,7 @@ export default function SiteLayout({
         <SiteFooter />
       </div>
       <GoogleAnalytics />
+      <MicrosoftClarity />
     </>
   );
 }
