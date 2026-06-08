@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleAnalytics } from "@/components/google-analytics";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -35,6 +36,7 @@ export default function SiteLayout({
         </main>
         <SiteFooter />
       </div>
+      <GoogleAnalytics />
     </>
   );
 }
