@@ -25,18 +25,31 @@ const AI_RESEARCH_TRACK_DEFINITIONS = [
       "AI 시대의 법학교육에 대한 생각을 기록합니다.",
     ],
     seriesTitle: "법학교육과 AI",
-    placeholderHref: "/series/legal-education-and-ai",
-    imageKey: "legal-education-and-ai",
+    seriesSlug: "법학교육과-ai",
+    placeholderHref: "/series/법학교육과-ai",
+    imageKey: "법학교육과-ai",
   },
 ] as const;
+
+function findTrackSeries(
+  allSeries: readonly EssaySeries[],
+  definition: (typeof AI_RESEARCH_TRACK_DEFINITIONS)[number],
+) {
+  if ("seriesSlug" in definition) {
+    const bySlug = allSeries.find((item) => item.slug === definition.seriesSlug);
+    if (bySlug) {
+      return bySlug;
+    }
+  }
+
+  return allSeries.find((item) => item.title === definition.seriesTitle);
+}
 
 export function buildAiResearchTracks(
   allSeries: readonly EssaySeries[],
 ): AiResearchTrack[] {
   return AI_RESEARCH_TRACK_DEFINITIONS.map((definition) => {
-    const series = allSeries.find(
-      (item) => item.title === definition.seriesTitle,
-    );
+    const series = findTrackSeries(allSeries, definition);
 
     return {
       title: definition.title,
