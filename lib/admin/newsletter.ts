@@ -63,15 +63,20 @@ export function isNewsletterDeliveryConfigured() {
   return isResendConfigured();
 }
 
-export async function getActiveSubscriberUnsubscribeUrl(
+export type ActiveSubscriberUnsubscribeLookup = {
+  isActiveSubscriber: boolean;
+  unsubscribeUrl: string | null;
+};
+
+export async function lookupActiveSubscriberUnsubscribe(
   email: string,
-): Promise<string | null> {
+): Promise<ActiveSubscriberUnsubscribeLookup> {
   await requireEditorSupabase();
   const supabase = requireSupabaseServiceRoleClient();
   const normalizedEmail = email.trim().toLowerCase();
 
   if (!normalizedEmail) {
-    return null;
+    return { isActiveSubscriber: false, unsubscribeUrl: null };
   }
 
   const { data, error } = await supabase
@@ -80,11 +85,23 @@ export async function getActiveSubscriberUnsubscribeUrl(
     .eq("email", normalizedEmail)
     .maybeSingle();
 
-  if (error || !data || data.status !== "active") {
-    return null;
+  if (error || !data) {
+    return { isActiveSubscriber: false, unsubscribeUrl: null };
   }
 
-  return buildNewsletterUnsubscribeUrl(data.unsubscribe_token);
+  if (data.status !== "active") {
+    return { isActiveSubscriber: false, unsubscribeUrl: null };
+  }
+
+  const token = data.unsubscribe_token?.trim();
+  if (!token) {
+    return { isActiveSubscriber: true, unsubscribeUrl: null };
+  }
+
+  return {
+    isActiveSubscriber: true,
+    unsubscribeUrl: buildNewsletterUnsubscribeUrl(token),
+  };
 }
 
 export async function getNewsletterSubscribers(): Promise<AdminNewsletterSubscriber[]> {

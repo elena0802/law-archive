@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { lookupActiveSubscriberUnsubscribe } from "@/lib/admin/newsletter";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
 import { isValidNewsletterEmail } from "@/lib/newsletter";
 import {
@@ -14,11 +15,15 @@ export type SendNewsletterTestEmailInput = {
   recipientEmail: string;
   subject: string;
   message: string;
-  unsubscribeUrl?: string | null;
 };
 
 export type SendNewsletterTestEmailResult =
-  | { ok: true; messageId: string }
+  | {
+      ok: true;
+      messageId: string;
+      includedUnsubscribeLink: boolean;
+      isActiveSubscriber: boolean;
+    }
   | {
       ok: false;
       error: string;
@@ -111,10 +116,13 @@ export async function sendNewsletterTestEmail(
     };
   }
 
+  const { isActiveSubscriber, unsubscribeUrl } =
+    await lookupActiveSubscriberUnsubscribe(recipientEmail);
+
   const content = buildNewsletterTestEmailContent({
     subject,
     message,
-    unsubscribeUrl: input.unsubscribeUrl,
+    unsubscribeUrl,
   });
 
   const resend = new Resend(process.env.RESEND_API_KEY);
@@ -141,5 +149,10 @@ export async function sendNewsletterTestEmail(
     };
   }
 
-  return { ok: true, messageId: data.id };
+  return {
+    ok: true,
+    messageId: data.id,
+    includedUnsubscribeLink: Boolean(unsubscribeUrl),
+    isActiveSubscriber,
+  };
 }

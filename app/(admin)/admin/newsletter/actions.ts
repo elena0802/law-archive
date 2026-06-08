@@ -1,9 +1,6 @@
 "use server";
 
-import {
-  exportNewsletterSubscribersCsv,
-  getActiveSubscriberUnsubscribeUrl,
-} from "@/lib/admin/newsletter";
+import { exportNewsletterSubscribersCsv } from "@/lib/admin/newsletter";
 import { sendNewsletterTestEmail } from "@/lib/newsletter-email/send-test";
 import {
   newsletterTestSendActionIdleState,
@@ -22,13 +19,10 @@ export async function sendNewsletterTestEmailAction(
   const subject = String(formData.get("subject") ?? "");
   const message = String(formData.get("message") ?? "");
 
-  const unsubscribeUrl = await getActiveSubscriberUnsubscribeUrl(recipientEmail);
-
   const result = await sendNewsletterTestEmail({
     recipientEmail,
     subject,
     message,
-    unsubscribeUrl,
   });
 
   if (!result.ok) {
@@ -39,9 +33,22 @@ export async function sendNewsletterTestEmailAction(
     };
   }
 
+  let successMessage = "테스트 메일이 발송되었습니다.";
+
+  if (result.includedUnsubscribeLink) {
+    successMessage +=
+      " 활성 구독자에게 수신 거부 링크가 포함되었습니다.";
+  } else if (result.isActiveSubscriber) {
+    successMessage +=
+      " 활성 구독자이지만 수신 거부 링크를 만들 수 없습니다. 구독자 토큰 설정을 확인해 주세요.";
+  } else {
+    successMessage +=
+      " 수신자가 활성 구독자가 아니어서 수신 거부 링크는 포함되지 않았습니다.";
+  }
+
   return {
     ...newsletterTestSendActionIdleState,
     status: "success",
-    message: "테스트 메일이 발송되었습니다.",
+    message: successMessage,
   };
 }

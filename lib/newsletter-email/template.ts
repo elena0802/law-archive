@@ -1,6 +1,8 @@
 import { siteConfig } from "@/lib/site";
 
 const TEST_FOOTER_LINE = "이 메일은 형사법 아카이브 뉴스레터 테스트 발송입니다.";
+const NON_SUBSCRIBER_FOOTER_LINE =
+  "테스트 수신자는 활성 구독자가 아니므로 수신 거부 링크가 포함되지 않았습니다.";
 
 export type NewsletterEmailContent = {
   subject: string;
@@ -34,6 +36,43 @@ function messageToHtmlParagraphs(message: string) {
     .join("");
 }
 
+function buildTestFooterText(unsubscribeUrl: string | null | undefined) {
+  const lines = ["", siteConfig.name, "", TEST_FOOTER_LINE];
+
+  if (unsubscribeUrl?.trim()) {
+    lines.push("", "수신 거부하기:", unsubscribeUrl.trim());
+  } else {
+    lines.push(NON_SUBSCRIBER_FOOTER_LINE);
+  }
+
+  return lines;
+}
+
+function buildTestFooterHtml(unsubscribeUrl: string | null | undefined) {
+  const footerIntro = `<p style="margin:2rem 0 0.75rem;font-family:Georgia,'Times New Roman',serif;font-size:1rem;line-height:1.5;color:#1f1f1f;">${escapeHtml(siteConfig.name)}</p>`;
+
+  if (unsubscribeUrl?.trim()) {
+    const safeUrl = escapeHtml(unsubscribeUrl.trim());
+    return [
+      footerIntro,
+      `<div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid #d9d9d9;">`,
+      `<p style="margin:0 0 0.75rem;font-size:0.875rem;line-height:1.6;color:#4a4a4a;">${escapeHtml(TEST_FOOTER_LINE)}</p>`,
+      `<p style="margin:0 0 0.5rem;font-size:0.9375rem;font-weight:600;line-height:1.6;color:#1f1f1f;">수신 거부하기:</p>`,
+      `<p style="margin:0 0 0.75rem;"><a href="${safeUrl}" style="display:inline-block;font-size:0.9375rem;font-weight:600;line-height:1.6;color:#1f1f1f;text-decoration:underline;">수신 거부하기</a></p>`,
+      `<p style="margin:0;font-size:0.8125rem;line-height:1.6;word-break:break-all;"><a href="${safeUrl}" style="color:#1f1f1f;text-decoration:underline;">${safeUrl}</a></p>`,
+      `</div>`,
+    ].join("");
+  }
+
+  return [
+    footerIntro,
+    `<div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid #d9d9d9;">`,
+    `<p style="margin:0 0 0.5rem;font-size:0.875rem;line-height:1.6;color:#4a4a4a;">${escapeHtml(TEST_FOOTER_LINE)}</p>`,
+    `<p style="margin:0;font-size:0.875rem;line-height:1.6;color:#4a4a4a;">${escapeHtml(NON_SUBSCRIBER_FOOTER_LINE)}</p>`,
+    `</div>`,
+  ].join("");
+}
+
 export function buildNewsletterTestEmailContent({
   subject,
   message,
@@ -44,34 +83,11 @@ export function buildNewsletterTestEmailContent({
   unsubscribeUrl?: string | null;
 }): NewsletterEmailContent {
   const trimmedMessage = message.trim();
-  const textParts = [
-    trimmedMessage,
-    "",
-    siteConfig.name,
-    "",
-    TEST_FOOTER_LINE,
-  ];
-
-  if (unsubscribeUrl?.trim()) {
-    textParts.push("", `구독 해지: ${unsubscribeUrl.trim()}`);
-  }
-
-  const htmlParts = [
-    messageToHtmlParagraphs(trimmedMessage),
-    `<p style="margin:2rem 0 0.75rem;font-family:Georgia,'Times New Roman',serif;font-size:1rem;line-height:1.5;color:#1f1f1f;">${escapeHtml(siteConfig.name)}</p>`,
-    `<p style="margin:0;font-size:0.875rem;line-height:1.6;color:#666;">${escapeHtml(TEST_FOOTER_LINE)}</p>`,
-  ];
-
-  if (unsubscribeUrl?.trim()) {
-    const safeUrl = escapeHtml(unsubscribeUrl.trim());
-    htmlParts.push(
-      `<p style="margin:1rem 0 0;font-size:0.875rem;line-height:1.6;"><a href="${safeUrl}" style="color:#666;">구독 해지</a></p>`,
-    );
-  }
+  const textParts = [trimmedMessage, ...buildTestFooterText(unsubscribeUrl)];
 
   return {
     subject: subject.trim(),
     text: textParts.join("\n"),
-    html: `<div style="max-width:36rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:1rem;color:#1f1f1f;">${htmlParts.join("")}</div>`,
+    html: `<div style="max-width:36rem;font-family:'Helvetica Neue',Arial,sans-serif;font-size:1rem;color:#1f1f1f;">${messageToHtmlParagraphs(trimmedMessage)}${buildTestFooterHtml(unsubscribeUrl)}</div>`,
   };
 }
