@@ -15,6 +15,7 @@ export type EssayRepository = {
   ): Promise<Essay | null>;
   getAllEssays(options?: EssayRepositoryOptions): Promise<Essay[]>;
   getAllSeries(options?: EssayRepositoryOptions): Promise<EssaySeries[]>;
+  getFeaturedSeries(options?: EssayRepositoryOptions): Promise<EssaySeries[]>;
   getSeriesBySlug(
     slug: string,
     options?: EssayRepositoryOptions,

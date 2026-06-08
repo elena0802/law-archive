@@ -85,6 +85,7 @@ export async function updateSeries(
       introduction: values.introduction,
       display_order: values.display_order,
       status: values.status,
+      featured: values.featured,
     })
     .eq("id", seriesId);
 

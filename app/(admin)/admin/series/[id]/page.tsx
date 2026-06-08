@@ -49,6 +49,7 @@ export default async function AdminEditSeriesPage({
           introduction: series.introduction,
           display_order: series.display_order,
           status: series.status,
+          featured: series.featured,
         }}
         mode="edit"
         noticeMessage={noticeMessage}

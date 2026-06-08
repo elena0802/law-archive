@@ -76,6 +76,7 @@ export default async function AdminSeriesPage({ searchParams }: AdminSeriesPageP
                 <th className="py-4 pr-4 font-medium">제목</th>
                 <th className="py-4 pr-4 font-medium">주소</th>
                 <th className="py-4 pr-4 font-medium">상태</th>
+                <th className="py-4 pr-4 font-medium">홈 노출</th>
                 <th className="py-4 pr-4 font-medium">글 수</th>
                 <th className="py-4 pr-4 font-medium">순서</th>
                 <th className="py-4 pr-4 font-medium">수정일</th>
@@ -90,6 +91,15 @@ export default async function AdminSeriesPage({ searchParams }: AdminSeriesPageP
                   <td className="py-4 pr-4 text-base text-ink">{item.title}</td>
                   <td className="py-4 pr-4 text-ink-muted">{item.slug}</td>
                   <td className="py-4 pr-4 text-ink-muted">{statusLabel(item.status)}</td>
+                  <td className="py-4 pr-4 text-ink-muted">
+                    {item.featured ? (
+                      <span className="text-keep inline-flex rounded-sm border border-line px-2 py-0.5 text-xs tracking-wide text-ink">
+                        홈 노출
+                      </span>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
                   <td className="py-4 pr-4 text-ink-muted">{item.essay_count}</td>
                   <td className="py-4 pr-4 text-ink-muted">{item.display_order}</td>
                   <td className="py-4 pr-4 text-ink-muted">

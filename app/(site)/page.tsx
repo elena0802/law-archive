@@ -6,7 +6,7 @@ import { HomeNewsletter } from "@/components/home/home-newsletter";
 import { HomeRecentWriting } from "@/components/home/home-recent-writing";
 import { HomeResearchArchiveSummary } from "@/components/home/home-research-archive-summary";
 import { Section } from "@/components/section";
-import { getAllEssays, getAllSeries } from "@/lib/essays";
+import { getAllEssays, getAllSeries, getFeaturedSeries } from "@/lib/essays";
 import { buildAiResearchTracks } from "@/lib/home-ai-research-tracks";
 import { siteConfig } from "@/lib/site";
 import { researchItems } from "@/src/data/research";
@@ -34,24 +34,20 @@ export const metadata: Metadata = {
 const RECENT_ESSAY_COUNT = 3;
 const REPRESENTATIVE_RESEARCH_PREVIEW_COUNT = 3;
 
-const HOME_FEATURED_SERIES_TITLES = [
-  "형사법 교수로 산다는 것",
-  "사법시험 출제위원을 하며 느낀 것",
-] as const;
-
 const HOME_SECTION_CLASS =
   "border-t border-line !py-[clamp(4.75rem,10vw,9.5rem)]";
 
 export default async function Home() {
-  const [allSeries, essays] = await Promise.all([getAllSeries(), getAllEssays()]);
+  const [allSeries, essays, featuredSeries] = await Promise.all([
+    getAllSeries(),
+    getAllEssays(),
+    getFeaturedSeries(),
+  ]);
 
   const recentEssays = essays.slice(0, RECENT_ESSAY_COUNT);
   const representativeResearchPreview = sortByPublicationNumber(researchItems)
     .filter((item) => item.isRepresentative)
     .slice(0, REPRESENTATIVE_RESEARCH_PREVIEW_COUNT);
-  const featuredSeries = HOME_FEATURED_SERIES_TITLES.map((title) =>
-    allSeries.find((series) => series.title === title),
-  ).filter((series): series is NonNullable<typeof series> => Boolean(series));
   const researchStats = getResearchSummaryStats(researchItems);
   const aiResearchTracks = buildAiResearchTracks(allSeries);
 

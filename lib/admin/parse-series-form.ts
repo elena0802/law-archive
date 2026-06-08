@@ -12,6 +12,7 @@ export type SeriesFormValues = {
   introduction: string;
   display_order: number;
   status: SeriesStatus;
+  featured: boolean;
 };
 
 export type SeriesFormFieldErrors = Partial<Record<keyof SeriesFormValues, string>>;
@@ -38,6 +39,7 @@ export function parseSeriesForm(formData: FormData): ParsedSeriesForm {
   const introduction = readString(formData, "introduction");
   const display_order = readDisplayOrder(formData);
   const status = parseSeriesStatus(formData.get("status"));
+  const featured = formData.get("featured") === "on";
   const errors: SeriesFormFieldErrors = {};
 
   if (!title) {
@@ -67,6 +69,7 @@ export function parseSeriesForm(formData: FormData): ParsedSeriesForm {
       introduction,
       display_order,
       status,
+      featured,
     },
   };
 }
@@ -79,6 +82,7 @@ export function emptySeriesFormValues(): SeriesFormValues {
     introduction: "",
     display_order: 1,
     status: "active",
+    featured: false,
   };
 }
 

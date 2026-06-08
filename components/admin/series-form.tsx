@@ -130,6 +130,26 @@ export function SeriesForm({
         />
       </div>
 
+      <div className="border-t border-line/70 pt-8">
+        <div className="flex items-start gap-3">
+          <input
+            className="mt-1.5 h-4 w-4 shrink-0 accent-accent"
+            defaultChecked={initialValues.featured}
+            id="featured"
+            name="featured"
+            type="checkbox"
+          />
+          <div>
+            <label className={adminLabelClassName} htmlFor="featured">
+              홈페이지 대표 연재로 표시
+            </label>
+            <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+              홈 화면의 대표 연재 영역에 노출됩니다.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="grid gap-10 sm:grid-cols-2">
         <div>
           <label className={adminLabelClassName} htmlFor="display_order">

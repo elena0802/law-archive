@@ -57,6 +57,7 @@ async function loadSeriesRows(options: { activeOnly?: boolean } = {}): Promise<S
     ...row,
     introduction: row.introduction ?? "",
     status: row.status ?? "active",
+    featured: row.featured ?? false,
   }));
 }
 
@@ -149,6 +150,18 @@ export function createSupabaseEssayRepository(): EssayRepository {
       const essays = mapEssayRows(essayRows, seriesBySlug, options);
 
       return buildEssaySeriesList(seriesRowsToVolumes(seriesRows), essays);
+    },
+
+    async getFeaturedSeries(options = {}) {
+      const [seriesRows, essayRows] = await Promise.all([
+        loadSeriesRows({ activeOnly: true }),
+        loadEssayRows(options),
+      ]);
+      const featuredRows = seriesRows.filter((row) => row.featured);
+      const seriesBySlug = new Map(seriesRows.map((item) => [item.slug, item]));
+      const essays = mapEssayRows(essayRows, seriesBySlug, options);
+
+      return buildEssaySeriesList(seriesRowsToVolumes(featuredRows), essays);
     },
 
     async getSeriesBySlug(slug, options = {}) {

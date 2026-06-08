@@ -14,6 +14,7 @@ export type SeriesRow = {
   introduction: string;
   display_order: number;
   status: SeriesStatus;
+  featured: boolean;
   created_at: string;
   updated_at: string;
 };

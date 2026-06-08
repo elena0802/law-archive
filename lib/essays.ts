@@ -364,6 +364,12 @@ export async function getAllSeries(
   return getEssayRepository().getAllSeries(options);
 }
 
+export async function getFeaturedSeries(
+  options: { includeDrafts?: boolean } = {},
+): Promise<EssaySeries[]> {
+  return getEssayRepository().getFeaturedSeries(options);
+}
+
 export async function getSeriesBySlug(
   slug: string,
   options: { includeDrafts?: boolean } = {},
