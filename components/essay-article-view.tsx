@@ -3,6 +3,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { CitationBlock } from "@/components/citation-block";
 import { EssayCommentsSection } from "@/components/essay-comments-section";
 import { EssayPreviewBanner } from "@/components/essay-preview-banner";
+import { EssayShareButton } from "@/components/essay-share-button";
 import {
   EssayBreadcrumb,
   EssayMetaRow,
@@ -151,6 +152,20 @@ export async function EssayArticleView({
             이 글은 저자의 생각과 연구를 바탕으로 작성되었으며, AI는 편집 및
             정리 과정에 활용되었습니다.
           </p>
+
+          {!isPreview ? (
+            <div className="mt-8 flex justify-start md:justify-end">
+              <div className="flex flex-col items-start gap-4 md:items-end">
+                <p className="text-keep text-sm leading-7 text-ink-muted">
+                  이 글이 도움이 되셨다면
+                </p>
+                <EssayShareButton
+                  title={essay.title}
+                  url={`${getSiteOrigin()}/essays/${essay.slug}`}
+                />
+              </div>
+            </div>
+          ) : null}
 
           {previousEssay || nextEssay ? (
             <nav
