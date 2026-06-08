@@ -123,14 +123,14 @@ export function EssayMarkdownPreview({ source }: { source: string }) {
       {nodes.map((node) => {
         if (node.type === "h1") {
           return (
-            <h1 className="text-keep mt-8 font-serif text-3xl text-ink" key={node.key}>
+            <h1 className="text-keep" key={node.key}>
               {node.content}
             </h1>
           );
         }
         if (node.type === "h2") {
           return (
-            <h2 className="text-keep mt-8 font-serif text-2xl text-ink" key={node.key}>
+            <h2 className="text-keep" key={node.key}>
               {node.content}
             </h2>
           );
@@ -160,7 +160,7 @@ export function EssayMarkdownPreview({ source }: { source: string }) {
           return <hr className="my-8 border-line" key={node.key} />;
         }
         return (
-          <p className="text-keep mt-4 leading-8 text-ink" key={node.key}>
+          <p className="text-keep" key={node.key}>
             {node.content}
           </p>
         );

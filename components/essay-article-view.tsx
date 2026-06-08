@@ -103,7 +103,7 @@ export async function EssayArticleView({
             {series ? (
               <p className="sr-only">연재 페이지: {series.title}</p>
             ) : null}
-            <h1 className="text-keep mt-5 font-serif text-4xl leading-[1.18] text-ink sm:text-5xl">
+            <h1 className="text-keep mt-5 font-serif text-3xl leading-[1.22] text-ink sm:text-[2.45rem] sm:leading-[1.2]">
               {essay.title}
             </h1>
             <p className="text-keep mt-6 text-lg leading-9 text-ink-muted">

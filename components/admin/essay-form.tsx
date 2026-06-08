@@ -40,8 +40,8 @@ const metadataSectionClassName = "space-y-8 border-t border-line/70 pt-8";
 const metadataHeadingClassName =
   "text-keep text-sm tracking-[0.12em] text-accent uppercase";
 
-const WRITING_GUIDE = `# 큰 제목
-## 소제목
+const WRITING_GUIDE = `# 제목
+## 단락 제목
 - 목록
 > 인용문
 ---
