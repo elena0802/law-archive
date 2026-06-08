@@ -10,7 +10,7 @@ const countSummaryItems: {
   suffix: string;
 }[] = [
   { key: "totalPublications", label: "전체 논문", suffix: "편" },
-  { key: "representativeCount", label: "대표 논문", suffix: "편" },
+  { key: "representativeCount", label: "대표 연구논문", suffix: "편" },
   { key: "importantCount", label: "주요 논문", suffix: "편" },
   { key: "areaCount", label: "연구 분야", suffix: "개" },
 ];

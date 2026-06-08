@@ -148,7 +148,7 @@ export default async function ResearchDetailPage({
             <div className="flex flex-wrap gap-2">
               {item.isRepresentative ? (
                 <span className="inline-flex rounded-sm border border-line px-2 py-0.5 text-xs tracking-wide text-ink-muted">
-                  대표 논문
+                  대표 연구논문
                 </span>
               ) : null}
               {item.isImportant ? (

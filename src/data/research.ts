@@ -342,7 +342,7 @@ const researchItemSamples: ResearchItem[] = [
   },
   {
     number: 26,
-    title: "불능미수범의 `결과발생 불가능’과 관련한 해석상의 문제점",
+    title: "불능미수범의 ‘결과발생 불가능’과 관련한 해석상의 문제점",
     year: 2008,
     month: 8,
     journal: "동아법학",
@@ -350,7 +350,7 @@ const researchItemSamples: ResearchItem[] = [
     volume: "0(42)",
     pages: "91-116",
     field: "형법",
-    category: resolveResearchCategory("형법", "불능미수범의 `결과발생 불가능’과 관련한 해석상의 문제점"),
+    category: resolveResearchCategory("형법", "불능미수범의 ‘결과발생 불가능’과 관련한 해석상의 문제점"),
     authors: "천진호",
   },
   {

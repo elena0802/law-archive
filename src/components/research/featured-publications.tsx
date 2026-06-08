@@ -19,7 +19,7 @@ export function FeaturedPublications({ items }: FeaturedPublicationsProps) {
         id="featured-publications-heading"
         className="font-serif text-2xl leading-tight text-ink sm:text-[1.75rem]"
       >
-        대표 논문
+        대표 연구논문
       </h2>
       <p className="text-keep mt-3 text-base leading-[1.85] text-ink-muted">
         교수님의 주요 연구 흐름을 보여주는 대표 연구입니다.

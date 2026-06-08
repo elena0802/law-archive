@@ -82,7 +82,7 @@ export const researchPublicationCategories = {
   78: "criminal-procedure",
   79: "criminal-law-theory",
   80: "criminal-law-theory",
-  81: "criminal-law-theory",
+  81: "criminal-policy",
   82: "criminal-law-theory",
   83: "criminal-law-theory",
 } as const satisfies Record<number, ResearchCategory>;
