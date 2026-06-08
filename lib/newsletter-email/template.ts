@@ -57,9 +57,7 @@ function buildTestFooterHtml(unsubscribeUrl: string | null | undefined) {
       footerIntro,
       `<div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid #d9d9d9;">`,
       `<p style="margin:0 0 0.75rem;font-size:0.875rem;line-height:1.6;color:#4a4a4a;">${escapeHtml(TEST_FOOTER_LINE)}</p>`,
-      `<p style="margin:0 0 0.5rem;font-size:0.9375rem;font-weight:600;line-height:1.6;color:#1f1f1f;">수신 거부하기:</p>`,
-      `<p style="margin:0 0 0.75rem;"><a href="${safeUrl}" style="display:inline-block;font-size:0.9375rem;font-weight:600;line-height:1.6;color:#1f1f1f;text-decoration:underline;">수신 거부하기</a></p>`,
-      `<p style="margin:0;font-size:0.8125rem;line-height:1.6;word-break:break-all;"><a href="${safeUrl}" style="color:#1f1f1f;text-decoration:underline;">${safeUrl}</a></p>`,
+      `<p style="margin:0;font-size:0.9375rem;line-height:1.6;"><a href="${safeUrl}" style="font-weight:600;color:#1f1f1f;text-decoration:underline;">수신 거부하기</a></p>`,
       `</div>`,
     ].join("");
   }
