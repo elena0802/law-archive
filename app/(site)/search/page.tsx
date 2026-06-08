@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ArticleCard } from "@/components/article-card";
+import { SearchForm } from "@/components/search-form";
 import { Section } from "@/components/section";
 import { formatEssayDate, searchEssays } from "@/lib/essays";
 
@@ -28,7 +29,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         <p className="text-keep mt-7 text-lg leading-9 text-ink-muted">
           제목, 소개, 본문, 연재명으로 공개된 글을 찾을 수 있습니다.
         </p>
-        <form className="mt-8" method="get">
+        <SearchForm className="mt-8" method="get">
           <label className="sr-only" htmlFor="search-query">
             검색어
           </label>
@@ -48,7 +49,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               검색
             </button>
           </div>
-        </form>
+        </SearchForm>
       </Section>
 
       <Section size="wide" className="border-t border-line">

@@ -1,4 +1,5 @@
 import { Container } from "@/components/container";
+import { SearchForm } from "@/components/search-form";
 
 export function SiteFooter() {
   return (
@@ -9,7 +10,7 @@ export function SiteFooter() {
           <br />
           AI와 함께 기록하는 디지털 연구 노트
         </p>
-        <form
+        <SearchForm
           action="/search"
           className="w-full max-w-[28rem]"
           method="get"
@@ -32,7 +33,7 @@ export function SiteFooter() {
               검색
             </button>
           </div>
-        </form>
+        </SearchForm>
       </Container>
     </footer>
   );

@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { submitGuestbookEntry } from "@/app/(site)/guestbook/actions";
+import { trackGaEvent } from "@/lib/analytics";
 import {
   commentFieldClassName,
   commentLabelClassName,
@@ -28,6 +29,12 @@ export function GuestbookForm() {
     submitGuestbookEntry,
     guestbookActionIdleState satisfies GuestbookActionState,
   );
+
+  useEffect(() => {
+    if (state.status === "success") {
+      trackGaEvent("guestbook_created");
+    }
+  }, [state.status]);
 
   return (
     <form action={formAction}>

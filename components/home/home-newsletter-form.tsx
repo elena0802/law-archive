@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { subscribeNewsletter } from "@/app/(site)/newsletter-actions";
+import { trackGaEvent } from "@/lib/analytics";
 import {
   commentFieldClassName,
   commentLabelClassName,
@@ -17,6 +18,12 @@ export function HomeNewsletterForm() {
     subscribeNewsletter,
     newsletterActionIdleState satisfies NewsletterActionState,
   );
+
+  useEffect(() => {
+    if (state.status === "success") {
+      trackGaEvent("newsletter_subscribed");
+    }
+  }, [state.status]);
 
   if (!isSupabaseConfigured()) {
     return (

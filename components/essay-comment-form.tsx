@@ -6,6 +6,7 @@ import {
   commentActionIdleState,
   type CommentActionState,
 } from "@/lib/comment-action-state";
+import { trackGaEvent } from "@/lib/analytics";
 
 export const commentFieldClassName =
   "mt-3 w-full rounded border border-line bg-paper px-4 py-3 text-base text-ink outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/25";
@@ -49,6 +50,7 @@ export function EssayCommentForm({
 
   useEffect(() => {
     if (state.status === "success") {
+      trackGaEvent("comment_created");
       onSuccess?.();
     }
   }, [state.status, onSuccess]);

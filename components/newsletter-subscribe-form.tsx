@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { subscribeNewsletter } from "@/app/(site)/newsletter-actions";
+import { trackGaEvent } from "@/lib/analytics";
 import {
   newsletterFieldClassName,
   newsletterLabelClassName,
@@ -29,6 +30,12 @@ export function NewsletterSubscribeForm({
     subscribeNewsletter,
     newsletterActionIdleState satisfies NewsletterActionState,
   );
+
+  useEffect(() => {
+    if (state.status === "success") {
+      trackGaEvent("newsletter_subscribed");
+    }
+  }, [state.status]);
 
   if (!isSupabaseConfigured()) {
     return (
