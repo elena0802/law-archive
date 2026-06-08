@@ -28,6 +28,7 @@ import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
 import type { SaveIntent } from "@/lib/admin/save-intent";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
 import { essayActionIdleState } from "@/lib/admin/essay-action-state";
+import { getEssayTopicSelectOptions } from "@/lib/admin/essay-topic-options";
 import {
   generateEssaySlugFromTitle,
   type EssayFormValues,
@@ -177,6 +178,10 @@ export function EssayForm({
   const [trashConfirmOpen, setTrashConfirmOpen] = useState(false);
 
   const fieldErrors = state.fieldErrors ?? {};
+  const topicOptions = useMemo(
+    () => getEssayTopicSelectOptions(category),
+    [category],
+  );
   const characterCount = formatEssayCharacterCount(content);
   const readingMinutes = estimateEssayReadingMinutes(content);
   const hasSubstantialBody = content.replace(/\s+/g, "").length > 400;
@@ -479,17 +484,22 @@ export function EssayForm({
 
           <div>
             <label className={adminLabelClassName} htmlFor="category">
-              분류
+              주제
             </label>
-            <input
+            <select
               className={adminFieldClassName}
               id="category"
               name="category"
               onChange={(event) => setCategory(event.target.value)}
-              placeholder="예: 형벌론"
-              type="text"
               value={category}
-            />
+            >
+              <option value="">주제 선택</option>
+              {topicOptions.map((topic) => (
+                <option key={topic} value={topic}>
+                  {topic}
+                </option>
+              ))}
+            </select>
             <AdminFieldError message={fieldErrors.category} />
           </div>
         </div>

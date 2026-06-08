@@ -132,7 +132,7 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
     }
 
     if (!category) {
-      errors.category = "분류를 입력해 주세요.";
+      errors.category = "주제를 선택해 주세요.";
     }
 
     if (!series_slug) {
