@@ -95,25 +95,6 @@ function FormBanner({
   );
 }
 
-function readSnapshotFromForm(form: HTMLFormElement): EssayFormSnapshot {
-  const formData = new FormData(form);
-  const read = (name: string) => {
-    const value = formData.get(name);
-    return typeof value === "string" ? value : "";
-  };
-  return {
-    title: read("title"),
-    slug: read("slug"),
-    description: read("description"),
-    content: read("content"),
-    essay_date: read("essay_date"),
-    category: read("category"),
-    series_slug: read("series_slug"),
-    series_order: read("series_order"),
-    featured: formData.get("featured") === "on",
-  };
-}
-
 function snapshotsEqual(a: EssayFormSnapshot, b: EssayFormSnapshot) {
   return (
     a.title === b.title &&
@@ -174,6 +155,11 @@ export function EssayForm({
   const publishConfirmedRef = useRef(false);
   const archiveConfirmedRef = useRef(false);
   const trashConfirmedRef = useRef(false);
+  const [title, setTitle] = useState(initialValues.title);
+  const [description, setDescription] = useState(initialValues.description);
+  const [category, setCategory] = useState(initialValues.category);
+  const [essayDate, setEssayDate] = useState(initialValues.essay_date);
+  const [featured, setFeatured] = useState(initialValues.featured);
   const [content, setContent] = useState(initialValues.content);
   const [slug, setSlug] = useState(initialValues.slug);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(
@@ -187,12 +173,9 @@ export function EssayForm({
       ? ""
       : String(initialValues.series_order),
   );
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
   const [archiveConfirmOpen, setArchiveConfirmOpen] = useState(false);
   const [trashConfirmOpen, setTrashConfirmOpen] = useState(false);
-  const isGuardEnabled = hasUnsavedChanges && !isSubmitting;
 
   const fieldErrors = state.fieldErrors ?? {};
   const characterCount = formatEssayCharacterCount(content);
@@ -221,17 +204,38 @@ export function EssayForm({
     [initialValues],
   );
 
-  const refreshDirtyState = useCallback(() => {
-    if (!formRef.current) {
-      return;
-    }
-    const nextSnapshot = readSnapshotFromForm(formRef.current);
-    setHasUnsavedChanges(!snapshotsEqual(initialSnapshot, nextSnapshot));
-  }, [initialSnapshot]);
+  const currentSnapshot = useMemo<EssayFormSnapshot>(
+    () => ({
+      title,
+      slug: slugLocked ? initialValues.slug : slug,
+      description,
+      content,
+      essay_date: essayDate,
+      category,
+      series_slug: selectedSeriesSlug,
+      series_order: seriesOrder,
+      featured,
+    }),
+    [
+      title,
+      slug,
+      slugLocked,
+      initialValues.slug,
+      description,
+      content,
+      essayDate,
+      category,
+      selectedSeriesSlug,
+      seriesOrder,
+      featured,
+    ],
+  );
 
-  useEffect(() => {
-    refreshDirtyState();
-  }, [content, refreshDirtyState]);
+  const hasUnsavedChanges = useMemo(
+    () => !snapshotsEqual(initialSnapshot, currentSnapshot),
+    [currentSnapshot, initialSnapshot],
+  );
+  const isGuardEnabled = hasUnsavedChanges && !isPending;
 
   useEffect(() => {
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -274,11 +278,6 @@ export function EssayForm({
     document.addEventListener("click", onDocumentClick, true);
     return () => document.removeEventListener("click", onDocumentClick, true);
   }, [isGuardEnabled]);
-
-  const beginSubmit = useCallback(() => {
-    setIsSubmitting(true);
-    setHasUnsavedChanges(false);
-  }, []);
 
   const readSubmitIntent = useCallback((event: FormEvent<HTMLFormElement>) => {
     const submitter = (event.nativeEvent as SubmitEvent)
@@ -339,9 +338,8 @@ export function EssayForm({
       publishConfirmedRef.current = false;
       archiveConfirmedRef.current = false;
       trashConfirmedRef.current = false;
-      beginSubmit();
     },
-    [beginSubmit, currentStatus, readSubmitIntent],
+    [currentStatus, readSubmitIntent],
   );
 
   const handlePublishConfirm = useCallback(() => {
@@ -374,12 +372,13 @@ export function EssayForm({
     setTrashConfirmOpen(false);
   }, []);
 
-  const handleTitleInput = useCallback(
-    (title: string) => {
+  const handleTitleChange = useCallback(
+    (nextTitle: string) => {
+      setTitle(nextTitle);
       if (slugLocked || slugManuallyEdited) {
         return;
       }
-      setSlug(generateEssaySlugFromTitle(title));
+      setSlug(generateEssaySlugFromTitle(nextTitle));
     },
     [slugLocked, slugManuallyEdited],
   );
@@ -400,8 +399,6 @@ export function EssayForm({
     <form
       action={formAction}
       className="mx-auto mt-10 max-w-reading space-y-8"
-      onChangeCapture={refreshDirtyState}
-      onInputCapture={refreshDirtyState}
       onSubmit={handleSubmit}
       ref={formRef}
     >
@@ -410,7 +407,14 @@ export function EssayForm({
       {noticeMessage ? <AdminNoticeBanner message={noticeMessage} /> : null}
 
       {state.status === "error" && state.message ? (
-        <FormBanner message={state.message} tone="error" />
+        <div className="space-y-3">
+          <FormBanner message={state.message} tone="error" />
+          {Object.keys(fieldErrors).length > 0 ? (
+            <p className="text-keep text-sm leading-7 text-ink-muted">
+              아래 표시된 항목을 확인해 주세요.
+            </p>
+          ) : null}
+        </div>
       ) : null}
 
       <div className="space-y-3 border-b border-line/70 pb-8">
@@ -420,13 +424,13 @@ export function EssayForm({
         </label>
         <input
           className={`${adminFieldClassName} font-serif text-2xl leading-snug`}
-          defaultValue={initialValues.title}
           id="title"
           name="title"
-          onInput={(event) => handleTitleInput(event.currentTarget.value)}
+          onChange={(event) => handleTitleChange(event.currentTarget.value)}
           placeholder="글 제목을 입력합니다"
           required
           type="text"
+          value={title}
         />
         <AdminFieldError message={fieldErrors.title} />
         <label className={`${adminLabelClassName} mt-6`} htmlFor="content">
@@ -460,11 +464,12 @@ export function EssayForm({
         </label>
         <textarea
           className={`${adminFieldClassName} min-h-[6rem] resize-y leading-8`}
-          defaultValue={initialValues.description}
           id="description"
           name="description"
+          onChange={(event) => setDescription(event.target.value)}
           placeholder="글의 요지를 한 줄로 적습니다."
           rows={3}
+          value={description}
         />
         <AdminFieldError message={fieldErrors.description} />
       </div>
@@ -479,10 +484,11 @@ export function EssayForm({
             </label>
             <input
               className={adminFieldClassName}
-              defaultValue={initialValues.essay_date}
               id="essay_date"
               name="essay_date"
+              onChange={(event) => setEssayDate(event.target.value)}
               type="date"
+              value={essayDate}
             />
             <AdminFieldError message={fieldErrors.essay_date} />
           </div>
@@ -493,11 +499,12 @@ export function EssayForm({
             </label>
             <input
               className={adminFieldClassName}
-              defaultValue={initialValues.category}
               id="category"
               name="category"
+              onChange={(event) => setCategory(event.target.value)}
               placeholder="예: 형벌론"
               type="text"
+              value={category}
             />
             <AdminFieldError message={fieldErrors.category} />
           </div>
@@ -587,10 +594,11 @@ export function EssayForm({
 
           <div className="flex items-start gap-3">
             <input
+              checked={featured}
               className="mt-1.5 size-4 accent-accent"
-              defaultChecked={initialValues.featured}
               id="featured"
               name="featured"
+              onChange={(event) => setFeatured(event.target.checked)}
               type="checkbox"
             />
             <div>
