@@ -11,6 +11,7 @@ import {
   sortEssaysForCategory,
   sortEssaysForSeries,
 } from "@/lib/content/series-order";
+import { getSeriesSlug } from "@/lib/content/series-slug";
 
 export { archiveSeriesTitles };
 
@@ -384,6 +385,27 @@ export async function getEssaysBySeries(
   const series = await getSeriesBySlug(slug, options);
 
   return series?.essays ?? [];
+}
+
+export async function getSeriesContextForEssay(
+  essay: Essay,
+  options: { includeDrafts?: boolean } = {},
+): Promise<{ series: EssaySeries | null; essaysInSeries: Essay[] }> {
+  const series =
+    (await getSeriesBySlug(getSeriesSlug(essay.series), options)) ??
+    (await getAllSeries(options)).find((item) => item.title === essay.series) ??
+    null;
+
+  let essaysInSeries = series ? sortEssaysForSeries(series.essays) : [];
+
+  if (essaysInSeries.length === 0) {
+    const allEssays = await getAllEssays(options);
+    essaysInSeries = sortEssaysForSeries(
+      allEssays.filter((item) => item.series === essay.series),
+    );
+  }
+
+  return { series, essaysInSeries };
 }
 
 export type EssayCategory = {

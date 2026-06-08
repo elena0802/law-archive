@@ -168,7 +168,11 @@ export function createSupabaseEssayRepository(): EssayRepository {
       const normalizedSlug = getSeriesSlug(decodeSlug(slug));
       const series = await this.getAllSeries(options);
 
-      return series.find((item) => item.slug === normalizedSlug) ?? null;
+      return (
+        series.find((item) => item.slug === normalizedSlug) ??
+        series.find((item) => getSeriesSlug(item.title) === normalizedSlug) ??
+        null
+      );
     },
   };
 }

@@ -12,10 +12,9 @@ import type { Essay } from "@/lib/essays";
 import { isPublishedEssayStatus } from "@/lib/content/essay-status";
 import {
   estimateReadingMinutes,
-  getSeriesBySlug,
+  getSeriesContextForEssay,
   getSeriesPartLabel,
   getSeriesSlug,
-  sortEssaysForSeries,
 } from "@/lib/essays";
 import { isCommentsAvailable } from "@/lib/comments";
 import { getSiteOrigin } from "@/lib/site";
@@ -33,10 +32,9 @@ export async function EssayArticleView({
 }: EssayArticleViewProps) {
   const isPreview = mode === "preview";
   const seriesSlug = getSeriesSlug(essay.series);
-  const series = await getSeriesBySlug(seriesSlug, {
+  const { series, essaysInSeries } = await getSeriesContextForEssay(essay, {
     includeDrafts: isPreview,
   });
-  const essaysInSeries = series ? sortEssaysForSeries(series.essays) : [];
   const readingMinutes = estimateReadingMinutes(essay.content);
   const partLabel = getSeriesPartLabel(essaysInSeries, essay.slug);
   const isPublic =
@@ -44,7 +42,7 @@ export async function EssayArticleView({
       ? isPublishedEssayStatus(essay.status)
       : !essay.draft;
   const showComments = !isPreview && isCommentsAvailable();
-  const showSeriesSiblings = essaysInSeries.length > 0;
+  const showSeriesSiblings = essaysInSeries.length > 1;
 
   return (
     <>
