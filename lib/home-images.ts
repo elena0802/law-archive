@@ -31,7 +31,7 @@ const SERIES_COVER_BASENAME_OVERRIDES: Record<string, string> = {
 const AI_RESEARCH_COVER_BASENAME_OVERRIDES: Record<string, string> = {
   // Expected asset might be missing; fall back to an existing real cover.
   "ai-and-criminal-law": "legal-education-and-ai",
-  "법학교육과-ai": "legal-education-and-ai",
+  "로스쿨-시대와-ai": "legal-education-and-ai",
 };
 
 /** `public/images/essays/{slug}.{jpg|jpeg|png|webp}` */

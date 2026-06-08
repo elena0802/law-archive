@@ -19,15 +19,15 @@ const AI_RESEARCH_TRACK_DEFINITIONS = [
     imageKey: "ai-and-criminal-law",
   },
   {
-    title: "법학교육과 AI",
+    title: "로스쿨 시대와 AI",
     description: [
-      "AI가 법학 교육과 연구 방식을 어떻게 바꾸는가.",
+      "AI가 로스쿨 시대의 법학 교육과 연구 방식을 어떻게 바꾸는가.",
       "AI 시대의 법학교육에 대한 생각을 기록합니다.",
     ],
-    seriesTitle: "법학교육과 AI",
-    seriesSlug: "법학교육과-ai",
-    placeholderHref: "/series/법학교육과-ai",
-    imageKey: "법학교육과-ai",
+    seriesTitle: "로스쿨 시대와 AI",
+    seriesSlug: "로스쿨-시대와-ai",
+    placeholderHref: "/series/로스쿨-시대와-ai",
+    imageKey: "로스쿨-시대와-ai",
   },
 ] as const;
 
