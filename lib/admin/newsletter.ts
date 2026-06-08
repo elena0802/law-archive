@@ -1,10 +1,15 @@
 import type {
+  NewsletterSendInsert,
   NewsletterSubscriberRow,
   NewsletterSubscriberStatus,
 } from "@/lib/content/db-types";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
 import { formatAdminDateTime } from "@/lib/admin/essays";
-import { buildNewsletterUnsubscribeUrl } from "@/lib/newsletter";
+import {
+  buildNewsletterUnsubscribeUrl,
+  isValidNewsletterEmail,
+  listActiveNewsletterSubscribersForDelivery,
+} from "@/lib/newsletter";
 import { isResendConfigured } from "@/lib/newsletter-email/config";
 import { isSupabaseServiceRoleConfigured } from "@/lib/supabase/config";
 import { requireSupabaseServiceRoleClient } from "@/lib/supabase/server";
@@ -67,6 +72,75 @@ export type ActiveSubscriberUnsubscribeLookup = {
   isActiveSubscriber: boolean;
   unsubscribeUrl: string | null;
 };
+
+export type DeliverableNewsletterSubscriber = {
+  id: string;
+  email: string;
+  unsubscribe_token: string;
+};
+
+const DELIVERABLE_UNSUBSCRIBE_TOKEN_PATTERN = /^[a-f0-9]{64}$/;
+
+function isDeliverableNewsletterSubscriber(row: {
+  email: string;
+  unsubscribe_token: string;
+}) {
+  const token = row.unsubscribe_token?.trim() ?? "";
+
+  return (
+    isValidNewsletterEmail(row.email) &&
+    DELIVERABLE_UNSUBSCRIBE_TOKEN_PATTERN.test(token)
+  );
+}
+
+export async function listDeliverableActiveSubscribers(): Promise<
+  DeliverableNewsletterSubscriber[]
+> {
+  await requireEditorSupabase();
+  const rows = await listActiveNewsletterSubscribersForDelivery();
+
+  return rows
+    .filter(isDeliverableNewsletterSubscriber)
+    .map((row) => ({
+      id: row.id,
+      email: row.email.trim().toLowerCase(),
+      unsubscribe_token: row.unsubscribe_token.trim(),
+    }));
+}
+
+export async function countDeliverableActiveSubscribers() {
+  const subscribers = await listDeliverableActiveSubscribers();
+  return subscribers.length;
+}
+
+export async function saveNewsletterSendLog(input: {
+  subject: string;
+  body: string;
+  relatedUrl: string | null;
+  recipientCount: number;
+  successCount: number;
+  failureCount: number;
+  createdBy: string;
+}) {
+  await requireEditorSupabase();
+  const supabase = requireSupabaseServiceRoleClient();
+
+  const payload: NewsletterSendInsert = {
+    subject: input.subject,
+    body: input.body,
+    related_url: input.relatedUrl,
+    recipient_count: input.recipientCount,
+    success_count: input.successCount,
+    failure_count: input.failureCount,
+    created_by: input.createdBy,
+  };
+
+  const { error } = await supabase.from("newsletter_sends").insert(payload);
+
+  if (error) {
+    throw new Error(`Failed to save newsletter send log: ${error.message}`);
+  }
+}
 
 export async function lookupActiveSubscriberUnsubscribe(
   email: string,

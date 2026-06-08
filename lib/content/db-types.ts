@@ -122,3 +122,26 @@ export type NewsletterSubscriberInsert = {
   source?: string | null;
   unsubscribe_token?: string;
 };
+
+export type NewsletterSendRow = {
+  id: string;
+  subject: string;
+  body: string;
+  related_url: string | null;
+  recipient_count: number;
+  success_count: number;
+  failure_count: number;
+  sent_at: string;
+  created_by: string;
+};
+
+export type NewsletterSendInsert = {
+  subject: string;
+  body: string;
+  related_url?: string | null;
+  recipient_count: number;
+  success_count: number;
+  failure_count: number;
+  sent_at?: string;
+  created_by: string;
+};

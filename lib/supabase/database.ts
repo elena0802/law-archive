@@ -7,6 +7,8 @@ import type {
   EssayUpdate,
   GuestbookEntryInsert,
   GuestbookEntryRow,
+  NewsletterSendInsert,
+  NewsletterSendRow,
   NewsletterSubscriberInsert,
   NewsletterSubscriberRow,
   SeriesRow,
@@ -69,6 +71,12 @@ export type Database = {
         Row: NewsletterSubscriberRow;
         Insert: NewsletterSubscriberInsert;
         Update: Partial<NewsletterSubscriberInsert>;
+        Relationships: [];
+      };
+      newsletter_sends: {
+        Row: NewsletterSendRow;
+        Insert: NewsletterSendInsert;
+        Update: Partial<NewsletterSendInsert>;
         Relationships: [];
       };
     };

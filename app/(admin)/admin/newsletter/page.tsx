@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { NewsletterCsvExportButton } from "@/components/admin/newsletter-csv-export-button";
-import { NewsletterTestSendForm } from "@/components/admin/newsletter-test-send-form";
+import { NewsletterSendForm } from "@/components/admin/newsletter-send-form";
 import { ADMIN_NEWSLETTER_UNAVAILABLE } from "@/lib/admin/admin-messages";
 import {
+  countDeliverableActiveSubscribers,
   formatAdminDateTime,
   formatNewsletterSource,
   getNewsletterStats,
@@ -40,9 +41,10 @@ export default async function AdminNewsletterPage() {
     );
   }
 
-  const [stats, subscribers] = await Promise.all([
+  const [stats, subscribers, deliverableSubscriberCount] = await Promise.all([
     getNewsletterStats(),
     getNewsletterSubscribers(),
+    countDeliverableActiveSubscribers(),
   ]);
 
   return (
@@ -81,7 +83,8 @@ export default async function AdminNewsletterPage() {
         </div>
       </section>
 
-      <NewsletterTestSendForm
+      <NewsletterSendForm
+        deliverableSubscriberCount={deliverableSubscriberCount}
         deliveryConfigured={isNewsletterDeliveryConfigured()}
         fromEmail={getNewsletterFromEmail()}
       />
