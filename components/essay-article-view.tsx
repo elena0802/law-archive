@@ -106,9 +106,11 @@ export async function EssayArticleView({
             <h1 className="text-keep mt-5 font-serif text-3xl leading-[1.22] text-ink sm:text-[2.45rem] sm:leading-[1.2]">
               {essay.title}
             </h1>
-            <p className="text-keep mt-6 text-lg leading-9 text-ink-muted">
-              {essay.description}
-            </p>
+            {essay.description.trim() ? (
+              <p className="text-keep mt-6 text-lg leading-9 text-ink-muted">
+                {essay.description}
+              </p>
+            ) : null}
             <EssayMetaRow
               category={essay.category}
               date={essay.date}
@@ -217,9 +219,11 @@ export async function EssayArticleView({
                         <p className="font-serif text-[1.125rem] leading-snug text-ink underline-offset-4 hover:text-accent hover:underline">
                           {item.title}
                         </p>
-                        <p className="text-keep mt-2 text-base leading-8 text-ink-muted">
-                          {item.description}
-                        </p>
+                        {item.description.trim() ? (
+                          <p className="text-keep mt-2 text-base leading-8 text-ink-muted">
+                            {item.description}
+                          </p>
+                        ) : null}
                         <p className="mt-3 text-sm leading-6 text-ink-muted">
                           {formatEssayDate(item.date)} · {item.category}
                           <span aria-hidden="true" className="mx-2 text-line">

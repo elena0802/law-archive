@@ -123,10 +123,6 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
         "주소는 영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.";
     }
 
-    if (!description) {
-      errors.description = "한 줄 소개를 입력해 주세요.";
-    }
-
     if (!content) {
       errors.content = "본문을 입력해 주세요.";
     }

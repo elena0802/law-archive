@@ -26,11 +26,13 @@ export function buildArticleJsonLd(essay: Essay) {
   const datePublished = toSchemaIsoDate(essay.date);
   const dateModified = toSchemaIsoDate(essay.updatedAt ?? essay.date);
 
+  const description = essay.description.trim();
+
   return {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: essay.title,
-    description: essay.description,
+    ...(description ? { description } : {}),
     author: {
       "@type": "Person",
       name: siteConfig.authorName,

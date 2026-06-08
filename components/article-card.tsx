@@ -2,7 +2,7 @@ import Link from "next/link";
 
 type ArticleCardProps = {
   title: string;
-  description: string;
+  description?: string;
   eyebrow?: string;
   meta?: string;
   href?: string;
@@ -25,9 +25,11 @@ export function ArticleCard({
           <h3 className="text-keep font-serif text-2xl leading-tight text-ink sm:text-[1.65rem]">
             {title}
           </h3>
-          <p className="mt-3 max-w-2xl text-base leading-8 text-ink-muted">
-            {description}
-          </p>
+          {description?.trim() ? (
+            <p className="mt-3 max-w-2xl text-base leading-8 text-ink-muted">
+              {description}
+            </p>
+          ) : null}
           {meta ? (
             <p className="mt-4 text-sm leading-6 text-accent">{meta}</p>
           ) : null}

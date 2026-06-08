@@ -22,8 +22,8 @@ export default async function AdminNewEssayPage() {
         새 글 작성
       </h1>
       <p className="text-keep mt-5 max-w-2xl text-base leading-8 text-ink-muted">
-        제목만 입력해도 「임시 저장」이 가능합니다. 본문을 이어 쓴 뒤, 준비가
-        되면 「공개하기」로 공개 서재에 올릴 수 있습니다.
+        제목만 입력해도 「임시 저장」이 가능합니다. 본문을 이어 쓴 뒤 분류와
+        연재를 선택하고 「공개하기」로 공개 서재에 올릴 수 있습니다.
       </p>
       {series.length === 0 ? (
         <div className="text-keep mt-8 rounded border border-line bg-paper-muted px-4 py-6 text-base leading-8 text-ink-muted">

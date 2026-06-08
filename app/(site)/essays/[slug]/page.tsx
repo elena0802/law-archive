@@ -33,15 +33,17 @@ export async function generateMetadata({
     return {};
   }
 
+  const description = essay.description.trim() || undefined;
+
   return {
     title: essay.title,
-    description: essay.description,
+    description,
     alternates: {
       canonical: `/essays/${essay.slug}`,
     },
     openGraph: {
       title: essay.title,
-      description: essay.description,
+      description: description ?? essay.title,
       url: `/essays/${essay.slug}`,
       type: "article",
       publishedTime: essay.date,

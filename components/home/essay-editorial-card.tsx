@@ -55,9 +55,13 @@ export function EssayEditorialCard({ essay }: EssayEditorialCardProps) {
         <h3 className="text-keep mt-3 font-serif text-xl leading-snug text-ink group-hover:text-accent sm:text-[1.35rem]">
           {essay.title}
         </h3>
-        <p className="text-keep mt-3 line-clamp-3 flex-1 text-sm leading-[1.75] text-ink-muted">
-          {essay.description}
-        </p>
+        {essay.description.trim() ? (
+          <p className="text-keep mt-3 line-clamp-3 flex-1 text-sm leading-[1.75] text-ink-muted">
+            {essay.description}
+          </p>
+        ) : (
+          <div className="flex-1" />
+        )}
       </div>
     </Link>
   );
