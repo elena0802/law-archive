@@ -7,6 +7,7 @@ type NavLinkProps = {
   href: string;
   label: string;
   match: "exact" | "prefix";
+  ariaLabel?: string;
 };
 
 function isActive(pathname: string, href: string, match: NavLinkProps["match"]) {
@@ -21,13 +22,14 @@ function isActive(pathname: string, href: string, match: NavLinkProps["match"]) 
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function NavLink({ href, label, match }: NavLinkProps) {
+export function NavLink({ href, label, match, ariaLabel }: NavLinkProps) {
   const pathname = usePathname();
   const active = isActive(pathname, href, match);
 
   return (
     <Link
       aria-current={active ? "page" : undefined}
+      aria-label={ariaLabel}
       className={
         active
           ? "border-b border-accent pb-0.5 text-ink"

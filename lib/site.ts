@@ -24,12 +24,11 @@ export const siteConfig = {
     imageCaption: "서재 책상 위의 기록 — 오래 쌓인 책과 원고",
   },
   navigation: [
-    { href: "/", label: "서재", match: "exact" as const },
+    { href: "/", label: "HOME", match: "exact" as const },
     { href: "/essays", label: "글", match: "prefix" as const },
     { href: "/series", label: "연재", match: "prefix" as const },
-    { href: "/categories", label: "주제", match: "prefix" as const },
-    { href: "/search", label: "검색", match: "prefix" as const },
-    { href: "/about", label: "서재 소개", match: "exact" as const },
+    { href: "/research", label: "연구", match: "prefix" as const },
+    { href: "/about", label: "학자 소개", match: "exact" as const },
     { href: "/guestbook", label: "안부의 글", match: "exact" as const },
   ],
   about: {
