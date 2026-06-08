@@ -4,6 +4,8 @@ import type {
 } from "@/lib/content/db-types";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
 import { formatAdminDateTime } from "@/lib/admin/essays";
+import { buildNewsletterUnsubscribeUrl } from "@/lib/newsletter";
+import { isResendConfigured } from "@/lib/newsletter-email/config";
 import { isSupabaseServiceRoleConfigured } from "@/lib/supabase/config";
 import { requireSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
@@ -12,6 +14,8 @@ export type AdminNewsletterSubscriber = {
   email: string;
   status: NewsletterSubscriberStatus;
   source: string | null;
+  unsubscribeToken: string;
+  unsubscribedAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -28,6 +32,8 @@ function mapSubscriberRow(row: NewsletterSubscriberRow): AdminNewsletterSubscrib
     email: row.email,
     status: row.status,
     source: row.source,
+    unsubscribeToken: row.unsubscribe_token,
+    unsubscribedAt: row.unsubscribed_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -51,6 +57,34 @@ export function formatNewsletterSource(source: string | null) {
 
 export function isAdminNewsletterAvailable() {
   return isSupabaseServiceRoleConfigured();
+}
+
+export function isNewsletterDeliveryConfigured() {
+  return isResendConfigured();
+}
+
+export async function getActiveSubscriberUnsubscribeUrl(
+  email: string,
+): Promise<string | null> {
+  await requireEditorSupabase();
+  const supabase = requireSupabaseServiceRoleClient();
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (!normalizedEmail) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from("newsletter_subscribers")
+    .select("status, unsubscribe_token")
+    .eq("email", normalizedEmail)
+    .maybeSingle();
+
+  if (error || !data || data.status !== "active") {
+    return null;
+  }
+
+  return buildNewsletterUnsubscribeUrl(data.unsubscribe_token);
 }
 
 export async function getNewsletterSubscribers(): Promise<AdminNewsletterSubscriber[]> {

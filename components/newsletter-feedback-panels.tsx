@@ -140,6 +140,20 @@ export function NewsletterNotFoundPanel() {
   );
 }
 
+export function NewsletterInvalidTokenPanel() {
+  return (
+    <NewsletterFeedbackPanel
+      headline="ℹ 유효하지 않은 구독 해지 링크입니다."
+      role="status"
+    >
+      <p className="text-ink-muted">
+        링크가 만료되었거나 잘못되었을 수 있습니다. 이메일로 구독 해지를
+        진행해 주세요.
+      </p>
+    </NewsletterFeedbackPanel>
+  );
+}
+
 export function NewsletterUnsubscribeErrorPanel({ message }: { message: string }) {
   return (
     <NewsletterFeedbackPanel

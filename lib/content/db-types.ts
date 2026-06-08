@@ -110,6 +110,8 @@ export type NewsletterSubscriberRow = {
   email: string;
   status: NewsletterSubscriberStatus;
   source: string | null;
+  unsubscribe_token: string;
+  unsubscribed_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -118,4 +120,5 @@ export type NewsletterSubscriberInsert = {
   email: string;
   status?: NewsletterSubscriberStatus;
   source?: string | null;
+  unsubscribe_token?: string;
 };

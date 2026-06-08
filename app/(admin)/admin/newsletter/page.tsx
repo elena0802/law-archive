@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { NewsletterCsvExportButton } from "@/components/admin/newsletter-csv-export-button";
+import { NewsletterTestSendForm } from "@/components/admin/newsletter-test-send-form";
 import { ADMIN_NEWSLETTER_UNAVAILABLE } from "@/lib/admin/admin-messages";
 import {
   formatAdminDateTime,
@@ -7,8 +8,10 @@ import {
   getNewsletterStats,
   getNewsletterSubscribers,
   isAdminNewsletterAvailable,
+  isNewsletterDeliveryConfigured,
   newsletterStatusLabel,
 } from "@/lib/admin/newsletter";
+import { getNewsletterFromEmail } from "@/lib/newsletter-email/config";
 
 export const metadata: Metadata = {
   title: "뉴스레터",
@@ -77,6 +80,11 @@ export default async function AdminNewsletterPage() {
           ))}
         </div>
       </section>
+
+      <NewsletterTestSendForm
+        deliveryConfigured={isNewsletterDeliveryConfigured()}
+        fromEmail={getNewsletterFromEmail()}
+      />
 
       {subscribers.length > 0 ? (
         <div className="mt-10 overflow-x-auto">

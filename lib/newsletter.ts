@@ -1,12 +1,17 @@
-import type { NewsletterSubscriberInsert } from "@/lib/content/db-types";
+import type {
+  NewsletterSubscriberInsert,
+  NewsletterSubscriberStatus,
+} from "@/lib/content/db-types";
 import { createSupabaseServerClient } from "@/lib/supabase/server-ssr";
 import {
   isSupabaseConfigured,
   isSupabaseServiceRoleConfigured,
 } from "@/lib/supabase/config";
 import { requireSupabaseServiceRoleClient } from "@/lib/supabase/server";
+import { getSiteOrigin } from "@/lib/site";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const UNSUBSCRIBE_TOKEN_PATTERN = /^[a-f0-9]{64}$/;
 const MAX_EMAIL_LENGTH = 320;
 
 export function isNewsletterAvailable() {
@@ -27,6 +32,19 @@ export function isValidNewsletterEmail(email: string) {
   return EMAIL_PATTERN.test(normalized);
 }
 
+function isValidUnsubscribeToken(token: string) {
+  return UNSUBSCRIBE_TOKEN_PATTERN.test(token.trim());
+}
+
+export function buildNewsletterUnsubscribeUrl(
+  unsubscribeToken: string,
+  siteOrigin = getSiteOrigin(),
+) {
+  const url = new URL("/newsletter/unsubscribe", siteOrigin);
+  url.searchParams.set("token", unsubscribeToken);
+  return url.toString();
+}
+
 export type SubscribeToNewsletterResult =
   | { ok: true }
   | {
@@ -36,19 +54,77 @@ export type SubscribeToNewsletterResult =
       fieldErrors?: { email?: string };
     };
 
+async function subscribeWithServiceRole(
+  normalizedEmail: string,
+  source?: string,
+): Promise<SubscribeToNewsletterResult> {
+  const supabase = requireSupabaseServiceRoleClient();
+  const trimmedSource = source?.trim() || null;
+
+  const { data: existing, error: fetchError } = await supabase
+    .from("newsletter_subscribers")
+    .select("id, status")
+    .eq("email", normalizedEmail)
+    .maybeSingle();
+
+  if (fetchError) {
+    return {
+      ok: false,
+      error: "구독 신청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    };
+  }
+
+  if (existing) {
+    if (existing.status === "active") {
+      return {
+        ok: false,
+        error: "이미 구독 중인 이메일입니다.",
+        code: "duplicate",
+      };
+    }
+
+    const { error: updateError } = await supabase
+      .from("newsletter_subscribers")
+      .update({
+        status: "active",
+        source: trimmedSource,
+      })
+      .eq("id", existing.id);
+
+    if (updateError) {
+      return {
+        ok: false,
+        error: "구독 신청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+      };
+    }
+
+    return { ok: true };
+  }
+
+  const row: NewsletterSubscriberInsert = {
+    email: normalizedEmail,
+    status: "active",
+    source: trimmedSource,
+  };
+
+  const { error: insertError } = await supabase
+    .from("newsletter_subscribers")
+    .insert(row);
+
+  if (insertError) {
+    return {
+      ok: false,
+      error: "구독 신청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    };
+  }
+
+  return { ok: true };
+}
+
 export async function subscribeToNewsletter(
   email: string,
   source?: string,
 ): Promise<SubscribeToNewsletterResult> {
-  const supabase = await createSupabaseServerClient();
-
-  if (!supabase) {
-    return {
-      ok: false,
-      error: "구독 기능을 사용할 수 없습니다. Supabase 설정을 확인해 주세요.",
-    };
-  }
-
   const normalizedEmail = normalizeEmail(email);
 
   if (!normalizedEmail) {
@@ -66,6 +142,19 @@ export async function subscribeToNewsletter(
       error: "올바른 이메일 주소를 입력해 주세요.",
       code: "invalid_email",
       fieldErrors: { email: "올바른 이메일 주소를 입력해 주세요." },
+    };
+  }
+
+  if (isSupabaseServiceRoleConfigured()) {
+    return subscribeWithServiceRole(normalizedEmail, source);
+  }
+
+  const supabase = await createSupabaseServerClient();
+
+  if (!supabase) {
+    return {
+      ok: false,
+      error: "구독 기능을 사용할 수 없습니다. Supabase 설정을 확인해 주세요.",
     };
   }
 
@@ -107,6 +196,46 @@ export type UnsubscribeFromNewsletterResult =
       error: string;
       fieldErrors?: { email?: string };
     };
+
+export type UnsubscribeFromNewsletterByTokenResult =
+  | { ok: true; code: "unsubscribed" }
+  | {
+      ok: false;
+      code: "already_unsubscribed" | "not_found" | "invalid_token" | "error";
+      error: string;
+    };
+
+async function markSubscriberUnsubscribed(
+  subscriber: { id: string; status: NewsletterSubscriberStatus },
+): Promise<
+  | { ok: true; code: "unsubscribed" }
+  | { ok: false; code: "already_unsubscribed" | "error"; error: string }
+> {
+  if (subscriber.status === "unsubscribed") {
+    return {
+      ok: false,
+      code: "already_unsubscribed",
+      error: "이미 구독 해지된 이메일입니다.",
+    };
+  }
+
+  const supabase = requireSupabaseServiceRoleClient();
+
+  const { error: updateError } = await supabase
+    .from("newsletter_subscribers")
+    .update({ status: "unsubscribed" })
+    .eq("id", subscriber.id);
+
+  if (updateError) {
+    return {
+      ok: false,
+      code: "error",
+      error: "구독 해지를 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    };
+  }
+
+  return { ok: true, code: "unsubscribed" };
+}
 
 export async function unsubscribeFromNewsletter(
   email: string,
@@ -163,26 +292,85 @@ export async function unsubscribeFromNewsletter(
     };
   }
 
-  if (subscriber.status === "unsubscribed") {
-    return {
-      ok: false,
-      code: "already_unsubscribed",
-      error: "이미 구독 해지된 이메일입니다.",
-    };
-  }
+  const result = await markSubscriberUnsubscribed(subscriber);
 
-  const { error: updateError } = await supabase
-    .from("newsletter_subscribers")
-    .update({ status: "unsubscribed" })
-    .eq("id", subscriber.id);
-
-  if (updateError) {
-    return {
-      ok: false,
-      code: "error",
-      error: "구독 해지를 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
-    };
+  if (!result.ok) {
+    return result;
   }
 
   return { ok: true, code: "unsubscribed" };
+}
+
+export async function unsubscribeFromNewsletterByToken(
+  token: string,
+): Promise<UnsubscribeFromNewsletterByTokenResult> {
+  if (!isSupabaseServiceRoleConfigured()) {
+    return {
+      ok: false,
+      code: "error",
+      error: "구독 해지 기능을 사용할 수 없습니다. Supabase 설정을 확인해 주세요.",
+    };
+  }
+
+  const trimmedToken = token.trim();
+
+  if (!isValidUnsubscribeToken(trimmedToken)) {
+    return {
+      ok: false,
+      code: "invalid_token",
+      error: "유효하지 않은 구독 해지 링크입니다.",
+    };
+  }
+
+  const supabase = requireSupabaseServiceRoleClient();
+
+  const { data: subscriber, error: fetchError } = await supabase
+    .from("newsletter_subscribers")
+    .select("id, status")
+    .eq("unsubscribe_token", trimmedToken)
+    .maybeSingle();
+
+  if (fetchError) {
+    return {
+      ok: false,
+      code: "error",
+      error: "구독 정보를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    };
+  }
+
+  if (!subscriber) {
+    return {
+      ok: false,
+      code: "not_found",
+      error: "유효하지 않은 구독 해지 링크입니다.",
+    };
+  }
+
+  const result = await markSubscriberUnsubscribed(subscriber);
+
+  if (!result.ok) {
+    return result;
+  }
+
+  return { ok: true, code: "unsubscribed" };
+}
+
+export async function listActiveNewsletterSubscribersForDelivery() {
+  if (!isSupabaseServiceRoleConfigured()) {
+    return [];
+  }
+
+  const supabase = requireSupabaseServiceRoleClient();
+
+  const { data, error } = await supabase
+    .from("newsletter_subscribers")
+    .select("id, email, unsubscribe_token, source, created_at")
+    .eq("status", "active")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to load active newsletter subscribers: ${error.message}`);
+  }
+
+  return data ?? [];
 }
