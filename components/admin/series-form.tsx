@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useCallback, useState } from "react";
 import {
   adminFieldClassName,
   adminLabelClassName,
@@ -10,6 +10,7 @@ import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
 import { essayActionIdleState } from "@/lib/admin/essay-action-state";
 import type { SeriesFormValues } from "@/lib/admin/parse-series-form";
+import { generateSeriesSlugFromTitle } from "@/lib/admin/series";
 import type { SeriesStatus } from "@/lib/content/db-types";
 
 type SeriesFormProps = {
@@ -35,7 +36,21 @@ export function SeriesForm({
   slugLocked = false,
 }: SeriesFormProps) {
   const [state, formAction, isPending] = useActionState(action, essayActionIdleState);
+  const [slug, setSlug] = useState(initialValues.slug);
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(
+    mode === "edit" && Boolean(initialValues.slug),
+  );
   const fieldErrors = state.fieldErrors ?? {};
+
+  const handleTitleInput = useCallback(
+    (title: string) => {
+      if (slugLocked || slugManuallyEdited) {
+        return;
+      }
+      setSlug(generateSeriesSlugFromTitle(title));
+    },
+    [slugLocked, slugManuallyEdited],
+  );
 
   return (
     <form action={formAction} className="mx-auto mt-10 max-w-reading space-y-10">
@@ -55,6 +70,7 @@ export function SeriesForm({
           defaultValue={initialValues.title}
           id="title"
           name="title"
+          onInput={(event) => handleTitleInput(event.currentTarget.value)}
           required
           type="text"
         />
@@ -68,19 +84,22 @@ export function SeriesForm({
         <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
           {slugLocked
             ? "주소(slug)는 기존 글과 연재 페이지 연결에 사용되므로 생성 후 수정하지 않습니다."
-            : "영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다."}
+            : "한글, 영문, 숫자, 하이픈(-)으로 구성됩니다. 제목을 입력하면 주소가 자동으로 제안됩니다."}
         </p>
         {slugLocked ? <input name="slug" type="hidden" value={initialValues.slug} /> : null}
         <input
           className={adminFieldClassName}
-          defaultValue={initialValues.slug}
           disabled={slugLocked}
           id="slug"
           name={slugLocked ? undefined : "slug"}
-          pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+          onChange={(event) => {
+            setSlugManuallyEdited(true);
+            setSlug(event.currentTarget.value);
+          }}
           readOnly={slugLocked}
           required={!slugLocked}
           type="text"
+          value={slugLocked ? initialValues.slug : slug}
         />
         {fieldErrors.slug ? <p className="mt-2 text-sm text-accent">{fieldErrors.slug}</p> : null}
       </div>

@@ -1,8 +1,8 @@
 import type { SeriesStatus } from "@/lib/content/db-types";
 import {
   isValidSeriesSlug,
-  normalizeSeriesSlug,
   parseSeriesStatus,
+  resolveSeriesSlug,
 } from "@/lib/admin/series";
 
 export type SeriesFormValues = {
@@ -33,7 +33,7 @@ function readDisplayOrder(formData: FormData) {
 
 export function parseSeriesForm(formData: FormData): ParsedSeriesForm {
   const title = readString(formData, "title");
-  const slug = normalizeSeriesSlug(readString(formData, "slug"));
+  const slug = resolveSeriesSlug(title, readString(formData, "slug"));
   const description = readString(formData, "description");
   const introduction = readString(formData, "introduction");
   const display_order = readDisplayOrder(formData);
@@ -46,7 +46,7 @@ export function parseSeriesForm(formData: FormData): ParsedSeriesForm {
   if (!slug) {
     errors.slug = "주소(slug)를 입력해 주세요.";
   } else if (!isValidSeriesSlug(slug)) {
-    errors.slug = "주소는 영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.";
+    errors.slug = "주소는 글자, 숫자, 하이픈(-)만 사용할 수 있습니다.";
   }
   if (!Number.isFinite(display_order)) {
     errors.display_order = "정렬 순서를 숫자로 입력해 주세요.";
