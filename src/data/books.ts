@@ -8,7 +8,7 @@ export type RepresentativeBook = {
   note?: string;
 };
 
-export const representativeBooksHeading = "대표 연구 저서";
+export const representativeBooksHeading = "대표 연구저서";
 
 export const representativeBooksIntro =
   "강의와 연구를 바탕으로 집필한 대표 저서입니다. 수험용 총서가 아니라, 형사법의 기본 문제를 차분히 정리한 교재와 논저입니다.";

@@ -6,7 +6,7 @@ export const researchCategoryUiLabels: Record<
   Exclude<ResearchCategory, "other">,
   string
 > = {
-  "criminal-law-theory": "형법 이론",
+  "criminal-law-theory": "형법이론",
   "criminal-procedure": "형사소송법",
   "evidence-law": "증거법",
   "criminal-policy": "형사정책",

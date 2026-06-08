@@ -39,7 +39,7 @@ export const researchCategoryMeta: Record<
   { label: string; keywords: readonly string[] }
 > = {
   "criminal-law-theory": {
-    label: "형법 이론",
+    label: "형법이론",
     keywords: [
       "공범론",
       "미수범",
