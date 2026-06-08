@@ -34,9 +34,26 @@ const AI_RESEARCH_COVER_BASENAME_OVERRIDES: Record<string, string> = {
   "로스쿨-시대와-ai": "legal-education-and-ai",
 };
 
+/** Fixed editorial covers for homepage 최근 글 slots (not tied to essay slug). */
+const HOME_RECENT_ESSAY_COVER_BASENAMES = [
+  "life-as-criminal-law-professor-04",
+  "life-as-criminal-law-professor-05",
+  "life-as-criminal-law-professor-06",
+] as const;
+
 /** `public/images/essays/{slug}.{jpg|jpeg|png|webp}` */
 export function getEssayCoverSrc(slug: string): string | null {
   return resolveHomeImageSrc("essays", slug);
+}
+
+/** Homepage 최근 글 card image by position (0–2), independent of essay slug. */
+export function getHomeRecentEssayCoverSrc(slotIndex: number): string | null {
+  const basename = HOME_RECENT_ESSAY_COVER_BASENAMES[slotIndex];
+  if (!basename) {
+    return null;
+  }
+
+  return resolveHomeImageSrc("essays", basename);
 }
 
 /** `public/images/series/{slug}.{jpg|jpeg|png|webp}` */

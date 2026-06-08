@@ -2,6 +2,7 @@ import { EssayEditorialCard } from "@/components/home/essay-editorial-card";
 import { HomeSectionLink } from "@/components/home/home-section-link";
 import { HomeSectionHeader } from "@/components/home/home-section-header";
 import type { Essay } from "@/lib/essays";
+import { getHomeRecentEssayCoverSrc } from "@/lib/home-images";
 
 type HomeRecentWritingProps = {
   essays: readonly Essay[];
@@ -17,9 +18,12 @@ export function HomeRecentWriting({ essays }: HomeRecentWritingProps) {
       />
       {essays.length > 0 ? (
         <ul className="mt-12 grid list-none gap-6 p-0 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3 lg:gap-10">
-          {essays.map((essay) => (
+          {essays.map((essay, index) => (
             <li key={essay.slug} className="min-w-0">
-              <EssayEditorialCard essay={essay} />
+              <EssayEditorialCard
+                coverSrc={getHomeRecentEssayCoverSrc(index)}
+                essay={essay}
+              />
             </li>
           ))}
         </ul>

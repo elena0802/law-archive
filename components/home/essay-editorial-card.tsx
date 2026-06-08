@@ -5,10 +5,18 @@ import { getEssayCoverSrc } from "@/lib/home-images";
 
 type EssayEditorialCardProps = {
   essay: Essay;
+  /** When set, used instead of per-essay slug cover lookup (e.g. homepage slot images). */
+  coverSrc?: string | null;
 };
 
-function EssayThumbnail({ essay }: { essay: Essay }) {
-  const coverSrc = getEssayCoverSrc(essay.slug);
+function EssayThumbnail({
+  essay,
+  coverSrc: coverSrcOverride,
+}: {
+  essay: Essay;
+  coverSrc?: string | null;
+}) {
+  const coverSrc = coverSrcOverride ?? getEssayCoverSrc(essay.slug);
   const categoryLabel = essay.category.trim() || "글";
 
   if (coverSrc) {
@@ -38,13 +46,13 @@ function EssayThumbnail({ essay }: { essay: Essay }) {
   );
 }
 
-export function EssayEditorialCard({ essay }: EssayEditorialCardProps) {
+export function EssayEditorialCard({ essay, coverSrc }: EssayEditorialCardProps) {
   return (
     <Link
       className="group flex h-full flex-col overflow-hidden border border-line/80 bg-paper transition-colors hover:border-ink-muted/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
       href={`/essays/${essay.slug}`}
     >
-      <EssayThumbnail essay={essay} />
+      <EssayThumbnail coverSrc={coverSrc} essay={essay} />
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         <time
           className="text-xs tracking-wide text-ink-muted"
