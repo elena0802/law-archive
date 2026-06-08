@@ -16,7 +16,7 @@ export const siteConfig = {
     headlineLine2: "사람과 사회를 생각해\u00A0왔습니다.",
     lead:
       "오랜 세월 강의실과 서재 사이를 오가며 남긴 질문들입니다. 책상 위 메모와 판례 속의 문장처럼, 이곳에는 형사법을 가르치고 글쓰던 한 학자의 생각이 차분히 놓입니다. 빠른 논평보다 오래 남을 사유를 위해 기록합니다.",
-    image: "/images/hero-study-v2.png",
+    image: "/images/hero-study-v3.png",
     imageWidth: 1536,
     imageHeight: 1024,
     imageAlt:
