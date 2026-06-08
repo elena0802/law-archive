@@ -7,7 +7,6 @@ import {
   type SeriesVolumeSource,
 } from "@/lib/content/series-aggregation";
 import { archiveSeriesTitles } from "@/lib/content/archive-series";
-import { LEGACY_HOME_FEATURED_SERIES_SLUGS } from "@/lib/content/home-featured-series";
 import type { Essay, EssayFrontmatter } from "@/lib/essays";
 import { parseOptionalSeriesOrder } from "@/lib/content/parse-series-order";
 import { getSeriesSlug } from "@/lib/content/series-slug";
@@ -148,11 +147,8 @@ export function createMdxEssayRepository(): EssayRepository {
       return buildEssaySeriesList(getMdxSeriesVolumes(), essays);
     },
 
-    async getFeaturedSeries(options = {}) {
-      const allSeries = await this.getAllSeries(options);
-      const featuredSlugs = new Set<string>(LEGACY_HOME_FEATURED_SERIES_SLUGS);
-
-      return allSeries.filter((series) => featuredSlugs.has(series.slug));
+    async getFeaturedSeries() {
+      return [];
     },
 
     async getSeriesBySlug(slug, options = {}) {

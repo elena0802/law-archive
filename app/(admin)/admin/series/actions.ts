@@ -8,6 +8,7 @@ import {
 } from "@/lib/admin/series";
 import { parseSeriesForm } from "@/lib/admin/parse-series-form";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
+import { revalidatePublicSeriesPaths } from "@/lib/content/revalidate-series-paths";
 
 export async function createSeries(
   _prevState: EssayActionState,
@@ -44,6 +45,8 @@ export async function createSeries(
       message: "연재를 생성하지 못했습니다. 잠시 후 다시 시도해 주세요.",
     };
   }
+
+  await revalidatePublicSeriesPaths(values.slug);
 
   redirect(`/admin/series/${data.id}?notice=saved`);
 }
@@ -90,11 +93,14 @@ export async function updateSeries(
     .eq("id", seriesId);
 
   if (error) {
+    console.error("[updateSeries] supabase update failed", { error, seriesId });
     return {
       status: "error",
       message: "연재를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
     };
   }
+
+  await revalidatePublicSeriesPaths(existing.slug);
 
   redirect(`/admin/series/${seriesId}?notice=saved`);
 }
