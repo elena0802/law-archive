@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 
 type MarkdownNode =
   | { type: "h1" | "h2" | "p" | "quote"; content: string; key: string }
@@ -107,6 +107,33 @@ function markdownToNodes(source: string): MarkdownNode[] {
   return nodes;
 }
 
+const BOLD_INLINE_PATTERN = /\*\*(.+?)\*\*/g;
+
+function renderMarkdownInline(text: string, keyPrefix: string): ReactNode {
+  const parts: ReactNode[] = [];
+  let lastIndex = 0;
+  let partIndex = 0;
+
+  for (const match of text.matchAll(BOLD_INLINE_PATTERN)) {
+    const index = match.index ?? 0;
+
+    if (index > lastIndex) {
+      parts.push(text.slice(lastIndex, index));
+    }
+
+    parts.push(
+      <strong key={`${keyPrefix}-strong-${partIndex++}`}>{match[1]}</strong>,
+    );
+    lastIndex = index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : text;
+}
+
 export function EssayMarkdownPreview({ source }: { source: string }) {
   const nodes = useMemo(() => markdownToNodes(source), [source]);
 
@@ -124,14 +151,14 @@ export function EssayMarkdownPreview({ source }: { source: string }) {
         if (node.type === "h1") {
           return (
             <h1 className="text-keep" key={node.key}>
-              {node.content}
+              {renderMarkdownInline(node.content, node.key)}
             </h1>
           );
         }
         if (node.type === "h2") {
           return (
             <h2 className="text-keep" key={node.key}>
-              {node.content}
+              {renderMarkdownInline(node.content, node.key)}
             </h2>
           );
         }
@@ -140,7 +167,7 @@ export function EssayMarkdownPreview({ source }: { source: string }) {
             <ul className="mt-4 list-disc space-y-2 pl-6" key={node.key}>
               {node.items.map((item, itemIdx) => (
                 <li className="text-keep text-ink" key={`${node.key}-${itemIdx}`}>
-                  {item}
+                  {renderMarkdownInline(item, `${node.key}-${itemIdx}`)}
                 </li>
               ))}
             </ul>
@@ -152,7 +179,7 @@ export function EssayMarkdownPreview({ source }: { source: string }) {
               className="text-keep mt-4 border-l-2 border-line pl-4 italic text-ink-muted"
               key={node.key}
             >
-              {node.content}
+              {renderMarkdownInline(node.content, node.key)}
             </blockquote>
           );
         }
@@ -161,7 +188,7 @@ export function EssayMarkdownPreview({ source }: { source: string }) {
         }
         return (
           <p className="text-keep" key={node.key}>
-            {node.content}
+            {renderMarkdownInline(node.content, node.key)}
           </p>
         );
       })}
