@@ -146,3 +146,45 @@ export type NewsletterSendInsert = {
   sent_at?: string;
   created_by: string;
 };
+
+export type ScholarDnaAnalysisStatus = "pending" | "completed" | "failed";
+
+export type ScholarDnaTraitRow = {
+  label: string;
+  percentage: number;
+};
+
+export type ScholarDnaAnalysisRow = {
+  id: string;
+  name: string;
+  affiliation: string;
+  field_of_study: string;
+  paper_title_1: string;
+  paper_title_2: string | null;
+  paper_title_3: string | null;
+  recent_interest: string | null;
+  scholar_alias: string | null;
+  academic_life_story: string | null;
+  keywords: string[];
+  scholar_dna: ScholarDnaTraitRow[];
+  ai_one_liner: string | null;
+  status: ScholarDnaAnalysisStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ScholarDnaAnalysisInsert = {
+  name: string;
+  affiliation: string;
+  field_of_study: string;
+  paper_title_1: string;
+  paper_title_2?: string | null;
+  paper_title_3?: string | null;
+  recent_interest?: string | null;
+  scholar_alias?: string | null;
+  academic_life_story?: string | null;
+  keywords?: string[];
+  scholar_dna?: ScholarDnaTraitRow[];
+  ai_one_liner?: string | null;
+  status?: ScholarDnaAnalysisStatus;
+};

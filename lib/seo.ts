@@ -10,6 +10,7 @@ export const publicSitemapStaticPaths = [
   "/categories",
   "/guestbook",
   "/about",
+  "/scholar-dna",
 ] as const;
 
 export function toSchemaIsoDate(date: string) {

@@ -11,6 +11,8 @@ import type {
   NewsletterSendRow,
   NewsletterSubscriberInsert,
   NewsletterSubscriberRow,
+  ScholarDnaAnalysisInsert,
+  ScholarDnaAnalysisRow,
   SeriesRow,
 } from "@/lib/content/db-types";
 
@@ -77,6 +79,12 @@ export type Database = {
         Row: NewsletterSendRow;
         Insert: NewsletterSendInsert;
         Update: Partial<NewsletterSendInsert>;
+        Relationships: [];
+      };
+      scholar_dna_analyses: {
+        Row: ScholarDnaAnalysisRow;
+        Insert: ScholarDnaAnalysisInsert;
+        Update: Partial<ScholarDnaAnalysisInsert>;
         Relationships: [];
       };
     };
