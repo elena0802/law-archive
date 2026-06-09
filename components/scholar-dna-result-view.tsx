@@ -98,7 +98,16 @@ export function ScholarDnaResultView({
       >
         <SectionHeading>공유하기</SectionHeading>
         <div className="mt-5">
-          <ScholarDnaShareActions shareUrl={shareUrl} />
+          <ScholarDnaShareActions
+            cardData={{
+              name: analysis.name,
+              scholarAlias: analysis.scholarAlias,
+              aiOneLiner: analysis.aiOneLiner,
+              keywords: analysis.keywords,
+              scholarDna: analysis.scholarDna,
+            }}
+            shareUrl={shareUrl}
+          />
         </div>
       </section>
     </div>
