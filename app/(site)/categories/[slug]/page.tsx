@@ -4,6 +4,7 @@ import { ArticleCard } from "@/components/article-card";
 import { Section } from "@/components/section";
 import { formatEssayDate, getCategoryBySlug } from "@/lib/essays";
 import { resolveCategorySlugParam } from "@/lib/content/category-slug";
+import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 type CategoryPageProps = {
@@ -35,6 +36,7 @@ export async function generateMetadata({
       url: `/categories/${category.slug}`,
       locale: "ko_KR",
       siteName: siteConfig.name,
+      images: buildDefaultOpenGraphImages(),
     },
   };
 }

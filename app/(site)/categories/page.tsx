@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Section } from "@/components/section";
 import { getCategoryDescription } from "@/lib/content/category-descriptions";
 import { getAllCategories } from "@/lib/essays";
+import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
     url: "/categories",
     locale: "ko_KR",
     siteName: siteConfig.name,
+    images: buildDefaultOpenGraphImages(),
   },
 };
 

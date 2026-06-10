@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
+import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { getSiteOrigin, siteConfig } from "@/lib/site";
 import "./globals.css";
 
@@ -40,6 +41,7 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     locale: "ko_KR",
     type: "website",
+    images: buildDefaultOpenGraphImages(),
   },
   robots: {
     index: true,

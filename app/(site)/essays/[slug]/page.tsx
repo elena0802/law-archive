@@ -4,7 +4,7 @@ import { EssayArticleView } from "@/components/essay-article-view";
 import { JsonLd } from "@/components/json-ld";
 import { Section } from "@/components/section";
 import { getAllEssays, getEssayBySlug } from "@/lib/essays";
-import { buildArticleJsonLd } from "@/lib/seo";
+import { buildArticleJsonLd, buildEssayOpenGraphImages } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 type EssayPageProps = {
@@ -51,6 +51,7 @@ export async function generateMetadata({
       section: essay.category,
       locale: "ko_KR",
       siteName: siteConfig.name,
+      images: buildEssayOpenGraphImages(essay.slug, essay.title),
     },
   };
 }

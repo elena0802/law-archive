@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import type { Essay } from "@/lib/essays";
+import { getEssayCoverSrc } from "@/lib/home-images";
 import { scholarProfile } from "@/lib/profile";
 import { getSiteOrigin, siteConfig } from "@/lib/site";
 import type { ResearchItem } from "@/src/types/research";
@@ -17,6 +19,40 @@ export const publicSitemapStaticPaths = [
 
 export function toSitemapAbsoluteUrl(origin: string, path: string) {
   return path === "/" ? `${origin}/` : `${origin}${path}`;
+}
+
+export function toAbsoluteAssetUrl(assetPath: string) {
+  return toSitemapAbsoluteUrl(getSiteOrigin(), assetPath);
+}
+
+export function buildDefaultOpenGraphImages(): NonNullable<
+  Metadata["openGraph"]
+>["images"] {
+  const { path, width, height, alt } = siteConfig.og.default;
+
+  return [
+    {
+      url: toAbsoluteAssetUrl(path),
+      width,
+      height,
+      alt,
+    },
+  ];
+}
+
+export function buildEssayOpenGraphImages(slug: string, title: string) {
+  const coverPath = getEssayCoverSrc(slug);
+
+  if (coverPath) {
+    return [
+      {
+        url: toAbsoluteAssetUrl(coverPath),
+        alt: title,
+      },
+    ];
+  }
+
+  return buildDefaultOpenGraphImages();
 }
 
 export function toResearchLastModified(item: ResearchItem) {

@@ -8,6 +8,7 @@ import { HomeResearchArchiveSummary } from "@/components/home/home-research-arch
 import { Section } from "@/components/section";
 import { getAllEssays, getAllSeries, getFeaturedSeries } from "@/lib/essays";
 import { buildAiResearchTracks } from "@/lib/home-ai-research-tracks";
+import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { researchItems } from "@/src/data/research";
 import {
@@ -20,8 +21,7 @@ export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "서재",
-  description:
-    "35년간 형사법을 연구한 학자가 AI와 함께 생각을 기록하는 디지털 연구 노트입니다.",
+  description: siteConfig.description,
   alternates: {
     canonical: "/",
   },
@@ -31,6 +31,7 @@ export const metadata: Metadata = {
     url: "/",
     locale: "ko_KR",
     siteName: siteConfig.name,
+    images: buildDefaultOpenGraphImages(),
   },
 };
 

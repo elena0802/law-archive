@@ -34,6 +34,14 @@ export const siteConfig = {
   about: {
     pageTitle: "서재 소개",
   },
+  og: {
+    default: {
+      path: "/og/default.jpg",
+      width: 1730,
+      height: 909,
+      alt: "형사법 아카이브 — 한 학자의 디지털 서재",
+    },
+  },
 } as const;
 
 export type SiteConfig = typeof siteConfig;

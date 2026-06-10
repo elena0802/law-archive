@@ -13,6 +13,7 @@ import {
   parseResearchPublicationNumber,
 } from "@/src/lib/research";
 import { researchPagePath } from "@/lib/research-record";
+import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 type ResearchDetailPageProps = {
@@ -61,6 +62,7 @@ export async function generateMetadata({
       url: canonical,
       locale: "ko_KR",
       siteName: siteConfig.name,
+      images: buildDefaultOpenGraphImages(),
     },
   };
 }

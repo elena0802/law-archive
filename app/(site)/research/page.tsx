@@ -14,6 +14,7 @@ import {
   sortByPublicationNumber,
 } from "@/src/lib/research";
 import { researchPagePath } from "@/lib/research-record";
+import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 const pageTitle = "연구업적";
@@ -32,6 +33,7 @@ export const metadata: Metadata = {
     url: researchPagePath,
     locale: "ko_KR",
     siteName: siteConfig.name,
+    images: buildDefaultOpenGraphImages(),
   },
 };
 
