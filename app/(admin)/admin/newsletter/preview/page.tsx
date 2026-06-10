@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { adminOutlineButtonClassName } from "@/components/admin/admin-form-styles";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
 import { loadArchiveDigestSourceData } from "@/lib/newsletter-email/archive-digest-source";
 import { buildArchiveDigestEmailContent } from "@/lib/newsletter/templates/archive-digest";
@@ -40,14 +41,11 @@ export default async function NewsletterPreviewPage() {
         본문 중심 Digest 미리보기입니다. 이번 글 본문, 댓글·공유 CTA, 요즘의
         시선 리스트가 순서대로 표시됩니다. 링크는 새 탭에서 열립니다.
       </p>
-      <p className="mt-6">
-        <Link
-          className="text-sm text-accent underline underline-offset-2"
-          href="/admin/newsletter"
-        >
+      <div className="mt-6">
+        <Link className={adminOutlineButtonClassName} href="/admin/newsletter">
           ← 뉴스레터 발송으로 돌아가기
         </Link>
-      </p>
+      </div>
 
       <div
         className="mt-10 overflow-hidden rounded border border-line bg-paper-muted"

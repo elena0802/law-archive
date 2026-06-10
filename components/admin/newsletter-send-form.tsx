@@ -8,6 +8,7 @@ import { AdminFieldError } from "@/components/admin/admin-field-error";
 import {
   adminFieldClassName,
   adminLabelClassName,
+  adminOutlineButtonClassName,
   adminPrimaryButtonClassName,
   adminSecondaryButtonClassName,
 } from "@/components/admin/admin-form-styles";
@@ -105,24 +106,19 @@ export function NewsletterSendForm({
 
   return (
     <section className="mt-10 border-t border-line pt-8">
-      <h2 className="text-sm tracking-[0.14em] text-accent uppercase">
-        뉴스레터 발송
-      </h2>
-      <p className="text-keep mt-4 max-w-2xl text-base leading-8 text-ink-muted">
-        제목과 본문을 작성한 뒤, 한 명에게 테스트하거나 활성 구독자 전체에게
-        발송할 수 있습니다. Archive Digest 템플릿은 이번 글 본문·댓글·공유 CTA·
-        요즘의 시선 리스트를 조합합니다.
-      </p>
-      <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h2 className="text-sm tracking-[0.14em] text-accent uppercase">
+          뉴스레터 발송
+        </h2>
         <Link
-          className="text-accent underline underline-offset-2"
+          className={adminOutlineButtonClassName}
           href="/admin/newsletter/preview"
           target="_blank"
         >
           Archive Digest 미리보기
         </Link>
-      </p>
-      <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+      </div>
+      <p className="text-keep mt-4 text-sm leading-7 text-ink-muted">
         발신 주소: {fromEmail}
       </p>
       <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">

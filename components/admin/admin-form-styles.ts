@@ -8,3 +8,6 @@ export const adminPrimaryButtonClassName =
 
 export const adminSecondaryButtonClassName =
   "rounded border border-line bg-paper px-5 py-3 text-base font-medium text-ink transition hover:border-accent/40 disabled:cursor-not-allowed disabled:opacity-60";
+
+export const adminOutlineButtonClassName =
+  "inline-flex items-center justify-center rounded border border-accent bg-paper px-5 py-3 text-base font-medium text-accent transition hover:bg-accent/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
