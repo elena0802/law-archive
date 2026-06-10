@@ -13,6 +13,59 @@ export function digestExternalLinkAttrs() {
   return `target="_blank" rel="noopener noreferrer"`;
 }
 
+const DIGEST_LIST_THUMB_WIDTH = 96;
+const DIGEST_LIST_THUMB_HEIGHT = 72;
+
+export function buildDigestHeroImage(imageUrl: string, alt: string) {
+  const safeUrl = escapeNewsletterHtml(imageUrl);
+  const safeAlt = escapeNewsletterHtml(alt);
+
+  return [
+    `<img`,
+    ` src="${safeUrl}"`,
+    ` alt="${safeAlt}"`,
+    ` width="${DIGEST_CARD_IMAGE_WIDTH}"`,
+    ` height="${DIGEST_CARD_IMAGE_HEIGHT}"`,
+    ` style="display:block;width:100%;max-width:100%;height:auto;border:0;margin:0 0 1.5rem;border-radius:2px;"`,
+    ` />`,
+  ].join("");
+}
+
+export function buildDigestListThumbnail(imageUrl: string, alt: string) {
+  const safeUrl = escapeNewsletterHtml(imageUrl);
+  const safeAlt = escapeNewsletterHtml(alt);
+
+  return [
+    `<img`,
+    ` src="${safeUrl}"`,
+    ` alt="${safeAlt}"`,
+    ` width="${DIGEST_LIST_THUMB_WIDTH}"`,
+    ` height="${DIGEST_LIST_THUMB_HEIGHT}"`,
+    ` style="display:block;width:${DIGEST_LIST_THUMB_WIDTH}px;max-width:100%;height:auto;border:0;border-radius:2px;"`,
+    ` />`,
+  ].join("");
+}
+
+export function buildDigestButton(url: string, label: string) {
+  const safeUrl = escapeNewsletterHtml(url);
+
+  return [
+    `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:1rem 0 0;border-collapse:separate;">`,
+    `<tr>`,
+    `<td style="background-color:#68462d;border-radius:4px;padding:12px 22px;">`,
+    `<a href="${safeUrl}" ${digestExternalLinkAttrs()} style="display:inline-block;font-size:0.9375rem;font-weight:600;line-height:1.4;color:#f8f4ea;text-decoration:none;">`,
+    escapeNewsletterHtml(label),
+    `</a>`,
+    `</td>`,
+    `</tr>`,
+    `</table>`,
+  ].join("");
+}
+
+export function buildDigestSectionDivider() {
+  return `<div style="margin:2.5rem 0;border-top:1px solid #d9cbb7;"></div>`;
+}
+
 export function buildDigestCardImage(imageUrl: string, alt: string) {
   const safeUrl = escapeNewsletterHtml(imageUrl);
   const safeAlt = escapeNewsletterHtml(alt);

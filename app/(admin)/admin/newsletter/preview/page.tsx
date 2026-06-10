@@ -23,7 +23,6 @@ export default async function NewsletterPreviewPage() {
     introMessage: sampleIntro,
     featuredEssay: source.featuredEssay,
     curationItems: source.curationItems,
-    aiResearchNote: source.aiResearchNote,
     siteOrigin,
     unsubscribeUrl: `${siteOrigin}/newsletter/unsubscribe?token=preview`,
     variant: "test",
@@ -38,9 +37,8 @@ export default async function NewsletterPreviewPage() {
         Archive Digest 미리보기
       </h1>
       <p className="text-keep mt-5 max-w-2xl text-base leading-8 text-ink-muted">
-        최근 공개 콘텐츠로 조합한 HTML 이메일 미리보기입니다. 카드 전체를
-        클릭하면 새 탭에서 링크가 열립니다. 실제 발송 전 테스트 메일로 한 번
-        더 확인해 주세요.
+        본문 중심 Digest 미리보기입니다. 이번 글 본문, 댓글·공유 CTA, 요즘의
+        시선 리스트가 순서대로 표시됩니다. 링크는 새 탭에서 열립니다.
       </p>
       <p className="mt-6">
         <Link

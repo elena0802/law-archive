@@ -1,23 +1,24 @@
 import "server-only";
 
-import type { Essay, EssaySeries } from "@/lib/essays";
-import { getAllEssays, getAllSeries } from "@/lib/essays";
+import type { Essay } from "@/lib/essays";
+import { getAllEssays, getEssayBySlug } from "@/lib/essays";
 import { getVisibleCurationItems } from "@/lib/curation/queries";
-import { buildAiResearchTracks } from "@/lib/home-ai-research-tracks";
-import { getAiResearchCoverSrc, getEssayCoverSrc } from "@/lib/home-images";
+import { getEssayCoverSrc } from "@/lib/home-images";
+import {
+  essayBodyToEmailHtml,
+  essayBodyToPlainText,
+} from "@/lib/newsletter-email/essay-body-html";
 import { toDigestAbsoluteImageUrl } from "@/lib/newsletter-email/digest-images";
 import type {
-  ArchiveDigestAiNote,
   ArchiveDigestCurationItem,
-  ArchiveDigestEssayCard,
+  ArchiveDigestMainEssay,
 } from "@/lib/newsletter/templates/archive-digest";
 
 const CURATION_LIMIT = 3;
 
 export type ArchiveDigestSourceData = {
-  featuredEssay: ArchiveDigestEssayCard | null;
+  featuredEssay: ArchiveDigestMainEssay | null;
   curationItems: ArchiveDigestCurationItem[];
-  aiResearchNote: ArchiveDigestAiNote | null;
 };
 
 function extractEssaySlug(url: string) {
@@ -30,44 +31,36 @@ function extractEssaySlug(url: string) {
   }
 }
 
-function resolveEssayImageUrl(
-  essay: Essay,
-  siteOrigin: string,
-): { imageUrl: string | null; imageAlt: string } {
+function buildMainEssay(essay: Essay, siteOrigin: string): ArchiveDigestMainEssay {
+  const normalizedOrigin = siteOrigin.replace(/\/$/, "");
+  const url = `${normalizedOrigin}/essays/${essay.slug}`;
   const coverPath = getEssayCoverSrc(essay.slug);
 
   return {
+    title: essay.title,
+    description: essay.description,
+    url,
+    commentsUrl: `${url}#essay-comments-heading`,
+    bodyHtml: essayBodyToEmailHtml(essay.content, siteOrigin),
+    bodyText: essayBodyToPlainText(essay.content),
     imageUrl: toDigestAbsoluteImageUrl(coverPath, siteOrigin),
     imageAlt: essay.title,
   };
 }
 
-function buildEssayCard(essay: Essay, siteOrigin: string): ArchiveDigestEssayCard {
-  const normalizedOrigin = siteOrigin.replace(/\/$/, "");
-  const { imageUrl, imageAlt } = resolveEssayImageUrl(essay, siteOrigin);
-
-  return {
-    title: essay.title,
-    description: essay.description,
-    url: `${normalizedOrigin}/essays/${essay.slug}`,
-    imageUrl,
-    imageAlt,
-  };
-}
-
-function resolveFeaturedEssay(
+async function resolveFeaturedEssay(
   essays: readonly Essay[],
   relatedUrl: string | null,
   siteOrigin: string,
-): ArchiveDigestEssayCard | null {
+): Promise<ArchiveDigestMainEssay | null> {
   const trimmedUrl = relatedUrl?.trim();
 
   if (trimmedUrl) {
     const slug = extractEssaySlug(trimmedUrl);
     if (slug) {
-      const essay = essays.find((item) => item.slug === slug);
-      if (essay) {
-        return buildEssayCard(essay, siteOrigin);
+      const essay = await getEssayBySlug(slug);
+      if (essay && !essay.draft) {
+        return buildMainEssay(essay, siteOrigin);
       }
     }
 
@@ -75,71 +68,43 @@ function resolveFeaturedEssay(
       title: "이번 글",
       description: "",
       url: trimmedUrl,
+      commentsUrl: trimmedUrl,
+      bodyHtml: "",
+      bodyText: "",
       imageUrl: null,
       imageAlt: "이번 글",
     };
   }
 
   const latestEssay = essays[0];
-  return latestEssay ? buildEssayCard(latestEssay, siteOrigin) : null;
-}
-
-function resolveAiResearchNote(
-  allSeries: readonly EssaySeries[],
-  siteOrigin: string,
-): ArchiveDigestAiNote | null {
-  const tracks = buildAiResearchTracks(allSeries);
-  const normalizedOrigin = siteOrigin.replace(/\/$/, "");
-
-  for (const track of tracks) {
-    const seriesSlug = track.href.replace(/^\/series\//, "");
-    const series = allSeries.find((item) => item.slug === seriesSlug);
-
-    if (!series || series.essays.length === 0) {
-      continue;
-    }
-
-    const latestEssay = series.essays[0];
-    const trackImagePath = getAiResearchCoverSrc(track.imageKey);
-    const essayImagePath = getEssayCoverSrc(latestEssay.slug);
-    const imageUrl =
-      toDigestAbsoluteImageUrl(trackImagePath, siteOrigin) ??
-      toDigestAbsoluteImageUrl(essayImagePath, siteOrigin);
-
-    return {
-      title: latestEssay.title,
-      description:
-        latestEssay.description.trim() || track.description.join(" "),
-      url: `${normalizedOrigin}/essays/${latestEssay.slug}`,
-      imageUrl,
-      imageAlt: track.title,
-    };
+  if (!latestEssay) {
+    return null;
   }
 
-  return null;
+  const essay = (await getEssayBySlug(latestEssay.slug)) ?? latestEssay;
+  return buildMainEssay(essay, siteOrigin);
 }
 
 export async function loadArchiveDigestSourceData(
   relatedUrl: string | null,
   siteOrigin: string,
 ): Promise<ArchiveDigestSourceData> {
-  const [essays, curationItems, allSeries] = await Promise.all([
+  const [essays, curationItems] = await Promise.all([
     getAllEssays(),
     getVisibleCurationItems(),
-    getAllSeries(),
   ]);
 
   return {
-    featuredEssay: resolveFeaturedEssay(essays, relatedUrl, siteOrigin),
+    featuredEssay: await resolveFeaturedEssay(essays, relatedUrl, siteOrigin),
     curationItems: curationItems.slice(0, CURATION_LIMIT).map((item) => ({
       title: item.title,
       type: item.type,
       source: item.source,
       professorNote: item.professorNote,
+      recommendedAt: item.recommendedAt,
       url: item.url,
       imageUrl: toDigestAbsoluteImageUrl(item.thumbnailUrl, siteOrigin),
       imageAlt: item.title,
     })),
-    aiResearchNote: resolveAiResearchNote(allSeries, siteOrigin),
   };
 }

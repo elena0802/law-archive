@@ -110,8 +110,8 @@ export function NewsletterSendForm({
       </h2>
       <p className="text-keep mt-4 max-w-2xl text-base leading-8 text-ink-muted">
         제목과 본문을 작성한 뒤, 한 명에게 테스트하거나 활성 구독자 전체에게
-        발송할 수 있습니다. Archive Digest 템플릿은 최근 글·요즘의 시선·AI 연구
-        노트를 함께 조합합니다.
+        발송할 수 있습니다. Archive Digest 템플릿은 이번 글 본문·댓글·공유 CTA·
+        요즘의 시선 리스트를 조합합니다.
       </p>
       <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
         <Link

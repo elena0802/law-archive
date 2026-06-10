@@ -51,7 +51,6 @@ export async function buildNewsletterSendContent({
     introMessage: message,
     featuredEssay: source.featuredEssay,
     curationItems: source.curationItems,
-    aiResearchNote: source.aiResearchNote,
     siteOrigin,
     unsubscribeUrl,
     variant,
