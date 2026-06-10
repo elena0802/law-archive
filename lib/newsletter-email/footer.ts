@@ -1,6 +1,15 @@
 import { getNewsletterFromEmail } from "@/lib/newsletter-email/config";
-import { escapeNewsletterHtml } from "@/lib/newsletter-email/html-utils";
+import {
+  DIGEST_COLORS,
+  DIGEST_SPACING,
+} from "@/lib/newsletter-email/digest-spacing";
+import {
+  digestExternalLinkAttrs,
+  escapeNewsletterHtml,
+} from "@/lib/newsletter-email/html-utils";
 import { getSiteOrigin, siteConfig } from "@/lib/site";
+
+const DIGEST_FOOTER_TAGLINE = "형사법, 사회, 기술에 대한 생각을 기록합니다.";
 
 const TEST_FOOTER_LINE = "이 메일은 형사법 아카이브 뉴스레터 테스트 발송입니다.";
 const NON_SUBSCRIBER_FOOTER_LINE =
@@ -39,13 +48,15 @@ export function buildDigestFooterText({
 }) {
   const siteUrl = buildNewsletterSiteUrl(siteOrigin);
   const fromEmail = getNewsletterFromEmail();
+  const year = new Date().getFullYear();
   const lines = [
     "",
     "—",
-    siteConfig.name,
-    siteUrl,
+    `© ${year} ${siteConfig.name}`,
+    DIGEST_FOOTER_TAGLINE,
     "",
-    `발신: ${siteConfig.name} <${fromEmail}>`,
+    `${siteConfig.name} 방문: ${siteUrl}`,
+    `요즘의 시선: ${siteUrl}/curation`,
   ];
 
   if (variant === "test") {
@@ -57,6 +68,8 @@ export function buildDigestFooterText({
   } else if (variant === "test") {
     lines.push(NON_SUBSCRIBER_FOOTER_LINE);
   }
+
+  lines.push("", `발신: ${siteConfig.name} <${fromEmail}>`);
 
   return lines;
 }
@@ -96,6 +109,11 @@ export function buildBroadcastFooterHtml(unsubscribeUrl: string) {
   ].join("");
 }
 
+function digestFooterLink(url: string, label: string) {
+  const safeUrl = escapeNewsletterHtml(url);
+  return `<a href="${safeUrl}" ${digestExternalLinkAttrs()} style="color:${DIGEST_COLORS.accent};text-decoration:underline;">${escapeNewsletterHtml(label)}</a>`;
+}
+
 export function buildDigestFooterHtml({
   siteOrigin,
   unsubscribeUrl,
@@ -106,34 +124,33 @@ export function buildDigestFooterHtml({
   variant: NewsletterEmailVariant;
 }) {
   const siteUrl = buildNewsletterSiteUrl(siteOrigin);
-  const safeSiteUrl = escapeNewsletterHtml(siteUrl);
   const fromEmail = escapeNewsletterHtml(getNewsletterFromEmail());
-  const curationUrl = escapeNewsletterHtml(`${siteUrl}/curation`);
-
-  const visitLink = `<a href="${safeSiteUrl}" style="color:#68462d;text-decoration:underline;">${escapeNewsletterHtml(siteConfig.name)} 방문</a>`;
-  const curationLink = `<a href="${curationUrl}" style="color:#68462d;text-decoration:underline;">요즘의 시선</a>`;
+  const year = new Date().getFullYear();
 
   let unsubscribeBlock = "";
 
   if (unsubscribeUrl?.trim()) {
-    const safeUrl = escapeNewsletterHtml(unsubscribeUrl.trim());
-    unsubscribeBlock = `<p style="margin:0.75rem 0 0;font-size:0.875rem;line-height:1.6;"><a href="${safeUrl}" style="color:#68462d;text-decoration:underline;">구독 해지</a></p>`;
+    unsubscribeBlock = `<p style="margin:0 0 0.75rem;font-size:0.875rem;line-height:1.65;">${digestFooterLink(unsubscribeUrl.trim(), "구독 해지")}</p>`;
   } else if (variant === "test") {
-    unsubscribeBlock = `<p style="margin:0.75rem 0 0;font-size:0.875rem;line-height:1.6;color:#655d52;">${escapeNewsletterHtml(NON_SUBSCRIBER_FOOTER_LINE)}</p>`;
+    unsubscribeBlock = `<p style="margin:0 0 0.75rem;font-size:0.875rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(NON_SUBSCRIBER_FOOTER_LINE)}</p>`;
   }
 
   const testNote =
     variant === "test"
-      ? `<p style="margin:0 0 0.75rem;font-size:0.8125rem;line-height:1.6;color:#655d52;">${escapeNewsletterHtml(TEST_FOOTER_LINE)}</p>`
+      ? `<p style="margin:0 0 1rem;font-size:0.8125rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(TEST_FOOTER_LINE)}</p>`
       : "";
 
   return [
-    `<div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid #d9cbb7;">`,
+    `<div style="margin-top:${DIGEST_SPACING.sectionYLarge};padding:${DIGEST_SPACING.footerPadding};background-color:${DIGEST_COLORS.footer};border-top:1px solid ${DIGEST_COLORS.line};">`,
+    `<div style="max-width:${DIGEST_SPACING.outerMaxWidth};margin:0 auto;">`,
     testNote,
-    `<p style="margin:0 0 0.5rem;font-family:Georgia,'Times New Roman',serif;font-size:1rem;line-height:1.5;color:#1d1a15;">${escapeNewsletterHtml(siteConfig.name)}</p>`,
-    `<p style="margin:0 0 0.75rem;font-size:0.875rem;line-height:1.6;color:#655d52;">${visitLink} · ${curationLink}</p>`,
+    `<p style="margin:0 0 0.5rem;font-size:0.875rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">© ${year} ${escapeNewsletterHtml(siteConfig.name)}</p>`,
+    `<p style="margin:0 0 1.25rem;font-size:0.875rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(DIGEST_FOOTER_TAGLINE)}</p>`,
+    `<p style="margin:0 0 0.5rem;font-size:0.875rem;line-height:1.65;">${digestFooterLink(siteUrl, `${siteConfig.name} 방문`)}</p>`,
+    `<p style="margin:0 0 0.75rem;font-size:0.875rem;line-height:1.65;">${digestFooterLink(`${siteUrl}/curation`, "요즘의 시선")}</p>`,
     unsubscribeBlock,
-    `<p style="margin:1rem 0 0;font-size:0.8125rem;line-height:1.6;color:#655d52;">발신: ${escapeNewsletterHtml(siteConfig.name)} &lt;${fromEmail}&gt;</p>`,
+    `<p style="margin:0;font-size:0.8125rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">발신: ${escapeNewsletterHtml(siteConfig.name)} &lt;${fromEmail}&gt;</p>`,
+    `</div>`,
     `</div>`,
   ].join("");
 }

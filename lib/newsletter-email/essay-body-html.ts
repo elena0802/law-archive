@@ -1,7 +1,7 @@
 import { escapeNewsletterHtml } from "@/lib/newsletter-email/html-utils";
 
 const PROSE_PARAGRAPH =
-  "margin:0 0 1.25rem;font-size:1rem;line-height:1.85;color:#1d1a15;";
+  "margin:0 0 1.25rem;font-size:1rem;line-height:1.9;color:#1d1a15;";
 const PROSE_HEADING =
   "margin:2rem 0 1rem;font-family:Georgia,'Times New Roman',serif;font-size:1.375rem;font-weight:400;line-height:1.35;color:#1d1a15;";
 const PROSE_SUBHEADING =

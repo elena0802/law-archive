@@ -1,3 +1,8 @@
+import {
+  DIGEST_COLORS,
+  DIGEST_SPACING,
+} from "@/lib/newsletter-email/digest-spacing";
+
 export function escapeNewsletterHtml(value: string) {
   return value
     .replaceAll("&", "&amp;")
@@ -46,24 +51,75 @@ export function buildDigestListThumbnail(imageUrl: string, alt: string) {
   ].join("");
 }
 
-export function buildDigestButton(url: string, label: string) {
+export function buildDigestButton(url: string, label: string, centered = false) {
   const safeUrl = escapeNewsletterHtml(url);
 
-  return [
-    `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:1rem 0 0;border-collapse:separate;">`,
+  const button = [
+    `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0;border-collapse:separate;">`,
     `<tr>`,
-    `<td style="background-color:#68462d;border-radius:4px;padding:12px 22px;">`,
-    `<a href="${safeUrl}" ${digestExternalLinkAttrs()} style="display:inline-block;font-size:0.9375rem;font-weight:600;line-height:1.4;color:#f8f4ea;text-decoration:none;">`,
+    `<td style="background-color:${DIGEST_COLORS.accent};border-radius:6px;padding:14px 28px;">`,
+    `<a href="${safeUrl}" ${digestExternalLinkAttrs()} style="display:inline-block;font-size:0.9375rem;font-weight:600;line-height:1.4;color:${DIGEST_COLORS.buttonText};text-decoration:none;">`,
     escapeNewsletterHtml(label),
     `</a>`,
     `</td>`,
     `</tr>`,
     `</table>`,
   ].join("");
+
+  if (!centered) {
+    return button;
+  }
+
+  return [
+    `<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:${DIGEST_SPACING.titleBelow} 0 0;border-collapse:collapse;">`,
+    `<tr><td align="center" style="padding:0;">`,
+    button,
+    `</td></tr>`,
+    `</table>`,
+  ].join("");
 }
 
 export function buildDigestSectionDivider() {
-  return `<div style="margin:2.5rem 0;border-top:1px solid #d9cbb7;"></div>`;
+  return `<div style="margin:${DIGEST_SPACING.dividerMargin};border-top:1px solid ${DIGEST_COLORS.line};font-size:0;line-height:0;">&nbsp;</div>`;
+}
+
+export function buildDigestProseWrap(innerHtml: string) {
+  return `<div style="max-width:${DIGEST_SPACING.proseMaxWidth};margin:0 auto;">${innerHtml}</div>`;
+}
+
+export function buildDigestCtaSection({
+  title,
+  body,
+  buttonUrl,
+  buttonLabel,
+  withTopDivider = true,
+}: {
+  title: string;
+  body?: string;
+  buttonUrl: string;
+  buttonLabel: string;
+  withTopDivider?: boolean;
+}) {
+  const bodyHtml = body?.trim()
+    ? `<p style="margin:0 0 ${DIGEST_SPACING.titleBelow};font-size:0.9375rem;line-height:1.75;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(body)}</p>`
+    : "";
+
+  const sectionMargin = withTopDivider
+    ? `${DIGEST_SPACING.sectionY} 0`
+    : `${DIGEST_SPACING.sectionY} 0 0`;
+
+  return [
+    withTopDivider ? buildDigestSectionDivider() : "",
+    `<section style="margin:${sectionMargin};text-align:center;">`,
+    `<h2 style="margin:0 0 ${bodyHtml ? DIGEST_SPACING.titleBelow : DIGEST_SPACING.titleBelow};font-family:Georgia,'Times New Roman',serif;font-size:1.25rem;font-weight:400;line-height:1.35;color:${DIGEST_COLORS.ink};">${escapeNewsletterHtml(title)}</h2>`,
+    bodyHtml,
+    buildDigestButton(buttonUrl, buttonLabel, true),
+    `</section>`,
+  ].join("");
+}
+
+export function buildDigestTypeBadge(label: string) {
+  return `<span style="display:inline-block;border:1px solid ${DIGEST_COLORS.line};background-color:${DIGEST_COLORS.page};padding:3px 8px;font-size:0.6875rem;letter-spacing:0.1em;text-transform:uppercase;color:${DIGEST_COLORS.accent};">${escapeNewsletterHtml(label)}</span>`;
 }
 
 export function buildDigestCardImage(imageUrl: string, alt: string) {
@@ -123,7 +179,7 @@ export function messageToHtmlParagraphs(message: string) {
   return paragraphs
     .map((paragraph) => {
       const lines = paragraph.split("\n").map((line) => escapeNewsletterHtml(line));
-      return `<p style="margin:0 0 1rem;line-height:1.75;color:#655d52;">${lines.join("<br />")}</p>`;
+      return `<p style="margin:0 0 1.125rem;line-height:1.8;color:${DIGEST_COLORS.inkMuted};">${lines.join("<br />")}</p>`;
     })
     .join("");
 }
