@@ -3,7 +3,7 @@ import { CurationFeaturedItem } from "@/components/curation/curation-featured-it
 import { HomeSectionHeader } from "@/components/home/home-section-header";
 import { HomeSectionLink } from "@/components/home/home-section-link";
 import type { CurationItem } from "@/lib/curation/types";
-import { curationPagePath } from "@/lib/curation/types";
+import { curationPagePath, curationSectionDescription } from "@/lib/curation/types";
 
 type HomeCurationPreviewProps = {
   featured: CurationItem | null;
@@ -16,7 +16,7 @@ export function HomeCurationPreview({ featured, recent }: HomeCurationPreviewPro
   return (
     <section aria-labelledby="home-curation-heading">
       <HomeSectionHeader
-        description="천진호 교수가 요즘 주목하는 콘텐츠와, 그 이유를 짧게 기록했습니다."
+        description={curationSectionDescription}
         headingId="home-curation-heading"
         title="요즘의 시선"
       />

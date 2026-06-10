@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { CurationList } from "@/components/curation/curation-list";
 import { Section } from "@/components/section";
 import { getVisibleCurationItems } from "@/lib/curation/queries";
+import { curationSectionDescription } from "@/lib/curation/types";
 import { siteConfig } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const pageDescription =
-  "천진호 교수가 직접 추천하는 유튜브, 기사, 외부글, 논문, 책과 그 이유를 모았습니다.";
+const pageDescription = curationSectionDescription;
 
 export const metadata: Metadata = {
   title: "요즘의 시선",
