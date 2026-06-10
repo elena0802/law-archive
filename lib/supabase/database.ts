@@ -11,6 +11,9 @@ import type {
   NewsletterSendRow,
   NewsletterSubscriberInsert,
   NewsletterSubscriberRow,
+  ProfessorCurationItemInsert,
+  ProfessorCurationItemRow,
+  ProfessorCurationItemUpdate,
   ScholarDnaAnalysisInsert,
   ScholarDnaAnalysisRow,
   SeriesRow,
@@ -85,6 +88,12 @@ export type Database = {
         Row: ScholarDnaAnalysisRow;
         Insert: ScholarDnaAnalysisInsert;
         Update: Partial<ScholarDnaAnalysisInsert>;
+        Relationships: [];
+      };
+      professor_curation_items: {
+        Row: ProfessorCurationItemRow;
+        Insert: ProfessorCurationItemInsert;
+        Update: ProfessorCurationItemUpdate;
         Relationships: [];
       };
     };

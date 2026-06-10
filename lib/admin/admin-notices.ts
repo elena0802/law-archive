@@ -63,3 +63,21 @@ export function getAdminSeriesNoticeMessage(
 
   return undefined;
 }
+
+export function getAdminCurationNoticeMessage(
+  notice: string | undefined,
+): string | undefined {
+  if (notice === "saved") {
+    return "큐레이션 항목이 저장되었습니다.";
+  }
+
+  if (notice === "deleted") {
+    return "큐레이션 항목이 삭제되었습니다.";
+  }
+
+  if (notice === "delete_failed") {
+    return "큐레이션 항목을 삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+  }
+
+  return undefined;
+}

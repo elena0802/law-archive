@@ -32,6 +32,9 @@ export function AdminNav() {
   const isNewsletter =
     pathname === "/admin/newsletter" ||
     pathname.startsWith("/admin/newsletter/");
+  const isCuration =
+    pathname === "/admin/curation" ||
+    pathname.startsWith("/admin/curation/");
 
   return (
     <nav
@@ -62,6 +65,12 @@ export function AdminNav() {
           href="/admin/series"
         >
           연재 관리
+        </Link>
+        <Link
+          className={isCuration ? activeLinkClassName : linkClassName}
+          href="/admin/curation"
+        >
+          요즘의 시선
         </Link>
         <Link
           className={isComments ? activeLinkClassName : linkClassName}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { HomeHero } from "@/components/home-hero";
 import { HomeAiNotes } from "@/components/home/home-ai-notes";
+import { HomeCurationPreview } from "@/components/home/home-curation-preview";
 import { HomeFeaturedSeries } from "@/components/home/home-featured-series";
 import { HomeNewsletter } from "@/components/home/home-newsletter";
 import { HomeRecentWriting } from "@/components/home/home-recent-writing";
@@ -8,6 +9,10 @@ import { HomeResearchArchiveSummary } from "@/components/home/home-research-arch
 import { Section } from "@/components/section";
 import { getAllEssays, getAllSeries, getFeaturedSeries } from "@/lib/essays";
 import { buildAiResearchTracks } from "@/lib/home-ai-research-tracks";
+import {
+  getFeaturedYoutubeCuration,
+  getHomeCurationLinks,
+} from "@/lib/curation/queries";
 import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { scholarTitle, siteConfig } from "@/lib/site";
 import { researchItems } from "@/src/data/research";
@@ -44,11 +49,13 @@ const HOME_SECTION_CLASS =
   "border-t border-line !py-[clamp(4.75rem,10vw,9.5rem)]";
 
 export default async function Home() {
-  const [allSeries, essays, featuredSeries] = await Promise.all([
+  const [allSeries, essays, featuredSeries, featuredYoutube] = await Promise.all([
     getAllSeries(),
     getAllEssays(),
     getFeaturedSeries(),
+    getFeaturedYoutubeCuration(),
   ]);
+  const curationLinks = await getHomeCurationLinks(featuredYoutube?.id, 3);
 
   const recentEssays = essays.slice(0, RECENT_ESSAY_COUNT);
   const representativeResearchPreview = sortByPublicationNumber(researchItems)
@@ -63,6 +70,13 @@ export default async function Home() {
 
       <Section size="wide" className={HOME_SECTION_CLASS}>
         <HomeRecentWriting essays={recentEssays} />
+      </Section>
+
+      <Section size="wide" className={HOME_SECTION_CLASS}>
+        <HomeCurationPreview
+          featuredYoutube={featuredYoutube}
+          links={curationLinks}
+        />
       </Section>
 
       <Section

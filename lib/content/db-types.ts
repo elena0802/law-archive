@@ -188,3 +188,38 @@ export type ScholarDnaAnalysisInsert = {
   ai_one_liner?: string | null;
   status?: ScholarDnaAnalysisStatus;
 };
+
+export type CurationType = "youtube" | "article" | "blog" | "paper" | "book";
+
+export type ProfessorCurationItemRow = {
+  id: string;
+  type: CurationType;
+  title: string;
+  description: string;
+  url: string;
+  source: string;
+  thumbnail_url: string | null;
+  published_at: string | null;
+  recommended_at: string;
+  is_featured: boolean;
+  is_visible: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ProfessorCurationItemInsert = {
+  type: CurationType;
+  title: string;
+  description?: string;
+  url: string;
+  source?: string;
+  thumbnail_url?: string | null;
+  published_at?: string | null;
+  recommended_at?: string;
+  is_featured?: boolean;
+  is_visible?: boolean;
+  sort_order?: number;
+};
+
+export type ProfessorCurationItemUpdate = Partial<ProfessorCurationItemInsert>;
