@@ -1,29 +1,36 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getEssayCoverImage } from "@/lib/essay-cover-image";
 import { formatEssayDate, type Essay } from "@/lib/essays";
-import { getEssayCoverSrc } from "@/lib/home-images";
 
 type EssayEditorialCardProps = {
   essay: Essay;
-  /** When set, used instead of per-essay slug cover lookup (e.g. homepage slot images). */
+  /** When set, used if essay has no CMS or slug-based cover (e.g. homepage slot images). */
   coverSrc?: string | null;
+  coverAlt?: string;
 };
 
 function EssayThumbnail({
   essay,
   coverSrc: coverSrcOverride,
+  coverAlt: coverAltOverride,
 }: {
   essay: Essay;
   coverSrc?: string | null;
+  coverAlt?: string;
 }) {
-  const coverSrc = coverSrcOverride ?? getEssayCoverSrc(essay.slug);
+  const resolved = getEssayCoverImage(essay);
+  const coverSrc = resolved.src ?? coverSrcOverride ?? null;
+  const coverAlt = resolved.src
+    ? resolved.alt
+    : (coverAltOverride ?? resolved.alt);
   const categoryLabel = essay.category.trim() || "글";
 
   if (coverSrc) {
     return (
       <div className="relative aspect-[5/3] overflow-hidden bg-paper-muted">
         <Image
-          alt=""
+          alt={coverAlt}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
           fill
           sizes="(min-width: 1024px) 320px, (min-width: 640px) 45vw, 100vw"
@@ -46,13 +53,17 @@ function EssayThumbnail({
   );
 }
 
-export function EssayEditorialCard({ essay, coverSrc }: EssayEditorialCardProps) {
+export function EssayEditorialCard({
+  essay,
+  coverSrc,
+  coverAlt,
+}: EssayEditorialCardProps) {
   return (
     <Link
       className="group flex h-full flex-col overflow-hidden border border-line/80 bg-paper transition-colors hover:border-ink-muted/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
       href={`/essays/${essay.slug}`}
     >
-      <EssayThumbnail coverSrc={coverSrc} essay={essay} />
+      <EssayThumbnail coverAlt={coverAlt} coverSrc={coverSrc} essay={essay} />
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         <time
           className="text-xs tracking-wide text-ink-muted"

@@ -21,6 +21,7 @@ export function HomeRecentWriting({ essays }: HomeRecentWritingProps) {
           {essays.map((essay, index) => (
             <li key={essay.slug} className="min-w-0">
               <EssayEditorialCard
+                coverAlt="글 대표 이미지"
                 coverSrc={getHomeRecentEssayCoverSrc(index)}
                 essay={essay}
               />

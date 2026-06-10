@@ -45,6 +45,8 @@ export async function createEssay(
 
   const row: EssayInsert = {
     ...values,
+    cover_image_url: values.cover_image_url.trim() || null,
+    cover_image_alt: values.cover_image_alt.trim() || null,
     published_at,
   };
 
@@ -129,6 +131,8 @@ export async function updateEssay(
       series_order: values.series_order,
       status: values.status,
       featured: values.featured,
+      cover_image_url: values.cover_image_url.trim() || null,
+      cover_image_alt: values.cover_image_alt.trim() || null,
       published_at,
     })
     .eq("id", essayId)

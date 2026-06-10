@@ -3,7 +3,7 @@ import "server-only";
 import type { Essay } from "@/lib/essays";
 import { getAllEssays, getEssayBySlug } from "@/lib/essays";
 import { getVisibleCurationItems } from "@/lib/curation/queries";
-import { getEssayCoverSrc } from "@/lib/home-images";
+import { getEssayCoverImage } from "@/lib/essay-cover-image";
 import {
   essayBodyToEmailHtml,
   essayBodyToPlainText,
@@ -34,7 +34,7 @@ function extractEssaySlug(url: string) {
 function buildMainEssay(essay: Essay, siteOrigin: string): ArchiveDigestMainEssay {
   const normalizedOrigin = siteOrigin.replace(/\/$/, "");
   const url = `${normalizedOrigin}/essays/${essay.slug}`;
-  const coverPath = getEssayCoverSrc(essay.slug);
+  const cover = getEssayCoverImage(essay);
 
   return {
     title: essay.title,
@@ -43,8 +43,10 @@ function buildMainEssay(essay: Essay, siteOrigin: string): ArchiveDigestMainEssa
     commentsUrl: `${url}#essay-comments-heading`,
     bodyHtml: essayBodyToEmailHtml(essay.content, siteOrigin),
     bodyText: essayBodyToPlainText(essay.content),
-    imageUrl: toDigestAbsoluteImageUrl(coverPath, siteOrigin),
-    imageAlt: essay.title,
+    imageUrl: cover.src
+      ? toDigestAbsoluteImageUrl(cover.src, siteOrigin)
+      : null,
+    imageAlt: cover.alt,
   };
 }
 

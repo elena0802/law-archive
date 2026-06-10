@@ -27,6 +27,8 @@ export function mapEssayRowToEssay(
     status: row.status,
     updatedAt: row.updated_at,
     seriesOrder: row.series_order,
+    coverImageUrl: row.cover_image_url ?? null,
+    coverImageAlt: row.cover_image_alt ?? null,
     ...frontmatter,
   };
 }

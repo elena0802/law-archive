@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ArticleCard } from "@/components/article-card";
 import { SearchForm } from "@/components/search-form";
 import { Section } from "@/components/section";
+import { getEssayCoverImage } from "@/lib/essay-cover-image";
 import { formatEssayDate, searchEssays } from "@/lib/essays";
 
 export const metadata: Metadata = {
@@ -65,16 +66,22 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           )}
 
           {results.length > 0 ? (
-            results.map((essay) => (
-              <ArticleCard
-                key={essay.slug}
-                description={essay.description}
-                eyebrow={`${formatEssayDate(essay.date)} · ${essay.category}`}
-                href={`/essays/${essay.slug}`}
-                meta={`연재: ${essay.series}`}
-                title={essay.title}
-              />
-            ))
+            results.map((essay) => {
+              const cover = getEssayCoverImage(essay);
+
+              return (
+                <ArticleCard
+                  key={essay.slug}
+                  coverAlt={cover.alt}
+                  coverSrc={cover.src ?? undefined}
+                  description={essay.description}
+                  eyebrow={`${formatEssayDate(essay.date)} · ${essay.category}`}
+                  href={`/essays/${essay.slug}`}
+                  meta={`연재: ${essay.series}`}
+                  title={essay.title}
+                />
+              );
+            })
           ) : query ? (
             <p className="border-t border-line py-8 text-base leading-8 text-ink-muted">
               검색 결과가 없습니다. 다른 검색어로 다시 시도해 주세요.

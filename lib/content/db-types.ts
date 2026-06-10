@@ -31,6 +31,8 @@ export type EssayRow = {
   series_order: number | null;
   status: EssayStatus;
   featured: boolean;
+  cover_image_url: string | null;
+  cover_image_alt: string | null;
   created_at: string;
   updated_at: string;
   published_at: string | null;
@@ -47,6 +49,8 @@ export type EssayInsert = {
   series_order?: number | null;
   status: EssayStatus;
   featured: boolean;
+  cover_image_url?: string | null;
+  cover_image_alt?: string | null;
   published_at?: string | null;
 };
 

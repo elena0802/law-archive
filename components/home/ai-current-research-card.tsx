@@ -34,13 +34,17 @@ function AiResearchTrackIcon() {
 }
 
 function AiResearchVisualHeader({ track }: { track: AiResearchTrack }) {
-  const coverSrc = getAiResearchCoverSrc(track.imageKey);
+  const coverSrc =
+    track.essayCoverSrc ?? getAiResearchCoverSrc(track.imageKey);
+  const coverAlt = track.essayCoverSrc
+    ? (track.essayCoverAlt ?? track.title)
+    : "";
 
   if (coverSrc) {
     return (
       <div className="relative h-28 overflow-hidden rounded-t-sm bg-paper-muted sm:h-32">
         <Image
-          alt=""
+          alt={coverAlt}
           className="h-full w-full object-cover object-center"
           fill
           sizes="(min-width: 640px) 320px, 100vw"

@@ -229,6 +229,8 @@ export function essayRowToFormValues(essay: EssayRow) {
     series_order: essay.series_order,
     status: essay.status,
     featured: essay.featured,
+    cover_image_url: essay.cover_image_url ?? "",
+    cover_image_alt: essay.cover_image_alt ?? "",
   };
 }
 

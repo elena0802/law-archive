@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ArticleCard } from "@/components/article-card";
 import { Section } from "@/components/section";
+import { getEssayCoverImage } from "@/lib/essay-cover-image";
 import { formatEssayDate, getAllEssays } from "@/lib/essays";
 import { siteConfig } from "@/lib/site";
 
@@ -44,16 +45,22 @@ export default async function EssaysPage() {
       <Section size="wide" className="border-t border-line">
         <div className="mx-auto max-w-reading">
           {essays.length > 0 ? (
-            essays.map((essay) => (
-              <ArticleCard
-                key={essay.slug}
-                eyebrow={`${formatEssayDate(essay.date)} · ${essay.category}`}
-                title={essay.title}
-                description={essay.description}
-                meta={`연재: ${essay.series}`}
-                href={`/essays/${essay.slug}`}
-              />
-            ))
+            essays.map((essay) => {
+              const cover = getEssayCoverImage(essay);
+
+              return (
+                <ArticleCard
+                  key={essay.slug}
+                  coverAlt={cover.alt}
+                  coverSrc={cover.src ?? undefined}
+                  description={essay.description}
+                  eyebrow={`${formatEssayDate(essay.date)} · ${essay.category}`}
+                  href={`/essays/${essay.slug}`}
+                  meta={`연재: ${essay.series}`}
+                  title={essay.title}
+                />
+              );
+            })
           ) : (
             <p className="text-keep border-t border-line py-8 text-base leading-8 text-ink-muted">
               아직 공개된 글이 없습니다.

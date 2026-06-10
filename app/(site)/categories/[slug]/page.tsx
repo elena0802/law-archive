@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleCard } from "@/components/article-card";
 import { Section } from "@/components/section";
+import { getEssayCoverImage } from "@/lib/essay-cover-image";
 import { formatEssayDate, getCategoryBySlug } from "@/lib/essays";
 import { resolveCategorySlugParam } from "@/lib/content/category-slug";
 import { buildDefaultOpenGraphImages } from "@/lib/seo";
@@ -80,16 +81,22 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
             전체 글
           </p>
           {category.essays.length > 0 ? (
-            category.essays.map((essay) => (
-              <ArticleCard
-                key={essay.slug}
-                description={essay.description}
-                eyebrow={formatEssayDate(essay.date)}
-                href={`/essays/${essay.slug}`}
-                meta={`연재: ${essay.series}`}
-                title={essay.title}
-              />
-            ))
+            category.essays.map((essay) => {
+              const cover = getEssayCoverImage(essay);
+
+              return (
+                <ArticleCard
+                  key={essay.slug}
+                  coverAlt={cover.alt}
+                  coverSrc={cover.src ?? undefined}
+                  description={essay.description}
+                  eyebrow={formatEssayDate(essay.date)}
+                  href={`/essays/${essay.slug}`}
+                  meta={`연재: ${essay.series}`}
+                  title={essay.title}
+                />
+              );
+            })
           ) : (
             <p className="border-t border-line py-8 text-base leading-8 text-ink-muted">
               이 주제에 공개된 글이 없습니다.

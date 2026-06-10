@@ -73,6 +73,8 @@ type EssayFormSnapshot = {
   series_slug: string;
   series_order: string;
   featured: boolean;
+  cover_image_url: string;
+  cover_image_alt: string;
 };
 
 function FormBanner({
@@ -106,7 +108,9 @@ function snapshotsEqual(a: EssayFormSnapshot, b: EssayFormSnapshot) {
     a.category === b.category &&
     a.series_slug === b.series_slug &&
     a.series_order === b.series_order &&
-    a.featured === b.featured
+    a.featured === b.featured &&
+    a.cover_image_url === b.cover_image_url &&
+    a.cover_image_alt === b.cover_image_alt
   );
 }
 
@@ -174,6 +178,12 @@ export function EssayForm({
       ? ""
       : String(initialValues.series_order),
   );
+  const [coverImageUrl, setCoverImageUrl] = useState(
+    initialValues.cover_image_url,
+  );
+  const [coverImageAlt, setCoverImageAlt] = useState(
+    initialValues.cover_image_alt,
+  );
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
   const [archiveConfirmOpen, setArchiveConfirmOpen] = useState(false);
   const [trashConfirmOpen, setTrashConfirmOpen] = useState(false);
@@ -205,6 +215,8 @@ export function EssayForm({
           ? ""
           : String(initialValues.series_order),
       featured: initialValues.featured,
+      cover_image_url: initialValues.cover_image_url,
+      cover_image_alt: initialValues.cover_image_alt,
     }),
     [initialValues],
   );
@@ -220,6 +232,8 @@ export function EssayForm({
       series_slug: selectedSeriesSlug,
       series_order: seriesOrder,
       featured,
+      cover_image_url: coverImageUrl,
+      cover_image_alt: coverImageAlt,
     }),
     [
       title,
@@ -233,6 +247,8 @@ export function EssayForm({
       selectedSeriesSlug,
       seriesOrder,
       featured,
+      coverImageUrl,
+      coverImageAlt,
     ],
   );
 
@@ -479,6 +495,46 @@ export function EssayForm({
         <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
           홈페이지, 글 목록, 검색 결과에 표시됩니다.
         </p>
+      </div>
+
+      <div className="space-y-8 border-t border-line/70 pt-8">
+        <p className={metadataHeadingClassName}>대표 이미지</p>
+
+        <div>
+          <label className={adminLabelClassName} htmlFor="cover_image_url">
+            대표 이미지 URL
+          </label>
+          <input
+            className={adminFieldClassName}
+            id="cover_image_url"
+            name="cover_image_url"
+            onChange={(event) => setCoverImageUrl(event.target.value)}
+            placeholder="https://... 또는 /images/essays/example.jpg"
+            type="text"
+            value={coverImageUrl}
+          />
+          <AdminFieldError message={fieldErrors.cover_image_url} />
+        </div>
+
+        <div>
+          <label className={adminLabelClassName} htmlFor="cover_image_alt">
+            대표 이미지 설명
+          </label>
+          <input
+            className={adminFieldClassName}
+            id="cover_image_alt"
+            name="cover_image_alt"
+            onChange={(event) => setCoverImageAlt(event.target.value)}
+            placeholder="이미지를 설명하는 짧은 문구를 입력해주세요."
+            type="text"
+            value={coverImageAlt}
+          />
+          <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+            글 카드, 뉴스레터, 공유 화면에 사용할 대표 이미지입니다. 비워두면
+            기존 기본 이미지가 사용됩니다.
+          </p>
+          <AdminFieldError message={fieldErrors.cover_image_alt} />
+        </div>
       </div>
 
       <div className={metadataSectionClassName}>

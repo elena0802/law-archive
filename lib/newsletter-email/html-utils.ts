@@ -32,7 +32,7 @@ export function buildDigestHeroImage(imageUrl: string, alt: string) {
     ` alt="${safeAlt}"`,
     ` width="${DIGEST_CARD_IMAGE_WIDTH}"`,
     ` height="${DIGEST_CARD_IMAGE_HEIGHT}"`,
-    ` style="display:block;width:100%;max-width:100%;height:auto;border:0;margin:0 0 1.5rem;border-radius:2px;"`,
+    ` style="display:block;width:100%;max-width:560px;height:auto;border:0;margin:0 0 1.5rem;border-radius:2px;"`,
     ` />`,
   ].join("");
 }

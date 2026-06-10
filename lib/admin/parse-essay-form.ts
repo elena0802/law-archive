@@ -13,6 +13,8 @@ export type EssayFormValues = {
   series_order: number | null;
   status: EssayStatus;
   featured: boolean;
+  cover_image_url: string;
+  cover_image_alt: string;
 };
 
 export type EssayParsedValues = Omit<EssayFormValues, "series_slug"> & {
@@ -105,6 +107,8 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
     readString(formData, "series_order"),
   );
   const featured = formData.get("featured") === "on";
+  const cover_image_url = readString(formData, "cover_image_url");
+  const cover_image_alt = readString(formData, "cover_image_alt");
   const errors: EssayFormFieldErrors = {};
 
   const status = resolveStatusFromForm(formData);
@@ -160,6 +164,8 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
         series_order,
         status,
         featured,
+        cover_image_url,
+        cover_image_alt,
       },
     };
   }
@@ -205,6 +211,8 @@ export function parseEssayForm(formData: FormData): ParsedEssayForm {
       series_order,
       status,
       featured,
+      cover_image_url,
+      cover_image_alt,
     },
   };
 }
@@ -225,5 +233,7 @@ export function emptyEssayFormValues(): Omit<EssayFormValues, "status"> & {
     series_order: null,
     status: "draft",
     featured: false,
+    cover_image_url: "",
+    cover_image_alt: "",
   };
 }

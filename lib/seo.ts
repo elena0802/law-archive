@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { Essay } from "@/lib/essays";
-import { getEssayCoverSrc } from "@/lib/home-images";
+import { getEssayCoverImage, toAbsoluteCoverImageUrl } from "@/lib/essay-cover-image";
 import { scholarProfile } from "@/lib/profile";
 import { getSiteOrigin, siteConfig } from "@/lib/site";
 import type { ResearchItem } from "@/src/types/research";
@@ -41,14 +41,16 @@ export function buildDefaultOpenGraphImages(): NonNullable<
   ];
 }
 
-export function buildEssayOpenGraphImages(slug: string, title: string) {
-  const coverPath = getEssayCoverSrc(slug);
+export function buildEssayOpenGraphImages(
+  essay: Pick<Essay, "slug" | "title" | "coverImageUrl" | "coverImageAlt">,
+) {
+  const cover = getEssayCoverImage(essay);
 
-  if (coverPath) {
+  if (cover.src) {
     return [
       {
-        url: toAbsoluteAssetUrl(coverPath),
-        alt: title,
+        url: toAbsoluteCoverImageUrl(cover.src, getSiteOrigin()),
+        alt: cover.alt,
       },
     ];
   }

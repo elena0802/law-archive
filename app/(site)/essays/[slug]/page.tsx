@@ -51,7 +51,7 @@ export async function generateMetadata({
       section: essay.category,
       locale: "ko_KR",
       siteName: siteConfig.name,
-      images: buildEssayOpenGraphImages(essay.slug, essay.title),
+      images: buildEssayOpenGraphImages(essay),
     },
   };
 }

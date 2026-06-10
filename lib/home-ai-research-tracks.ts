@@ -1,10 +1,14 @@
-import type { EssaySeries } from "@/lib/essays";
+import { getEssayCoverImage } from "@/lib/essay-cover-image";
+import type { Essay, EssaySeries } from "@/lib/essays";
 
 export type AiResearchTrack = {
   description: readonly string[];
   href: string;
   imageKey: string;
   title: string;
+  /** Latest essay cover from the linked series, when available. */
+  essayCoverSrc?: string | null;
+  essayCoverAlt?: string;
 };
 
 const AI_RESEARCH_TRACK_DEFINITIONS = [
@@ -31,6 +35,23 @@ const AI_RESEARCH_TRACK_DEFINITIONS = [
   },
 ] as const;
 
+function resolveLatestEssayCover(essays: readonly Essay[]): {
+  src: string | null;
+  alt: string;
+} | null {
+  const latestEssay = essays[0];
+  if (!latestEssay) {
+    return null;
+  }
+
+  const cover = getEssayCoverImage(latestEssay);
+  if (!cover.src) {
+    return null;
+  }
+
+  return cover;
+}
+
 function findTrackSeries(
   allSeries: readonly EssaySeries[],
   definition: (typeof AI_RESEARCH_TRACK_DEFINITIONS)[number],
@@ -50,12 +71,17 @@ export function buildAiResearchTracks(
 ): AiResearchTrack[] {
   return AI_RESEARCH_TRACK_DEFINITIONS.map((definition) => {
     const series = findTrackSeries(allSeries, definition);
+    const essayCover = series
+      ? resolveLatestEssayCover(series.essays)
+      : null;
 
     return {
       title: definition.title,
       description: definition.description,
       imageKey: definition.imageKey,
       href: series ? `/series/${series.slug}` : definition.placeholderHref,
+      essayCoverSrc: essayCover?.src ?? null,
+      essayCoverAlt: essayCover?.alt,
     };
   });
 }

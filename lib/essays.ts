@@ -272,6 +272,10 @@ export type Essay = EssayFrontmatter & {
   updatedAt?: string;
   /** Explicit installment order when set in CMS (`series_order`). */
   seriesOrder?: number | null;
+  /** CMS cover image URL (`cover_image_url`). */
+  coverImageUrl?: string | null;
+  /** CMS cover image alt (`cover_image_alt`). */
+  coverImageAlt?: string | null;
 };
 
 export type EssaySeries = {

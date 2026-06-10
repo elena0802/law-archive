@@ -105,15 +105,11 @@ function buildMainEssayHtml(essay: ArchiveDigestMainEssay) {
     `</p>`,
   ].join("");
 
-  const proseContent = [
-    heroImage,
-    description,
-    bodyHtml,
-    readOnArchiveLink,
-  ].join("");
+  const proseContent = [description, bodyHtml, readOnArchiveLink].join("");
 
   return [
     `<article style="margin:0 0 ${DIGEST_SPACING.sectionY};">`,
+    heroImage,
     `<h2 style="margin:0 0 1.25rem;font-family:${DIGEST_FONT_FAMILY};font-size:1.625rem;font-weight:600;line-height:1.32;color:${DIGEST_COLORS.ink};">${escapeNewsletterHtml(essay.title)}</h2>`,
     buildDigestProseWrap(proseContent),
     `</article>`,

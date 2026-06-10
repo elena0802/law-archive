@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import { getEssayCoverImage } from "@/lib/essay-cover-image";
 import { EssayCommentsSection } from "@/components/essay-comments-section";
 import { EssayPreviewBanner } from "@/components/essay-preview-banner";
 import { EssayShareButton } from "@/components/essay-share-button";
@@ -43,6 +45,7 @@ export async function EssayArticleView({
       : !essay.draft;
   const showComments = !isPreview && isCommentsAvailable();
   const showSeriesSiblings = essaysInSeries.length > 1;
+  const cover = getEssayCoverImage(essay);
 
   return (
     <>
@@ -77,6 +80,19 @@ export async function EssayArticleView({
         <EssayBreadcrumb seriesTitle={essay.series} />
 
         <article className="mt-8">
+          {cover.src ? (
+            <div className="relative mb-10 aspect-[5/3] overflow-hidden bg-paper-muted">
+              <Image
+                alt={cover.alt}
+                className="h-full w-full object-cover"
+                fill
+                priority
+                sizes="(min-width: 768px) 720px, 100vw"
+                src={cover.src}
+              />
+            </div>
+          ) : null}
+
           <header className="border-b border-line pb-10">
             <p className="text-keep text-xl font-serif leading-snug text-ink-muted sm:text-2xl">
               {essay.series}
