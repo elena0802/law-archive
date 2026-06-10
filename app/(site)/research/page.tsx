@@ -15,20 +15,21 @@ import {
 } from "@/src/lib/research";
 import { researchPagePath } from "@/lib/research-record";
 import { buildDefaultOpenGraphImages } from "@/lib/seo";
-import { siteConfig } from "@/lib/site";
+import { scholarTitle, siteConfig } from "@/lib/site";
 
-const pageTitle = "연구업적";
+const pageHeading = "연구업적";
+const metadataTitle = `${pageHeading} | ${scholarTitle}`;
 const pageLead =
   "형사법, 형사소송법, 증거법과 형사정책을 중심으로 이어온 연구의 기록입니다.";
 
 export const metadata: Metadata = {
-  title: pageTitle,
+  title: { absolute: metadataTitle },
   description: pageLead,
   alternates: {
     canonical: researchPagePath,
   },
   openGraph: {
-    title: `${pageTitle} | ${siteConfig.name}`,
+    title: metadataTitle,
     description: pageLead,
     url: researchPagePath,
     locale: "ko_KR",
@@ -57,7 +58,7 @@ export default function ResearchPage() {
           Research Publications
         </p>
         <h1 className="text-keep font-serif text-4xl leading-[1.1] text-ink sm:text-5xl">
-          {pageTitle}
+          {pageHeading}
         </h1>
         <p className="text-keep mt-7 text-lg leading-9 text-ink-muted">
           {pageLead}

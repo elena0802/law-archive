@@ -46,6 +46,9 @@ export const siteConfig = {
 
 export type SiteConfig = typeof siteConfig;
 
+/** Metadata identity line — e.g. homepage and OG titles (PR53.4). */
+export const scholarTitle = `${siteConfig.authorName} 교수`;
+
 export function getSiteOrigin() {
   const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
 

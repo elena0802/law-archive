@@ -9,7 +9,7 @@ import { Section } from "@/components/section";
 import { getAllEssays, getAllSeries, getFeaturedSeries } from "@/lib/essays";
 import { buildAiResearchTracks } from "@/lib/home-ai-research-tracks";
 import { buildDefaultOpenGraphImages } from "@/lib/seo";
-import { siteConfig } from "@/lib/site";
+import { scholarTitle, siteConfig } from "@/lib/site";
 import { researchItems } from "@/src/data/research";
 import {
   getResearchSummaryStats,
@@ -19,14 +19,16 @@ import {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+const homeTitle = `${scholarTitle} | ${siteConfig.name}`;
+
 export const metadata: Metadata = {
-  title: "서재",
+  title: { absolute: homeTitle },
   description: siteConfig.description,
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: siteConfig.name,
+    title: homeTitle,
     description: siteConfig.description,
     url: "/",
     locale: "ko_KR",

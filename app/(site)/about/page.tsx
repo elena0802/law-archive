@@ -10,19 +10,20 @@ import { Section } from "@/components/section";
 import { scholarProfile } from "@/lib/profile";
 import { researchPagePath } from "@/lib/research-record";
 import { buildPersonJsonLd } from "@/lib/seo";
-import { siteConfig } from "@/lib/site";
+import { scholarTitle, siteConfig } from "@/lib/site";
 
 const profile = scholarProfile;
+const pageTitle = `${scholarTitle} 소개`;
 
 export const metadata: Metadata = {
-  title: "서재 소개",
+  title: { absolute: pageTitle },
   description:
     "천진호 형사법학자의 연구 궤적과 이 디지털 서재가 남기려는 기록에 대한 소개입니다.",
   alternates: {
     canonical: "/about",
   },
   openGraph: {
-    title: `서재 소개 | ${siteConfig.name}`,
+    title: pageTitle,
     description:
       "천진호 형사법학자의 연구 궤적과 이 디지털 서재가 남기려는 기록에 대한 소개입니다.",
     url: "/about",
