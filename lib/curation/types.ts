@@ -18,7 +18,7 @@ export type CurationItem = {
 export const curationPagePath = "/curation";
 
 export const curationSectionDescription =
-  "최근 관심 있게 읽고 보고 있는 콘텐츠와, 그 이유를 짧게 기록했습니다.";
+  "최근 관심 있게 읽고 보고 있는 콘텐츠를 모았습니다.";
 
 export function formatCurationDate(date: string) {
   return new Intl.DateTimeFormat("ko-KR", {

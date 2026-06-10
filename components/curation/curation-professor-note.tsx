@@ -19,7 +19,7 @@ export function CurationProfessorNote({
 
   return (
     <p
-      className={`text-keep text-sm leading-[1.75] text-ink-muted ${lineClampClass} ${className}`}
+      className={`text-keep text-[0.9375rem] leading-[1.72] text-ink/80 ${lineClampClass} ${className}`}
     >
       {trimmed}
     </p>

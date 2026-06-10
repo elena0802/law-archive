@@ -32,7 +32,7 @@ export function CurationList({ items }: CurationListProps) {
           <article className="border-t border-line py-8" key={item.id}>
             <div className="flex flex-col gap-4 sm:grid sm:grid-cols-[9.5rem_1fr] sm:gap-8">
               <div className="text-sm leading-6 text-ink-muted">
-                <CurationTypeBadge type={item.type} />
+                <CurationTypeBadge type={item.type} variant="compact" />
                 <p className="mt-2">{formatCurationDate(item.recommendedAt)}</p>
                 {item.source.trim() ? (
                   <p className="mt-1 text-xs">{item.source}</p>

@@ -27,8 +27,14 @@ export function CurationYoutubeModal({
       }
     }
 
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [open, onClose]);
 
   if (!open) {
@@ -39,20 +45,20 @@ export function CurationYoutubeModal({
     <div
       aria-labelledby="curation-youtube-title"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/30 px-4 py-8 sm:px-6"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/35 p-0 sm:items-center sm:px-4 sm:py-8"
       onClick={onClose}
       role="dialog"
     >
       <div
-        className="w-full max-w-4xl overflow-hidden rounded border border-line bg-paper shadow-sm"
+        className="flex max-h-[min(100dvh,48rem)] w-full max-w-4xl flex-col overflow-hidden rounded-t border border-line bg-paper shadow-sm sm:max-h-[90dvh] sm:rounded"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4 sm:px-6">
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-line px-4 py-3.5 sm:gap-4 sm:px-6 sm:py-4">
           <h2
-            className="text-keep font-serif text-xl leading-snug text-ink sm:text-2xl"
+            className="text-keep min-w-0 flex-1 font-serif text-lg leading-snug text-ink sm:text-2xl sm:leading-snug"
             id="curation-youtube-title"
           >
-            {title}
+            <span className="line-clamp-2">{title}</span>
           </h2>
           <button
             aria-label="닫기"
@@ -63,7 +69,7 @@ export function CurationYoutubeModal({
             닫기
           </button>
         </div>
-        <div className="aspect-video bg-ink/5">
+        <div className="aspect-video w-full shrink-0 bg-ink/5">
           <iframe
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen

@@ -54,20 +54,25 @@ export function CurationYoutubeFeature({
           </span>
         </div>
         <div className="flex flex-1 flex-col p-5 sm:p-6">
-          <div className="flex items-center gap-3">
-            <CurationTypeBadge type={item.type} />
+          <div className="flex flex-wrap items-center gap-2.5">
+            <CurationTypeBadge
+              type={item.type}
+              variant={isHome ? "featured" : "default"}
+            />
             {item.source.trim() ? (
               <span className="text-xs text-ink-muted">{item.source}</span>
             ) : null}
           </div>
-          <h3 className="text-keep mt-3 font-serif text-xl leading-snug text-ink group-hover:text-accent sm:text-2xl">
+          <h3
+            className={`text-keep mt-3 font-serif leading-snug text-ink group-hover:text-accent ${
+              isHome
+                ? "line-clamp-2 text-xl sm:text-2xl"
+                : "text-lg sm:text-xl"
+            }`}
+          >
             {item.title}
           </h3>
-          <CurationProfessorNote
-            className="mt-3"
-            lines={isHome ? 3 : 2}
-            note={item.professorNote}
-          />
+          <CurationProfessorNote className="mt-3" lines={2} note={item.professorNote} />
         </div>
       </button>
 

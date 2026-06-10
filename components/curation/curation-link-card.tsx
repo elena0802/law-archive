@@ -52,22 +52,27 @@ export function CurationLinkCard({
             </div>
           ) : null}
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <CurationTypeBadge type={item.type} />
+            <div className="flex flex-wrap items-center gap-2.5">
+              <CurationTypeBadge
+                type={item.type}
+                variant={featured ? "featured" : "default"}
+              />
               {metaParts.length > 0 ? (
                 <span className="text-xs text-ink-muted">{metaParts.join(" · ")}</span>
               ) : null}
             </div>
             <h3
               className={`text-keep mt-3 font-serif leading-snug text-ink group-hover:text-accent ${
-                featured ? "text-xl sm:text-2xl" : "text-lg sm:text-xl"
+                featured
+                  ? "line-clamp-2 text-xl sm:text-2xl"
+                  : "text-lg sm:text-xl"
               }`}
             >
               {item.title}
             </h3>
             <CurationProfessorNote
               className="mt-3"
-              lines={featured ? 3 : compact ? 2 : 3}
+              lines={featured ? 2 : compact ? 2 : 3}
               note={item.professorNote}
             />
             {!compact ? (

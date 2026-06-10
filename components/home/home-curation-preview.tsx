@@ -33,7 +33,7 @@ export function HomeCurationPreview({ featured, recent }: HomeCurationPreviewPro
             )}
           </div>
 
-          <div className="flex min-w-0 flex-col gap-4">
+          <div className="flex min-w-0 flex-col gap-3 sm:gap-3.5">
             {recent.length > 0 ? (
               recent.map((item) => <CurationCompactItem item={item} key={item.id} />)
             ) : (
