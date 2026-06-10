@@ -1,4 +1,4 @@
-import { getEssayCoverImage } from "@/lib/essay-cover-image";
+import { getEssayCoverImage } from "@/lib/essay-cover-image.server";
 import type { Essay, EssaySeries } from "@/lib/essays";
 
 export type AiResearchTrack = {

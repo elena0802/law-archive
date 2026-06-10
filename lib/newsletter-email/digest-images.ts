@@ -1,4 +1,4 @@
-import { normalizeEssayCoverImageSrc } from "@/lib/essay-cover-image";
+import { normalizeEssayCoverImageSrc } from "@/lib/essay-cover-url";
 
 export function toDigestAbsoluteImageUrl(
   pathOrUrl: string | null | undefined,

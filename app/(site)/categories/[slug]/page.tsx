@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleCard } from "@/components/article-card";
 import { Section } from "@/components/section";
-import { getEssayCoverImage } from "@/lib/essay-cover-image";
+import { getEssayCoverImage } from "@/lib/essay-cover-image.server";
 import { formatEssayDate, getCategoryBySlug } from "@/lib/essays";
 import { resolveCategorySlugParam } from "@/lib/content/category-slug";
 import { buildDefaultOpenGraphImages } from "@/lib/seo";

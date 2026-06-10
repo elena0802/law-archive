@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ArticleCard } from "@/components/article-card";
 import { SearchForm } from "@/components/search-form";
 import { Section } from "@/components/section";
-import { getEssayCoverImage } from "@/lib/essay-cover-image";
+import { getEssayCoverImage } from "@/lib/essay-cover-image.server";
 import { formatEssayDate, searchEssays } from "@/lib/essays";
 
 export const metadata: Metadata = {

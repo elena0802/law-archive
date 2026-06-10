@@ -10,7 +10,7 @@ import {
   type FormEvent,
 } from "react";
 import { useRouter } from "next/navigation";
-import { normalizeCoverImagePreviewSrc } from "@/lib/essay-cover-image";
+import { normalizeEssayCoverImageSrc } from "@/lib/essay-cover-url";
 import { AdminCollapsibleSection } from "@/components/admin/admin-collapsible-section";
 import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 import { AdminFieldError } from "@/components/admin/admin-field-error";
@@ -86,7 +86,7 @@ function CoverImagePreview({
   src: string;
   alt: string;
 }) {
-  const previewSrc = normalizeCoverImagePreviewSrc(src);
+  const previewSrc = normalizeEssayCoverImageSrc(src);
   const previewAlt = alt.trim() || "대표 이미지 미리보기";
 
   if (!previewSrc) {
@@ -287,7 +287,7 @@ export function EssayForm({
     [currentSnapshot, initialSnapshot],
   );
   const isGuardEnabled = hasUnsavedChanges && !isPending;
-  const coverPreviewSrc = normalizeCoverImagePreviewSrc(coverImageUrl);
+  const coverPreviewSrc = normalizeEssayCoverImageSrc(coverImageUrl);
 
   useEffect(() => {
     if (state.redirectTo) {

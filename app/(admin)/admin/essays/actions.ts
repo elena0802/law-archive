@@ -19,7 +19,7 @@ import { requireEditorSupabase } from "@/lib/admin/require-editor";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
 import type { EssayInsert } from "@/lib/content/db-types";
 import { revalidatePublicEssayPaths } from "@/lib/content/revalidate-public";
-import { normalizeEssayCoverImageSrc } from "@/lib/essay-cover-image";
+import { normalizeEssayCoverImageSrc } from "@/lib/essay-cover-url";
 
 function normalizeStoredCoverImageUrl(raw: string) {
   return normalizeEssayCoverImageSrc(raw);

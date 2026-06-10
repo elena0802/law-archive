@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ArticleCard } from "@/components/article-card";
 import { Section } from "@/components/section";
-import { getEssayCoverImage } from "@/lib/essay-cover-image";
+import { getEssayCoverImage } from "@/lib/essay-cover-image.server";
 import { formatEssayDate, getAllEssays } from "@/lib/essays";
 import { siteConfig } from "@/lib/site";
 

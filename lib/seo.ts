@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Essay } from "@/lib/essays";
-import { getEssayCoverImage, toAbsoluteCoverImageUrl } from "@/lib/essay-cover-image";
+import { getEssayCoverImage } from "@/lib/essay-cover-image.server";
+import { toAbsoluteCoverImageUrl } from "@/lib/essay-cover-url";
 import { scholarProfile } from "@/lib/profile";
 import { getSiteOrigin, siteConfig } from "@/lib/site";
 import type { ResearchItem } from "@/src/types/research";

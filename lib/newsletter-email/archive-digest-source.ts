@@ -3,7 +3,7 @@ import "server-only";
 import type { Essay } from "@/lib/essays";
 import { getAllEssays, getEssayBySlug } from "@/lib/essays";
 import { getVisibleCurationItems } from "@/lib/curation/queries";
-import { getEssayCoverImage } from "@/lib/essay-cover-image";
+import { getEssayCoverImage } from "@/lib/essay-cover-image.server";
 import {
   essayBodyToEmailHtml,
   essayBodyToPlainText,

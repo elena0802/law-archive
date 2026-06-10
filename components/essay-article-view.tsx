@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getEssayCoverImage } from "@/lib/essay-cover-image";
+import { getEssayCoverImage } from "@/lib/essay-cover-image.server";
 import { EssayCommentsSection } from "@/components/essay-comments-section";
 import { EssayPreviewBanner } from "@/components/essay-preview-banner";
 import { EssayShareButton } from "@/components/essay-share-button";
