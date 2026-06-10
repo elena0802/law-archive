@@ -72,10 +72,16 @@ export default async function AdminEditEssayPage({
     notFound();
   }
 
-  const [{ series, seriesLoadWarning }, seriesOrderHints] = await Promise.all([
-    loadSeriesForEdit(essay.series_slug ?? ""),
-    getSeriesOrderHints(id),
-  ]);
+  let seriesOrderHints: Record<string, number> = {};
+  try {
+    seriesOrderHints = await getSeriesOrderHints(id);
+  } catch (error) {
+    console.error("[admin/essays/edit] getSeriesOrderHints failed", { id, error });
+  }
+
+  const { series, seriesLoadWarning } = await loadSeriesForEdit(
+    essay.series_slug ?? "",
+  );
 
   const updateWithId = updateEssay.bind(null, id);
   const noticeMessage = getAdminEssayNoticeMessage(notice);

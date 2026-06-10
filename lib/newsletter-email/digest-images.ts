@@ -1,19 +1,20 @@
+import { normalizeEssayCoverImageSrc } from "@/lib/essay-cover-image";
+
 export function toDigestAbsoluteImageUrl(
   pathOrUrl: string | null | undefined,
   siteOrigin: string,
 ): string | null {
-  const trimmed = pathOrUrl?.trim();
-  if (!trimmed) {
+  const normalized = normalizeEssayCoverImageSrc(pathOrUrl);
+  if (!normalized) {
     return null;
   }
 
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
-    return trimmed;
+  if (
+    normalized.startsWith("http://") ||
+    normalized.startsWith("https://")
+  ) {
+    return normalized;
   }
 
-  if (trimmed.startsWith("/")) {
-    return `${siteOrigin.replace(/\/$/, "")}${trimmed}`;
-  }
-
-  return null;
+  return `${siteOrigin.replace(/\/$/, "")}${normalized}`;
 }

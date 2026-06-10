@@ -12,21 +12,21 @@ function assertAsciiQueryValue(name: string, value: string) {
   }
 }
 
+export function buildAdminEssayEditPath(
+  essayId: string,
+  notice: EssaySaveNotice,
+) {
+  assertAsciiQueryValue("id", essayId);
+  assertAsciiQueryValue("notice", notice);
+  const search = new URLSearchParams({ notice }).toString();
+  return `/admin/essays/${essayId}?${search}`;
+}
+
 export function redirectAdminEssayEdit(
   essayId: string,
   notice: EssaySaveNotice,
 ): never {
-  assertAsciiQueryValue("id", essayId);
-  assertAsciiQueryValue("notice", notice);
-  const search = new URLSearchParams({ notice }).toString();
-  const target = `/admin/essays/${essayId}?${search}`;
-  console.error("[redirectAdminEssayEdit] before redirect", {
-    essayId,
-    notice,
-    target,
-    targetLength: target.length,
-  });
-  redirect(target);
+  redirect(buildAdminEssayEditPath(essayId, notice));
 }
 
 export function redirectAdminEssaysList(options?: {

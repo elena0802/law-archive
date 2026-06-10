@@ -9,6 +9,8 @@ import {
   useState,
   type FormEvent,
 } from "react";
+import { useRouter } from "next/navigation";
+import { normalizeCoverImagePreviewSrc } from "@/lib/essay-cover-image";
 import { AdminCollapsibleSection } from "@/components/admin/admin-collapsible-section";
 import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 import { AdminFieldError } from "@/components/admin/admin-field-error";
@@ -76,6 +78,33 @@ type EssayFormSnapshot = {
   cover_image_url: string;
   cover_image_alt: string;
 };
+
+function CoverImagePreview({
+  alt,
+  src,
+}: {
+  src: string;
+  alt: string;
+}) {
+  const previewSrc = normalizeCoverImagePreviewSrc(src);
+  const previewAlt = alt.trim() || "대표 이미지 미리보기";
+
+  if (!previewSrc) {
+    return null;
+  }
+
+  return (
+    <div className="mt-4 overflow-hidden border border-line/80 bg-paper-muted">
+      {/* Native img for reliable local /public path preview in admin. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        alt={previewAlt}
+        className="block max-h-64 w-full object-cover"
+        src={previewSrc}
+      />
+    </div>
+  );
+}
 
 function FormBanner({
   message,
@@ -148,6 +177,7 @@ export function EssayForm({
   action,
   noticeMessage,
 }: EssayFormProps) {
+  const router = useRouter();
   const [state, formAction, isPending] = useActionState(
     action,
     essayActionIdleState,
@@ -257,6 +287,13 @@ export function EssayForm({
     [currentSnapshot, initialSnapshot],
   );
   const isGuardEnabled = hasUnsavedChanges && !isPending;
+  const coverPreviewSrc = normalizeCoverImagePreviewSrc(coverImageUrl);
+
+  useEffect(() => {
+    if (state.redirectTo) {
+      router.replace(state.redirectTo);
+    }
+  }, [router, state.redirectTo]);
 
   useEffect(() => {
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -514,6 +551,14 @@ export function EssayForm({
             value={coverImageUrl}
           />
           <AdminFieldError message={fieldErrors.cover_image_url} />
+          {coverPreviewSrc ? (
+            <CoverImagePreview alt={coverImageAlt} src={coverImageUrl} />
+          ) : coverImageUrl.trim() ? (
+            <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+              미리보기를 표시할 수 없는 주소 형식입니다. `/images/...` 또는
+              `https://...` 형태로 입력해 주세요.
+            </p>
+          ) : null}
         </div>
 
         <div>

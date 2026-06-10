@@ -167,7 +167,15 @@ export async function getAdminEssayById(id: string): Promise<EssayRow | null> {
     throw new Error(error.message);
   }
 
-  return data;
+  if (!data) {
+    return null;
+  }
+
+  return {
+    ...data,
+    cover_image_url: data.cover_image_url ?? null,
+    cover_image_alt: data.cover_image_alt ?? null,
+  };
 }
 
 export async function isEssaySlugTaken(slug: string, excludeId?: string) {

@@ -2,9 +2,13 @@
 
 import { resolveEssaySaveNotice } from "@/lib/admin/admin-notices";
 import {
-  redirectAdminEssayEdit,
+  buildAdminEssayEditPath,
   redirectAdminEssaysList,
 } from "@/lib/admin/admin-redirect";
+import {
+  formatEssaySaveErrorMessage,
+  logEssaySaveError,
+} from "@/lib/admin/essay-supabase-error";
 import {
   getAdminEssayById,
   isEssaySlugTaken,
@@ -15,6 +19,11 @@ import { requireEditorSupabase } from "@/lib/admin/require-editor";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
 import type { EssayInsert } from "@/lib/content/db-types";
 import { revalidatePublicEssayPaths } from "@/lib/content/revalidate-public";
+import { normalizeEssayCoverImageSrc } from "@/lib/essay-cover-image";
+
+function normalizeStoredCoverImageUrl(raw: string) {
+  return normalizeEssayCoverImageSrc(raw);
+}
 
 export async function createEssay(
   _prevState: EssayActionState,
@@ -40,12 +49,22 @@ export async function createEssay(
     };
   }
 
-  const { supabase } = await requireEditorSupabase();
+  let supabase;
+  try {
+    ({ supabase } = await requireEditorSupabase());
+  } catch (error) {
+    console.error("[createEssay] editor auth failed", { error });
+    return {
+      status: "error",
+      message: "관리자 인증이 필요합니다. 다시 로그인한 뒤 시도해 주세요.",
+    };
+  }
+
   const published_at = resolvePublishedAt(values.status, null);
 
   const row: EssayInsert = {
     ...values,
-    cover_image_url: values.cover_image_url.trim() || null,
+    cover_image_url: normalizeStoredCoverImageUrl(values.cover_image_url),
     cover_image_alt: values.cover_image_alt.trim() || null,
     published_at,
   };
@@ -57,10 +76,12 @@ export async function createEssay(
     .single();
 
   if (error || !data) {
-    console.error("[createEssay] supabase insert failed", { error });
+    logEssaySaveError("createEssay", { slug: values.slug }, error);
     return {
       status: "error",
-      message: "글을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+      message: error
+        ? formatEssaySaveErrorMessage(error)
+        : "글을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
     };
   }
 
@@ -70,7 +91,10 @@ export async function createEssay(
   });
 
   const notice = resolveEssaySaveNotice("draft", data.status);
-  redirectAdminEssayEdit(data.id, notice);
+  return {
+    status: "success",
+    redirectTo: buildAdminEssayEditPath(data.id, notice),
+  };
 }
 
 export async function updateEssay(
@@ -88,7 +112,16 @@ export async function updateEssay(
     };
   }
 
-  const existing = await getAdminEssayById(essayId);
+  let existing;
+  try {
+    existing = await getAdminEssayById(essayId);
+  } catch (error) {
+    console.error("[updateEssay] getAdminEssayById failed", { essayId, error });
+    return {
+      status: "error",
+      message: "글 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    };
+  }
 
   if (!existing) {
     return {
@@ -115,7 +148,17 @@ export async function updateEssay(
     };
   }
 
-  const { supabase } = await requireEditorSupabase();
+  let supabase;
+  try {
+    ({ supabase } = await requireEditorSupabase());
+  } catch (error) {
+    console.error("[updateEssay] editor auth failed", { essayId, error });
+    return {
+      status: "error",
+      message: "관리자 인증이 필요합니다. 다시 로그인한 뒤 시도해 주세요.",
+    };
+  }
+
   const published_at = resolvePublishedAt(values.status, existing.published_at);
 
   const { data: updated, error } = await supabase
@@ -131,7 +174,7 @@ export async function updateEssay(
       series_order: values.series_order,
       status: values.status,
       featured: values.featured,
-      cover_image_url: values.cover_image_url.trim() || null,
+      cover_image_url: normalizeStoredCoverImageUrl(values.cover_image_url),
       cover_image_alt: values.cover_image_alt.trim() || null,
       published_at,
     })
@@ -140,14 +183,16 @@ export async function updateEssay(
     .single();
 
   if (error || !updated) {
-    console.error("[updateEssay] supabase update failed", {
-      essayId,
-      requestedStatus: values.status,
+    logEssaySaveError(
+      "updateEssay",
+      { essayId, requestedStatus: values.status },
       error,
-    });
+    );
     return {
       status: "error",
-      message: "변경 내용을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+      message: error
+        ? formatEssaySaveErrorMessage(error)
+        : "변경 내용을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
     };
   }
 
@@ -159,7 +204,10 @@ export async function updateEssay(
   });
 
   const notice = resolveEssaySaveNotice(existing.status, updated.status);
-  redirectAdminEssayEdit(essayId, notice);
+  return {
+    status: "success",
+    redirectTo: buildAdminEssayEditPath(essayId, notice),
+  };
 }
 
 export async function restoreDeletedEssay(essayId: string) {

@@ -13,6 +13,28 @@ export type EssayCoverImage = {
 
 const DEFAULT_COVER_ALT = "글 대표 이미지";
 
+/**
+ * Normalize CMS cover paths for site and email use.
+ * Accepts `images/essays/foo.jpg` or `/images/essays/foo.jpg` or absolute URLs.
+ */
+export function normalizeEssayCoverImageSrc(
+  raw: string | null | undefined,
+): string | null {
+  const trimmed = raw?.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+
+  return `/${trimmed.replace(/^\/+/, "")}`;
+}
+
+/** @deprecated Use normalizeEssayCoverImageSrc */
+export const normalizeCoverImagePreviewSrc = normalizeEssayCoverImageSrc;
+
 function resolveCoverAlt(essay: EssayCoverImageSource) {
   return essay.coverImageAlt?.trim() || essay.title.trim() || DEFAULT_COVER_ALT;
 }
@@ -24,10 +46,10 @@ function resolveCoverAlt(essay: EssayCoverImageSource) {
  */
 export function getEssayCoverImage(essay: EssayCoverImageSource): EssayCoverImage {
   const alt = resolveCoverAlt(essay);
-  const cmsUrl = essay.coverImageUrl?.trim();
+  const cmsSrc = normalizeEssayCoverImageSrc(essay.coverImageUrl);
 
-  if (cmsUrl) {
-    return { src: cmsUrl, alt };
+  if (cmsSrc) {
+    return { src: cmsSrc, alt };
   }
 
   const slugSrc = getEssayCoverSrc(essay.slug);
@@ -42,17 +64,17 @@ export function toAbsoluteCoverImageUrl(
   src: string,
   siteOrigin: string,
 ): string {
-  const trimmed = src.trim();
+  const normalized = normalizeEssayCoverImageSrc(src);
+  if (!normalized) {
+    return src.trim();
+  }
+
   if (
-    trimmed.startsWith("http://") ||
-    trimmed.startsWith("https://")
+    normalized.startsWith("http://") ||
+    normalized.startsWith("https://")
   ) {
-    return trimmed;
+    return normalized;
   }
 
-  if (trimmed.startsWith("/")) {
-    return `${siteOrigin.replace(/\/$/, "")}${trimmed}`;
-  }
-
-  return trimmed;
+  return `${siteOrigin.replace(/\/$/, "")}${normalized}`;
 }
