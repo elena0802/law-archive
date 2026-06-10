@@ -157,6 +157,7 @@ export function EssayForm({
   const archiveConfirmedRef = useRef(false);
   const trashConfirmedRef = useRef(false);
   const [title, setTitle] = useState(initialValues.title);
+  const [description, setDescription] = useState(initialValues.description);
   const [category, setCategory] = useState(initialValues.category);
   const [essayDate, setEssayDate] = useState(initialValues.essay_date);
   const [featured, setFeatured] = useState(initialValues.featured);
@@ -212,7 +213,7 @@ export function EssayForm({
     () => ({
       title,
       slug: slugLocked ? initialValues.slug : slug,
-      description: initialValues.description,
+      description,
       content,
       essay_date: essayDate,
       category,
@@ -225,7 +226,7 @@ export function EssayForm({
       slug,
       slugLocked,
       initialValues.slug,
-      initialValues.description,
+      description,
       content,
       essayDate,
       category,
@@ -407,7 +408,6 @@ export function EssayForm({
       ref={formRef}
     >
       <input name="current_status" type="hidden" value={currentStatus} />
-      <input name="description" type="hidden" value={initialValues.description} />
 
       {noticeMessage ? <AdminNoticeBanner message={noticeMessage} /> : null}
 
@@ -462,6 +462,24 @@ export function EssayForm({
           {WRITING_GUIDE}
         </pre>
       </AdminCollapsibleSection>
+
+      <div>
+        <label className={adminLabelClassName} htmlFor="description">
+          한 줄 요약 (선택)
+        </label>
+        <textarea
+          className={`${adminFieldClassName} min-h-[6rem] resize-y leading-8`}
+          id="description"
+          name="description"
+          onChange={(event) => setDescription(event.currentTarget.value)}
+          placeholder="글의 요지를 한 줄로 적습니다."
+          rows={3}
+          value={description}
+        />
+        <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+          홈페이지, 글 목록, 검색 결과에 표시됩니다.
+        </p>
+      </div>
 
       <div className={metadataSectionClassName}>
         <p className={metadataHeadingClassName}>출판 정보</p>
