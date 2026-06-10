@@ -9,6 +9,7 @@ import {
 import { AdminNoticeBanner } from "@/components/admin/admin-notice-banner";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
 import { essayActionIdleState } from "@/lib/admin/essay-action-state";
+import { adminCurationProfessorNotePlaceholder } from "@/lib/admin/curation-copy";
 import type { CurationFormValues } from "@/lib/admin/parse-curation-form";
 import { CURATION_TYPES, CURATION_TYPE_LABELS } from "@/lib/curation/youtube";
 
@@ -83,28 +84,16 @@ export function CurationForm({
           <p className="mt-2 text-sm text-accent">{fieldErrors.title}</p>
         ) : null}
 
-        <label className={`${adminLabelClassName} mt-6`} htmlFor="description">
-          설명 (선택)
-        </label>
-        <textarea
-          className={`${adminFieldClassName} min-h-[6rem] resize-y leading-8`}
-          defaultValue={initialValues.description}
-          id="description"
-          name="description"
-          placeholder="콘텐츠를 한두 문장으로 소개합니다."
-          rows={3}
-        />
-
         <label className={`${adminLabelClassName} mt-6`} htmlFor="professor_note">
           추천 이유
         </label>
         <textarea
-          className={`${adminFieldClassName} min-h-[6rem] resize-y leading-8`}
+          className={`${adminFieldClassName} min-h-[7rem] resize-y leading-8`}
           defaultValue={initialValues.professor_note}
           id="professor_note"
           name="professor_note"
-          placeholder="이 콘텐츠를 왜 지금 읽어야 하는지, 교수님의 관점에서 적습니다."
-          rows={3}
+          placeholder={adminCurationProfessorNotePlaceholder}
+          rows={4}
         />
         <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
           홈페이지와 목록에 1~2줄로 표시됩니다. 링크 공유보다 추천 이유 전달이
@@ -135,6 +124,18 @@ export function CurationForm({
             ? "유튜브 동영상 주소를 입력합니다. 공개 사이트에서는 내부 모달로 재생됩니다."
             : "기사·외부글·논문·책은 외부 링크로 연결됩니다. 본문은 저장하지 않습니다."}
         </p>
+
+        <label className={`${adminLabelClassName} mt-6`} htmlFor="description">
+          한 줄 소개 (선택)
+        </label>
+        <textarea
+          className={`${adminFieldClassName} min-h-[6rem] resize-y leading-8`}
+          defaultValue={initialValues.description}
+          id="description"
+          name="description"
+          placeholder="콘텐츠 내용을 짧게 요약합니다."
+          rows={3}
+        />
       </div>
 
       <div className="grid gap-8 sm:grid-cols-2">
@@ -198,14 +199,16 @@ export function CurationForm({
 
         <div>
           <label className={adminLabelClassName} htmlFor="sort_order">
-            정렬 순서
+            정렬 순서 (선택)
           </label>
           <input
             className={adminFieldClassName}
-            defaultValue={String(initialValues.sort_order)}
+            defaultValue={
+              initialValues.sort_order === 0 ? "" : String(initialValues.sort_order)
+            }
             id="sort_order"
             name="sort_order"
-            required
+            placeholder="비워 두기"
             type="number"
             min={0}
           />
@@ -213,7 +216,8 @@ export function CurationForm({
             <p className="mt-2 text-sm text-accent">{fieldErrors.sort_order}</p>
           ) : null}
           <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
-            숫자가 클수록 목록 상단에 표시됩니다.
+            비워두거나 같은 값이면 추천 날짜 기준으로 정렬됩니다. 특별히 위에
+            고정하고 싶을 때만 사용하세요.
           </p>
         </div>
       </div>

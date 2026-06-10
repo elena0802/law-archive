@@ -34,6 +34,10 @@ function readString(formData: FormData, name: string) {
 
 function readSortOrder(formData: FormData) {
   const raw = readString(formData, "sort_order");
+  if (!raw) {
+    return 0;
+  }
+
   const parsed = Number.parseInt(raw, 10);
   return Number.isFinite(parsed) ? parsed : Number.NaN;
 }

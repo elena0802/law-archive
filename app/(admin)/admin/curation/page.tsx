@@ -6,6 +6,7 @@ import {
   parseCurationFilter,
 } from "@/lib/admin/curation";
 import { getAdminCurationNoticeMessage } from "@/lib/admin/admin-notices";
+import { adminCurationListLead } from "@/lib/admin/curation-copy";
 
 export const metadata: Metadata = {
   title: "요즘의 시선 관리",
@@ -44,7 +45,7 @@ export default async function AdminCurationPage({
             요즘의 시선 관리
           </h1>
           <p className="text-keep mt-5 max-w-2xl text-base leading-8 text-ink-muted">
-            교수님이 추천하는 유튜브, 기사, 외부글, 논문, 책을 관리합니다.
+            {adminCurationListLead}
           </p>
         </div>
         <Link
