@@ -1,3 +1,7 @@
+/** Email-safe Korean sans-serif stack for Archive Digest. */
+export const DIGEST_FONT_FAMILY =
+  "'Apple SD Gothic Neo','Malgun Gothic',Arial,sans-serif";
+
 /** Shared Archive Digest spacing tokens (email-safe inline values). */
 export const DIGEST_SPACING = {
   sectionY: "40px",

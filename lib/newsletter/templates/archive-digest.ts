@@ -4,6 +4,7 @@ import type { NewsletterEmailVariant } from "@/lib/newsletter-email/footer";
 import { buildDigestFooterHtml, buildDigestFooterText } from "@/lib/newsletter-email/footer";
 import {
   DIGEST_COLORS,
+  DIGEST_FONT_FAMILY,
   DIGEST_SPACING,
 } from "@/lib/newsletter-email/digest-spacing";
 import {
@@ -67,9 +68,9 @@ function buildShareUrl(siteOrigin: string) {
 function buildHeaderHtml() {
   return [
     `<header style="margin:0 0 ${DIGEST_SPACING.sectionY};padding-bottom:${DIGEST_SPACING.sectionY};border-bottom:1px solid ${DIGEST_COLORS.line};">`,
-    `<p style="margin:0 0 0.625rem;font-size:0.6875rem;letter-spacing:0.18em;text-transform:uppercase;color:${DIGEST_COLORS.accent};">Archive Digest</p>`,
-    `<h1 style="margin:0 0 0.875rem;font-family:Georgia,'Times New Roman',serif;font-size:2.05rem;font-weight:400;line-height:1.22;color:${DIGEST_COLORS.ink};">${escapeNewsletterHtml(siteConfig.name)}</h1>`,
-    `<p style="margin:0;font-size:0.9375rem;line-height:1.75;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(DIGEST_TAGLINE)}</p>`,
+    `<p style="margin:0 0 0.625rem;font-family:${DIGEST_FONT_FAMILY};font-size:0.6875rem;letter-spacing:0.18em;text-transform:uppercase;color:${DIGEST_COLORS.accent};">Archive Digest</p>`,
+    `<h1 style="margin:0 0 0.875rem;font-family:${DIGEST_FONT_FAMILY};font-size:2.05rem;font-weight:600;line-height:1.22;color:${DIGEST_COLORS.ink};">${escapeNewsletterHtml(siteConfig.name)}</h1>`,
+    `<p style="margin:0;font-family:${DIGEST_FONT_FAMILY};font-size:0.9375rem;line-height:1.75;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(DIGEST_TAGLINE)}</p>`,
     `</header>`,
   ].join("");
 }
@@ -86,18 +87,18 @@ function buildMainEssayHtml(essay: ArchiveDigestMainEssay) {
     : "";
 
   const description = essay.description.trim()
-    ? `<p style="margin:0 0 1.25rem;font-size:1.0625rem;line-height:1.85;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(essay.description)}</p>`
+    ? `<p style="margin:0 0 1.25rem;font-family:${DIGEST_FONT_FAMILY};font-size:1.0625rem;line-height:1.85;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(essay.description)}</p>`
     : "";
 
   const bodyHtml = essay.bodyHtml.trim()
     ? `<div style="margin:0;">${essay.bodyHtml}</div>`
     : description
       ? ""
-      : `<p style="margin:0;font-size:1rem;line-height:1.85;color:${DIGEST_COLORS.inkMuted};">아카이브에서 전체 글을 읽어 보세요.</p>`;
+      : `<p style="margin:0;font-family:${DIGEST_FONT_FAMILY};font-size:1rem;line-height:1.85;color:${DIGEST_COLORS.inkMuted};">아카이브에서 전체 글을 읽어 보세요.</p>`;
 
   const readOnArchiveLink = [
-    `<p style="margin:1.5rem 0 0;font-size:0.9375rem;line-height:1.65;">`,
-    `<a href="${escapeNewsletterHtml(essay.url)}" ${digestExternalLinkAttrs()} style="color:${DIGEST_COLORS.accent};font-weight:600;text-decoration:underline;">`,
+    `<p style="margin:1.5rem 0 0;font-family:${DIGEST_FONT_FAMILY};font-size:0.9375rem;line-height:1.65;">`,
+    `<a href="${escapeNewsletterHtml(essay.url)}" ${digestExternalLinkAttrs()} style="font-family:${DIGEST_FONT_FAMILY};color:${DIGEST_COLORS.accent};font-weight:600;text-decoration:underline;">`,
     `아카이브에서 글 보기 →`,
     `</a>`,
     `</p>`,
@@ -112,7 +113,7 @@ function buildMainEssayHtml(essay: ArchiveDigestMainEssay) {
 
   return [
     `<article style="margin:0 0 ${DIGEST_SPACING.sectionY};">`,
-    `<h2 style="margin:0 0 1.25rem;font-family:Georgia,'Times New Roman',serif;font-size:1.625rem;font-weight:400;line-height:1.32;color:${DIGEST_COLORS.ink};">${escapeNewsletterHtml(essay.title)}</h2>`,
+    `<h2 style="margin:0 0 1.25rem;font-family:${DIGEST_FONT_FAMILY};font-size:1.625rem;font-weight:600;line-height:1.32;color:${DIGEST_COLORS.ink};">${escapeNewsletterHtml(essay.title)}</h2>`,
     buildDigestProseWrap(proseContent),
     `</article>`,
   ].join("");
@@ -160,7 +161,7 @@ function buildCurationListHtml(items: readonly ArchiveDigestCurationItem[]) {
       ].filter(Boolean);
       const sourceDate = sourceDateParts.join(" · ");
       const note = item.professorNote.trim()
-        ? `<p style="margin:0.625rem 0 0;font-size:0.875rem;line-height:1.7;color:${DIGEST_COLORS.inkMuted};max-height:3.4em;overflow:hidden;">${escapeNewsletterHtml(truncateNote(item.professorNote))}</p>`
+        ? `<p style="margin:0.625rem 0 0;font-family:${DIGEST_FONT_FAMILY};font-size:0.875rem;line-height:1.7;color:${DIGEST_COLORS.inkMuted};max-height:3.4em;overflow:hidden;">${escapeNewsletterHtml(truncateNote(item.professorNote))}</p>`
         : "";
       const thumb = item.imageUrl?.trim()
         ? `<td width="96" valign="top" style="padding-left:14px;width:96px;">${buildDigestListThumbnail(item.imageUrl.trim(), item.imageAlt?.trim() || item.title)}</td>`
@@ -177,8 +178,8 @@ function buildCurationListHtml(items: readonly ArchiveDigestCurationItem[]) {
         `<tr>`,
         `<td valign="top" style="padding:0;">`,
         `<p style="margin:0;">${buildDigestTypeBadge(typeLabel)}</p>`,
-        `<p style="margin:0.5rem 0 0;font-size:0.8125rem;line-height:1.6;color:${DIGEST_COLORS.accent};">${escapeNewsletterHtml(sourceDate)}</p>`,
-        `<p style="margin:0.625rem 0 0;font-family:Georgia,'Times New Roman',serif;font-size:1.0625rem;line-height:1.45;color:${DIGEST_COLORS.ink};">${escapeNewsletterHtml(item.title)}</p>`,
+        `<p style="margin:0.5rem 0 0;font-family:${DIGEST_FONT_FAMILY};font-size:0.8125rem;line-height:1.6;color:${DIGEST_COLORS.accent};">${escapeNewsletterHtml(sourceDate)}</p>`,
+        `<p style="margin:0.625rem 0 0;font-family:${DIGEST_FONT_FAMILY};font-size:1.0625rem;font-weight:600;line-height:1.45;color:${DIGEST_COLORS.ink};">${escapeNewsletterHtml(item.title)}</p>`,
         note,
         `</td>`,
         thumb,
@@ -192,7 +193,7 @@ function buildCurationListHtml(items: readonly ArchiveDigestCurationItem[]) {
   return [
     buildDigestSectionDivider(),
     `<section style="margin:${DIGEST_SPACING.sectionY} 0 0;">`,
-    `<p style="margin:0 0 ${DIGEST_SPACING.titleBelow};font-size:0.6875rem;letter-spacing:0.14em;text-transform:uppercase;color:${DIGEST_COLORS.accent};">요즘의 시선</p>`,
+    `<p style="margin:0 0 ${DIGEST_SPACING.titleBelow};font-family:${DIGEST_FONT_FAMILY};font-size:0.6875rem;letter-spacing:0.14em;text-transform:uppercase;color:${DIGEST_COLORS.accent};">요즘의 시선</p>`,
     rows,
     `</section>`,
   ].join("");
@@ -263,7 +264,7 @@ export function buildArchiveDigestEmailContent(
 
   const html = [
     `<div style="margin:0;padding:24px 16px;background-color:${DIGEST_COLORS.page};">`,
-    `<div style="max-width:${DIGEST_SPACING.outerMaxWidth};margin:0 auto;font-family:'Helvetica Neue',Arial,sans-serif;font-size:1rem;color:${DIGEST_COLORS.ink};">`,
+    `<div style="max-width:${DIGEST_SPACING.outerMaxWidth};margin:0 auto;font-family:${DIGEST_FONT_FAMILY};font-size:1rem;color:${DIGEST_COLORS.ink};">`,
     buildHeaderHtml(),
     buildIntroHtml(trimmedIntro),
     mainEssayHtml,

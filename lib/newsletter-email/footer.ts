@@ -1,6 +1,7 @@
 import { getNewsletterFromEmail } from "@/lib/newsletter-email/config";
 import {
   DIGEST_COLORS,
+  DIGEST_FONT_FAMILY,
   DIGEST_SPACING,
 } from "@/lib/newsletter-email/digest-spacing";
 import {
@@ -111,7 +112,7 @@ export function buildBroadcastFooterHtml(unsubscribeUrl: string) {
 
 function digestFooterLink(url: string, label: string) {
   const safeUrl = escapeNewsletterHtml(url);
-  return `<a href="${safeUrl}" ${digestExternalLinkAttrs()} style="color:${DIGEST_COLORS.accent};text-decoration:underline;">${escapeNewsletterHtml(label)}</a>`;
+  return `<a href="${safeUrl}" ${digestExternalLinkAttrs()} style="font-family:${DIGEST_FONT_FAMILY};color:${DIGEST_COLORS.accent};text-decoration:underline;">${escapeNewsletterHtml(label)}</a>`;
 }
 
 export function buildDigestFooterHtml({
@@ -130,26 +131,26 @@ export function buildDigestFooterHtml({
   let unsubscribeBlock = "";
 
   if (unsubscribeUrl?.trim()) {
-    unsubscribeBlock = `<p style="margin:0 0 0.75rem;font-size:0.875rem;line-height:1.65;">${digestFooterLink(unsubscribeUrl.trim(), "구독 해지")}</p>`;
+    unsubscribeBlock = `<p style="margin:0 0 0.75rem;font-family:${DIGEST_FONT_FAMILY};font-size:0.875rem;line-height:1.65;">${digestFooterLink(unsubscribeUrl.trim(), "구독 해지")}</p>`;
   } else if (variant === "test") {
-    unsubscribeBlock = `<p style="margin:0 0 0.75rem;font-size:0.875rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(NON_SUBSCRIBER_FOOTER_LINE)}</p>`;
+    unsubscribeBlock = `<p style="margin:0 0 0.75rem;font-family:${DIGEST_FONT_FAMILY};font-size:0.875rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(NON_SUBSCRIBER_FOOTER_LINE)}</p>`;
   }
 
   const testNote =
     variant === "test"
-      ? `<p style="margin:0 0 1rem;font-size:0.8125rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(TEST_FOOTER_LINE)}</p>`
+      ? `<p style="margin:0 0 1rem;font-family:${DIGEST_FONT_FAMILY};font-size:0.8125rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(TEST_FOOTER_LINE)}</p>`
       : "";
 
   return [
-    `<div style="margin-top:${DIGEST_SPACING.sectionYLarge};padding:${DIGEST_SPACING.footerPadding};background-color:${DIGEST_COLORS.footer};border-top:1px solid ${DIGEST_COLORS.line};">`,
+    `<div style="margin-top:${DIGEST_SPACING.sectionYLarge};padding:${DIGEST_SPACING.footerPadding};background-color:${DIGEST_COLORS.footer};border-top:1px solid ${DIGEST_COLORS.line};font-family:${DIGEST_FONT_FAMILY};">`,
     `<div style="max-width:${DIGEST_SPACING.outerMaxWidth};margin:0 auto;">`,
     testNote,
-    `<p style="margin:0 0 0.5rem;font-size:0.875rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">© ${year} ${escapeNewsletterHtml(siteConfig.name)}</p>`,
-    `<p style="margin:0 0 1.25rem;font-size:0.875rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(DIGEST_FOOTER_TAGLINE)}</p>`,
-    `<p style="margin:0 0 0.5rem;font-size:0.875rem;line-height:1.65;">${digestFooterLink(siteUrl, `${siteConfig.name} 방문`)}</p>`,
-    `<p style="margin:0 0 0.75rem;font-size:0.875rem;line-height:1.65;">${digestFooterLink(`${siteUrl}/curation`, "요즘의 시선")}</p>`,
+    `<p style="margin:0 0 0.5rem;font-family:${DIGEST_FONT_FAMILY};font-size:0.875rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">© ${year} ${escapeNewsletterHtml(siteConfig.name)}</p>`,
+    `<p style="margin:0 0 1.25rem;font-family:${DIGEST_FONT_FAMILY};font-size:0.875rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(DIGEST_FOOTER_TAGLINE)}</p>`,
+    `<p style="margin:0 0 0.5rem;font-family:${DIGEST_FONT_FAMILY};font-size:0.875rem;line-height:1.65;">${digestFooterLink(siteUrl, `${siteConfig.name} 방문`)}</p>`,
+    `<p style="margin:0 0 0.75rem;font-family:${DIGEST_FONT_FAMILY};font-size:0.875rem;line-height:1.65;">${digestFooterLink(`${siteUrl}/curation`, "요즘의 시선")}</p>`,
     unsubscribeBlock,
-    `<p style="margin:0;font-size:0.8125rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">발신: ${escapeNewsletterHtml(siteConfig.name)} &lt;${fromEmail}&gt;</p>`,
+    `<p style="margin:0;font-family:${DIGEST_FONT_FAMILY};font-size:0.8125rem;line-height:1.65;color:${DIGEST_COLORS.inkMuted};">발신: ${escapeNewsletterHtml(siteConfig.name)} &lt;${fromEmail}&gt;</p>`,
     `</div>`,
     `</div>`,
   ].join("");

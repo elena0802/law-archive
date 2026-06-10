@@ -1,5 +1,6 @@
 import {
   DIGEST_COLORS,
+  DIGEST_FONT_FAMILY,
   DIGEST_SPACING,
 } from "@/lib/newsletter-email/digest-spacing";
 
@@ -58,7 +59,7 @@ export function buildDigestButton(url: string, label: string, centered = false) 
     `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0;border-collapse:separate;">`,
     `<tr>`,
     `<td style="background-color:${DIGEST_COLORS.accent};border-radius:6px;padding:14px 28px;">`,
-    `<a href="${safeUrl}" ${digestExternalLinkAttrs()} style="display:inline-block;font-size:0.9375rem;font-weight:600;line-height:1.4;color:${DIGEST_COLORS.buttonText};text-decoration:none;">`,
+    `<a href="${safeUrl}" ${digestExternalLinkAttrs()} style="display:inline-block;font-family:${DIGEST_FONT_FAMILY};font-size:0.9375rem;font-weight:600;line-height:1.4;color:${DIGEST_COLORS.buttonText};text-decoration:none;">`,
     escapeNewsletterHtml(label),
     `</a>`,
     `</td>`,
@@ -101,7 +102,7 @@ export function buildDigestCtaSection({
   withTopDivider?: boolean;
 }) {
   const bodyHtml = body?.trim()
-    ? `<p style="margin:0 0 ${DIGEST_SPACING.titleBelow};font-size:0.9375rem;line-height:1.75;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(body)}</p>`
+    ? `<p style="margin:0 0 ${DIGEST_SPACING.titleBelow};font-family:${DIGEST_FONT_FAMILY};font-size:0.9375rem;line-height:1.75;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(body)}</p>`
     : "";
 
   const sectionMargin = withTopDivider
@@ -111,7 +112,7 @@ export function buildDigestCtaSection({
   return [
     withTopDivider ? buildDigestSectionDivider() : "",
     `<section style="margin:${sectionMargin};text-align:center;">`,
-    `<h2 style="margin:0 0 ${bodyHtml ? DIGEST_SPACING.titleBelow : DIGEST_SPACING.titleBelow};font-family:Georgia,'Times New Roman',serif;font-size:1.25rem;font-weight:400;line-height:1.35;color:${DIGEST_COLORS.ink};">${escapeNewsletterHtml(title)}</h2>`,
+    `<h2 style="margin:0 0 ${bodyHtml ? DIGEST_SPACING.titleBelow : DIGEST_SPACING.titleBelow};font-family:${DIGEST_FONT_FAMILY};font-size:1.25rem;font-weight:600;line-height:1.35;color:${DIGEST_COLORS.ink};">${escapeNewsletterHtml(title)}</h2>`,
     bodyHtml,
     buildDigestButton(buttonUrl, buttonLabel, true),
     `</section>`,
@@ -119,7 +120,7 @@ export function buildDigestCtaSection({
 }
 
 export function buildDigestTypeBadge(label: string) {
-  return `<span style="display:inline-block;border:1px solid ${DIGEST_COLORS.line};background-color:${DIGEST_COLORS.page};padding:3px 8px;font-size:0.6875rem;letter-spacing:0.1em;text-transform:uppercase;color:${DIGEST_COLORS.accent};">${escapeNewsletterHtml(label)}</span>`;
+  return `<span style="display:inline-block;border:1px solid ${DIGEST_COLORS.line};background-color:${DIGEST_COLORS.page};padding:3px 8px;font-family:${DIGEST_FONT_FAMILY};font-size:0.6875rem;letter-spacing:0.1em;text-transform:uppercase;color:${DIGEST_COLORS.accent};">${escapeNewsletterHtml(label)}</span>`;
 }
 
 export function buildDigestCardImage(imageUrl: string, alt: string) {
@@ -179,7 +180,7 @@ export function messageToHtmlParagraphs(message: string) {
   return paragraphs
     .map((paragraph) => {
       const lines = paragraph.split("\n").map((line) => escapeNewsletterHtml(line));
-      return `<p style="margin:0 0 1.125rem;line-height:1.8;color:${DIGEST_COLORS.inkMuted};">${lines.join("<br />")}</p>`;
+      return `<p style="margin:0 0 1.125rem;font-family:${DIGEST_FONT_FAMILY};line-height:1.8;color:${DIGEST_COLORS.inkMuted};">${lines.join("<br />")}</p>`;
     })
     .join("");
 }
