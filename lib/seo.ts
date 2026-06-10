@@ -1,6 +1,7 @@
 import type { Essay } from "@/lib/essays";
 import { scholarProfile } from "@/lib/profile";
 import { getSiteOrigin, siteConfig } from "@/lib/site";
+import type { ResearchItem } from "@/src/types/research";
 
 /** Public index paths (주제 hub is `/categories`). */
 export const publicSitemapStaticPaths = [
@@ -8,10 +9,24 @@ export const publicSitemapStaticPaths = [
   "/essays",
   "/series",
   "/categories",
+  "/research",
   "/guestbook",
   "/about",
   "/scholar-dna",
 ] as const;
+
+export function toSitemapAbsoluteUrl(origin: string, path: string) {
+  return path === "/" ? `${origin}/` : `${origin}${path}`;
+}
+
+export function toResearchLastModified(item: ResearchItem) {
+  const year = item.year ?? 2000;
+  const month = item.month ?? 12;
+
+  return new Date(
+    `${year}-${String(month).padStart(2, "0")}-01T00:00:00.000Z`,
+  );
+}
 
 export function toSchemaIsoDate(date: string) {
   if (date.includes("T")) {
