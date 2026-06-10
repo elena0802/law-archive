@@ -95,6 +95,7 @@ export function curationRowToFormValues(item: ProfessorCurationItemRow) {
     type: item.type,
     title: item.title,
     description: item.description,
+    professor_note: item.professor_note ?? "",
     url: item.url,
     source: item.source,
     thumbnail_url: item.thumbnail_url ?? "",

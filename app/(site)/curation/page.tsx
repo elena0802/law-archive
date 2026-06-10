@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 const pageDescription =
-  "교수님이 직접 추천하는 유튜브, 기사, 외부글, 논문, 책을 모았습니다.";
+  "천진호 교수가 직접 추천하는 유튜브, 기사, 외부글, 논문, 책과 그 이유를 모았습니다.";
 
 export const metadata: Metadata = {
   title: "요즘의 시선",
@@ -38,8 +38,8 @@ export default async function CurationPage() {
           요즘의 시선
         </h1>
         <p className="text-keep mt-7 text-lg leading-9 text-ink-muted">
-          {pageDescription} 외부 콘텐츠의 본문은 저장하지 않으며, 제목·설명·출처·
-          링크만 기록합니다.
+          {pageDescription} 외부 콘텐츠의 본문은 저장하지 않으며, 제목·추천 이유·
+          출처·링크만 기록합니다.
         </p>
       </Section>
 

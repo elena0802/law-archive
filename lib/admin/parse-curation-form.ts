@@ -10,6 +10,7 @@ export type CurationFormValues = {
   type: CurationType;
   title: string;
   description: string;
+  professor_note: string;
   url: string;
   source: string;
   thumbnail_url: string;
@@ -41,6 +42,7 @@ export function parseCurationForm(formData: FormData): ParsedCurationForm {
   const type = parseCurationType(formData.get("type"));
   const title = readString(formData, "title");
   const description = readString(formData, "description");
+  const professor_note = readString(formData, "professor_note");
   const url = readString(formData, "url");
   const source = readString(formData, "source");
   const thumbnail_url = readString(formData, "thumbnail_url");
@@ -91,6 +93,7 @@ export function parseCurationForm(formData: FormData): ParsedCurationForm {
       type,
       title,
       description,
+      professor_note,
       url,
       source,
       thumbnail_url,
@@ -110,6 +113,7 @@ export function emptyCurationFormValues(): CurationFormValues {
     type: "article",
     title: "",
     description: "",
+    professor_note: "",
     url: "",
     source: "",
     thumbnail_url: "",

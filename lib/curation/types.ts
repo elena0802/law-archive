@@ -5,6 +5,7 @@ export type CurationItem = {
   type: CurationType;
   title: string;
   description: string;
+  professorNote: string;
   url: string;
   source: string;
   thumbnailUrl: string | null;

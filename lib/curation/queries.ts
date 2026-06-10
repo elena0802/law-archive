@@ -11,6 +11,7 @@ function mapCurationRow(row: ProfessorCurationItemRow): CurationItem {
     type: row.type,
     title: row.title,
     description: row.description,
+    professorNote: row.professor_note?.trim() ?? "",
     url: row.url,
     source: row.source,
     thumbnailUrl: resolveCurationThumbnail(row.type, row.url, row.thumbnail_url),
@@ -43,13 +44,12 @@ export async function getVisibleCurationItems(): Promise<CurationItem[]> {
   return (data ?? []).map(mapCurationRow);
 }
 
-export async function getFeaturedYoutubeCuration(): Promise<CurationItem | null> {
+export async function getFeaturedCuration(): Promise<CurationItem | null> {
   const supabase = requireSupabaseServiceRoleClient();
   const { data, error } = await supabase
     .from("professor_curation_items")
     .select("*")
     .eq("is_visible", true)
-    .eq("type", "youtube")
     .eq("is_featured", true)
     .order("sort_order", { ascending: false })
     .order("recommended_at", { ascending: false })
@@ -57,25 +57,25 @@ export async function getFeaturedYoutubeCuration(): Promise<CurationItem | null>
     .maybeSingle();
 
   if (error) {
-    console.error("[getFeaturedYoutubeCuration] query failed", { error });
+    console.error("[getFeaturedCuration] query failed", { error });
     return null;
   }
 
   return data ? mapCurationRow(data) : null;
 }
 
-export async function getHomeCurationLinks(
+export async function getHomeCurationRecent(
   excludeId?: string,
-  limit = 3,
+  limit = 4,
 ): Promise<CurationItem[]> {
   const supabase = requireSupabaseServiceRoleClient();
   let query = supabase
     .from("professor_curation_items")
     .select("*")
     .eq("is_visible", true)
-    .neq("type", "youtube")
     .order("sort_order", { ascending: false })
     .order("recommended_at", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(limit);
 
   if (excludeId) {
@@ -85,7 +85,7 @@ export async function getHomeCurationLinks(
   const { data, error } = await query;
 
   if (error) {
-    console.error("[getHomeCurationLinks] query failed", { error });
+    console.error("[getHomeCurationRecent] query failed", { error });
     return [];
   }
 

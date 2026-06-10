@@ -196,6 +196,7 @@ export type ProfessorCurationItemRow = {
   type: CurationType;
   title: string;
   description: string;
+  professor_note: string | null;
   url: string;
   source: string;
   thumbnail_url: string | null;
@@ -212,6 +213,7 @@ export type ProfessorCurationItemInsert = {
   type: CurationType;
   title: string;
   description?: string;
+  professor_note?: string | null;
   url: string;
   source?: string;
   thumbnail_url?: string | null;

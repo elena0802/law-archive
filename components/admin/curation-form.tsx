@@ -91,8 +91,25 @@ export function CurationForm({
           defaultValue={initialValues.description}
           id="description"
           name="description"
+          placeholder="콘텐츠를 한두 문장으로 소개합니다."
           rows={3}
         />
+
+        <label className={`${adminLabelClassName} mt-6`} htmlFor="professor_note">
+          추천 이유
+        </label>
+        <textarea
+          className={`${adminFieldClassName} min-h-[6rem] resize-y leading-8`}
+          defaultValue={initialValues.professor_note}
+          id="professor_note"
+          name="professor_note"
+          placeholder="이 콘텐츠를 왜 지금 읽어야 하는지, 교수님의 관점에서 적습니다."
+          rows={3}
+        />
+        <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+          홈페이지와 목록에 1~2줄로 표시됩니다. 링크 공유보다 추천 이유 전달이
+          중요합니다.
+        </p>
 
         <label className={`${adminLabelClassName} mt-6`} htmlFor="url">
           링크 (URL)
@@ -215,20 +232,18 @@ export function CurationForm({
           </span>
         </label>
 
-        {type === "youtube" ? (
-          <label className="flex items-start gap-3">
-            <input
-              checked={isFeatured}
-              className="mt-1"
-              name="is_featured"
-              onChange={(event) => setIsFeatured(event.currentTarget.checked)}
-              type="checkbox"
-            />
-            <span className="text-keep text-base leading-8 text-ink">
-              홈페이지 대표 유튜브로 표시
-            </span>
-          </label>
-        ) : null}
+        <label className="flex items-start gap-3">
+          <input
+            checked={isFeatured}
+            className="mt-1"
+            name="is_featured"
+            onChange={(event) => setIsFeatured(event.currentTarget.checked)}
+            type="checkbox"
+          />
+          <span className="text-keep text-base leading-8 text-ink">
+            홈페이지 대표 콘텐츠로 표시
+          </span>
+        </label>
       </div>
 
       <div className="flex flex-wrap items-center gap-4 border-t border-line pt-8">

@@ -15,6 +15,7 @@ function mapFormToInsert(values: CurationFormValues) {
     type: values.type,
     title: values.title,
     description: values.description,
+    professor_note: values.professor_note || null,
     url: values.url,
     source: values.source,
     thumbnail_url: values.thumbnail_url || null,

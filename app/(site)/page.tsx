@@ -10,8 +10,8 @@ import { Section } from "@/components/section";
 import { getAllEssays, getAllSeries, getFeaturedSeries } from "@/lib/essays";
 import { buildAiResearchTracks } from "@/lib/home-ai-research-tracks";
 import {
-  getFeaturedYoutubeCuration,
-  getHomeCurationLinks,
+  getFeaturedCuration,
+  getHomeCurationRecent,
 } from "@/lib/curation/queries";
 import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { scholarTitle, siteConfig } from "@/lib/site";
@@ -49,13 +49,13 @@ const HOME_SECTION_CLASS =
   "border-t border-line !py-[clamp(4.75rem,10vw,9.5rem)]";
 
 export default async function Home() {
-  const [allSeries, essays, featuredSeries, featuredYoutube] = await Promise.all([
+  const [allSeries, essays, featuredSeries, featuredCuration] = await Promise.all([
     getAllSeries(),
     getAllEssays(),
     getFeaturedSeries(),
-    getFeaturedYoutubeCuration(),
+    getFeaturedCuration(),
   ]);
-  const curationLinks = await getHomeCurationLinks(featuredYoutube?.id, 3);
+  const curationRecent = await getHomeCurationRecent(featuredCuration?.id, 4);
 
   const recentEssays = essays.slice(0, RECENT_ESSAY_COUNT);
   const representativeResearchPreview = sortByPublicationNumber(researchItems)
@@ -73,10 +73,7 @@ export default async function Home() {
       </Section>
 
       <Section size="wide" className={HOME_SECTION_CLASS}>
-        <HomeCurationPreview
-          featuredYoutube={featuredYoutube}
-          links={curationLinks}
-        />
+        <HomeCurationPreview featured={featuredCuration} recent={curationRecent} />
       </Section>
 
       <Section

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CurationProfessorNote } from "@/components/curation/curation-professor-note";
 import { CurationTypeBadge } from "@/components/curation/curation-type-badge";
 import { CurationYoutubeModal } from "@/components/curation/curation-youtube-modal";
 import type { CurationItem } from "@/lib/curation/types";
@@ -62,11 +63,11 @@ export function CurationYoutubeFeature({
           <h3 className="text-keep mt-3 font-serif text-xl leading-snug text-ink group-hover:text-accent sm:text-2xl">
             {item.title}
           </h3>
-          {item.description.trim() ? (
-            <p className="text-keep mt-3 line-clamp-3 text-sm leading-[1.75] text-ink-muted">
-              {item.description}
-            </p>
-          ) : null}
+          <CurationProfessorNote
+            className="mt-3"
+            lines={isHome ? 3 : 2}
+            note={item.professorNote}
+          />
         </div>
       </button>
 

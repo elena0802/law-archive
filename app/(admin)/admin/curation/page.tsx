@@ -112,7 +112,7 @@ export default async function AdminCurationPage({
                     {visibilityLabel(item.is_visible)}
                   </td>
                   <td className="py-4 pr-4 text-ink-muted">
-                    {item.type === "youtube" && item.is_featured ? "유튜브" : "—"}
+                    {item.is_featured ? "대표" : "—"}
                   </td>
                   <td className="py-4 pr-4 text-ink-muted">{item.sort_order}</td>
                   <td className="py-4 pr-4 text-ink-muted">
