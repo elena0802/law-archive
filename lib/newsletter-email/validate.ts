@@ -4,11 +4,18 @@ export const MAX_NEWSLETTER_SUBJECT_LENGTH = 200;
 export const MAX_NEWSLETTER_MESSAGE_LENGTH = 10000;
 export const MAX_NEWSLETTER_RELATED_URL_LENGTH = 2048;
 
+import {
+  NEWSLETTER_TEMPLATES,
+  type NewsletterTemplate,
+  parseNewsletterTemplate,
+} from "@/lib/newsletter-email/templates";
+
 export type NewsletterSendFieldErrors = {
   recipientEmail?: string;
   subject?: string;
   message?: string;
   relatedUrl?: string;
+  template?: string;
 };
 
 export function normalizeOptionalRelatedUrl(value: string) {
@@ -39,14 +46,22 @@ export function validateNewsletterSendFields(input: {
   message: string;
   relatedUrl?: string;
   recipientEmail?: string;
+  template?: string;
   requireRecipient?: boolean;
 }):
-  | { ok: true; subject: string; message: string; relatedUrl: string | null }
+  | {
+      ok: true;
+      subject: string;
+      message: string;
+      relatedUrl: string | null;
+      template: NewsletterTemplate;
+    }
   | { ok: false; error: string; fieldErrors?: NewsletterSendFieldErrors } {
   const subject = input.subject.trim();
   const message = input.message.trim();
   const relatedUrl = normalizeOptionalRelatedUrl(input.relatedUrl ?? "");
   const recipientEmail = input.recipientEmail?.trim().toLowerCase() ?? "";
+  const template = parseNewsletterTemplate(input.template);
 
   if (input.requireRecipient && !recipientEmail) {
     return {
@@ -112,5 +127,16 @@ export function validateNewsletterSendFields(input: {
     };
   }
 
-  return { ok: true, subject, message, relatedUrl };
+  if (
+    input.template &&
+    !NEWSLETTER_TEMPLATES.includes(input.template as NewsletterTemplate)
+  ) {
+    return {
+      ok: false,
+      error: "이메일 템플릿을 확인해 주세요.",
+      fieldErrors: { template: "지원하지 않는 템플릿입니다." },
+    };
+  }
+
+  return { ok: true, subject, message, relatedUrl, template };
 }

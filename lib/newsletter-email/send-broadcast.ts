@@ -5,8 +5,9 @@ import {
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
 import { buildNewsletterUnsubscribeUrl } from "@/lib/newsletter";
 import { isResendConfigured } from "@/lib/newsletter-email/config";
+import { buildNewsletterSendContent } from "@/lib/newsletter-email/build-send-content";
 import { sendOneNewsletterEmail } from "@/lib/newsletter-email/send-one";
-import { buildNewsletterEmailContent } from "@/lib/newsletter-email/template";
+import type { NewsletterTemplate } from "@/lib/newsletter-email/templates";
 import {
   validateNewsletterSendFields,
   type NewsletterSendFieldErrors,
@@ -29,6 +30,7 @@ export async function sendNewsletterBroadcast(input: {
   subject: string;
   message: string;
   relatedUrl?: string;
+  template?: NewsletterTemplate;
   broadcastConfirmed: boolean;
 }): Promise<SendNewsletterBroadcastResult> {
   const { user } = await requireEditorSupabase();
@@ -52,6 +54,7 @@ export async function sendNewsletterBroadcast(input: {
     subject: input.subject,
     message: input.message,
     relatedUrl: input.relatedUrl,
+    template: input.template,
   });
 
   if (!validated.ok) {
@@ -79,7 +82,8 @@ export async function sendNewsletterBroadcast(input: {
       recipient.unsubscribe_token,
     );
 
-    const content = buildNewsletterEmailContent({
+    const content = await buildNewsletterSendContent({
+      template: validated.template,
       subject: validated.subject,
       message: validated.message,
       relatedUrl: validated.relatedUrl,

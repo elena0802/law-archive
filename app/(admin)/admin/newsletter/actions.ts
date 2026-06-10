@@ -3,6 +3,7 @@
 import { exportNewsletterSubscribersCsv } from "@/lib/admin/newsletter";
 import { sendNewsletterBroadcast } from "@/lib/newsletter-email/send-broadcast";
 import { sendNewsletterTestEmail } from "@/lib/newsletter-email/send-test";
+import { parseNewsletterTemplate } from "@/lib/newsletter-email/templates";
 import {
   newsletterSendActionIdleState,
   type NewsletterSendActionState,
@@ -20,6 +21,7 @@ export async function sendNewsletterAction(
   const subject = String(formData.get("subject") ?? "");
   const message = String(formData.get("message") ?? "");
   const relatedUrl = String(formData.get("related_url") ?? "");
+  const template = parseNewsletterTemplate(formData.get("template"));
 
   if (intent === "test") {
     const recipientEmail = String(formData.get("recipient_email") ?? "");
@@ -29,6 +31,7 @@ export async function sendNewsletterAction(
       subject,
       message,
       relatedUrl,
+      template,
     });
 
     if (!result.ok) {
@@ -69,6 +72,7 @@ export async function sendNewsletterAction(
       subject,
       message,
       relatedUrl,
+      template,
       broadcastConfirmed,
     });
 

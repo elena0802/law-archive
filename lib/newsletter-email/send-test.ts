@@ -1,7 +1,8 @@
 import { lookupActiveSubscriberUnsubscribe } from "@/lib/admin/newsletter";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
+import { buildNewsletterSendContent } from "@/lib/newsletter-email/build-send-content";
 import { sendOneNewsletterEmail } from "@/lib/newsletter-email/send-one";
-import { buildNewsletterTestEmailContent } from "@/lib/newsletter-email/template";
+import type { NewsletterTemplate } from "@/lib/newsletter-email/templates";
 import {
   validateNewsletterSendFields,
   type NewsletterSendFieldErrors,
@@ -12,6 +13,7 @@ export type SendNewsletterTestEmailInput = {
   subject: string;
   message: string;
   relatedUrl?: string;
+  template?: NewsletterTemplate;
 };
 
 export type SendNewsletterTestEmailResult =
@@ -36,6 +38,7 @@ export async function sendNewsletterTestEmail(
     subject: input.subject,
     message: input.message,
     relatedUrl: input.relatedUrl,
+    template: input.template,
     recipientEmail: input.recipientEmail,
     requireRecipient: true,
   });
@@ -53,11 +56,13 @@ export async function sendNewsletterTestEmail(
   const { isActiveSubscriber, unsubscribeUrl } =
     await lookupActiveSubscriberUnsubscribe(recipientEmail);
 
-  const content = buildNewsletterTestEmailContent({
+  const content = await buildNewsletterSendContent({
+    template: validated.template,
     subject: validated.subject,
     message: validated.message,
     relatedUrl: validated.relatedUrl,
     unsubscribeUrl,
+    variant: "test",
   });
 
   const result = await sendOneNewsletterEmail({

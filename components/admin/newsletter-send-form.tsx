@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useCallback, useRef, useState } from "react";
 import { sendNewsletterAction } from "@/app/(admin)/admin/newsletter/actions";
 import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
@@ -14,6 +15,12 @@ import {
   newsletterSendActionIdleState,
   type NewsletterSendActionState,
 } from "@/lib/newsletter-send-action-state";
+import {
+  DEFAULT_NEWSLETTER_TEMPLATE,
+  NEWSLETTER_TEMPLATES,
+  newsletterTemplateLabel,
+  type NewsletterTemplate,
+} from "@/lib/newsletter-email/templates";
 
 type NewsletterSendFormProps = {
   deliveryConfigured: boolean;
@@ -36,6 +43,10 @@ export function NewsletterSendForm({
   const broadcastConfirmedRef = useRef(false);
   const broadcastConfirmedInputRef = useRef<HTMLInputElement>(null);
   const [broadcastConfirmOpen, setBroadcastConfirmOpen] = useState(false);
+  const [template, setTemplate] = useState<NewsletterTemplate>(
+    DEFAULT_NEWSLETTER_TEMPLATE,
+  );
+  const isDigestTemplate = template === "archive-digest";
 
   const readSubmitIntent = useCallback((event: React.FormEvent<HTMLFormElement>) => {
     const submitter = event.nativeEvent as SubmitEvent;
@@ -99,7 +110,17 @@ export function NewsletterSendForm({
       </h2>
       <p className="text-keep mt-4 max-w-2xl text-base leading-8 text-ink-muted">
         제목과 본문을 작성한 뒤, 한 명에게 테스트하거나 활성 구독자 전체에게
-        발송할 수 있습니다.
+        발송할 수 있습니다. Archive Digest 템플릿은 최근 글·요즘의 시선·AI 연구
+        노트를 함께 조합합니다.
+      </p>
+      <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+        <Link
+          className="text-accent underline underline-offset-2"
+          href="/admin/newsletter/preview"
+          target="_blank"
+        >
+          Archive Digest 미리보기
+        </Link>
       </p>
       <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
         발신 주소: {fromEmail}
@@ -158,6 +179,28 @@ export function NewsletterSendForm({
         />
 
         <div>
+          <label className={adminLabelClassName} htmlFor="template">
+            이메일 템플릿
+          </label>
+          <select
+            className={adminFieldClassName}
+            id="template"
+            name="template"
+            onChange={(event) =>
+              setTemplate(event.target.value as NewsletterTemplate)
+            }
+            value={template}
+          >
+            {NEWSLETTER_TEMPLATES.map((option) => (
+              <option key={option} value={option}>
+                {newsletterTemplateLabel(option)}
+              </option>
+            ))}
+          </select>
+          <AdminFieldError message={state.fieldErrors?.template} />
+        </div>
+
+        <div>
           <label className={adminLabelClassName} htmlFor="subject">
             제목
           </label>
@@ -174,12 +217,17 @@ export function NewsletterSendForm({
 
         <div>
           <label className={adminLabelClassName} htmlFor="message">
-            본문
+            {isDigestTemplate ? "인사말" : "본문"}
           </label>
           <textarea
             className={`${adminFieldClassName} min-h-[10rem] resize-y leading-8`}
             id="message"
             name="message"
+            placeholder={
+              isDigestTemplate
+                ? "이번 호 인사말을 짧게 작성해 주세요."
+                : undefined
+            }
             required
             rows={6}
           />
@@ -188,17 +236,26 @@ export function NewsletterSendForm({
 
         <div>
           <label className={adminLabelClassName} htmlFor="related_url">
-            관련 글 URL (선택)
+            {isDigestTemplate ? "이번 글 URL (선택)" : "관련 글 URL (선택)"}
           </label>
           <input
             className={adminFieldClassName}
             id="related_url"
             maxLength={2048}
             name="related_url"
-            placeholder="https://"
+            placeholder={
+              isDigestTemplate
+                ? "https://…/essays/글-slug (비우면 최신 글)"
+                : "https://"
+            }
             type="url"
           />
           <AdminFieldError message={state.fieldErrors?.relatedUrl} />
+          {isDigestTemplate ? (
+            <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+              비우면 최신 공개 글이 이번 글 카드로 들어갑니다.
+            </p>
+          ) : null}
         </div>
 
         <div className="border-t border-line/70 pt-6">
