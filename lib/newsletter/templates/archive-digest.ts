@@ -3,6 +3,7 @@ import { formatCurationDate } from "@/lib/curation/types";
 import type { NewsletterEmailVariant } from "@/lib/newsletter-email/footer";
 import { buildDigestFooterHtml, buildDigestFooterText } from "@/lib/newsletter-email/footer";
 import {
+  DIGEST_BRAND_FONT_FAMILY,
   DIGEST_COLORS,
   DIGEST_FONT_FAMILY,
   DIGEST_SPACING,
@@ -69,7 +70,7 @@ function buildHeaderHtml() {
   return [
     `<header style="margin:0 0 ${DIGEST_SPACING.sectionY};padding-bottom:${DIGEST_SPACING.sectionY};border-bottom:1px solid ${DIGEST_COLORS.line};">`,
     `<p style="margin:0 0 0.625rem;font-family:${DIGEST_FONT_FAMILY};font-size:0.6875rem;letter-spacing:0.18em;text-transform:uppercase;color:${DIGEST_COLORS.accent};">Archive Digest</p>`,
-    `<h1 style="margin:0 0 0.875rem;font-family:${DIGEST_FONT_FAMILY};font-size:2.05rem;font-weight:600;line-height:1.22;color:${DIGEST_COLORS.ink};">${escapeNewsletterHtml(siteConfig.name)}</h1>`,
+    `<h1 style="margin:0 0 0.875rem;font-family:${DIGEST_BRAND_FONT_FAMILY};font-size:2.05rem;font-weight:400;line-height:1.22;color:${DIGEST_COLORS.ink};">${escapeNewsletterHtml(siteConfig.name)}</h1>`,
     `<p style="margin:0;font-family:${DIGEST_FONT_FAMILY};font-size:0.9375rem;line-height:1.75;color:${DIGEST_COLORS.inkMuted};">${escapeNewsletterHtml(DIGEST_TAGLINE)}</p>`,
     `</header>`,
   ].join("");

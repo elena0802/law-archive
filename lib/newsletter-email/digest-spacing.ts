@@ -1,6 +1,9 @@
-/** Email-safe Korean sans-serif stack for Archive Digest. */
+/** Email-safe Korean sans-serif stack for Archive Digest content. */
 export const DIGEST_FONT_FAMILY =
   "'Apple SD Gothic Neo','Malgun Gothic',Arial,sans-serif";
+
+/** Header brand title only — mirrors site serif heading tone in email clients. */
+export const DIGEST_BRAND_FONT_FAMILY = "Georgia,'Times New Roman',serif";
 
 /** Shared Archive Digest spacing tokens (email-safe inline values). */
 export const DIGEST_SPACING = {
