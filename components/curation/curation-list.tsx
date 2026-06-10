@@ -13,7 +13,7 @@ type CurationListProps = {
 export function CurationList({ items }: CurationListProps) {
   if (items.length === 0) {
     return (
-      <p className="text-keep border-t border-line py-8 text-base leading-8 text-ink-muted">
+      <p className="text-keep text-base leading-8 text-ink-muted">
         아직 추천 콘텐츠가 없습니다.
       </p>
     );
@@ -23,13 +23,19 @@ export function CurationList({ items }: CurationListProps) {
     <div>
       {items.map((item) =>
         item.type === "youtube" ? (
-          <article className="border-t border-line py-8" key={item.id}>
+          <article
+            className="border-t border-line py-8 first:border-t-0 first:pt-0"
+            key={item.id}
+          >
             <div className="max-w-3xl">
               <CurationYoutubeFeature item={item} layout="list" />
             </div>
           </article>
         ) : (
-          <article className="border-t border-line py-8" key={item.id}>
+          <article
+            className="border-t border-line py-8 first:border-t-0 first:pt-0"
+            key={item.id}
+          >
             <div className="flex flex-col gap-4 sm:grid sm:grid-cols-[9.5rem_1fr] sm:gap-8">
               <div className="text-sm leading-6 text-ink-muted">
                 <CurationTypeBadge type={item.type} variant="compact" />
