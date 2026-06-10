@@ -38,8 +38,9 @@ export default async function NewsletterPreviewPage() {
         Archive Digest 미리보기
       </h1>
       <p className="text-keep mt-5 max-w-2xl text-base leading-8 text-ink-muted">
-        최근 공개 콘텐츠로 조합한 HTML 이메일 미리보기입니다. 실제 발송 전
-        테스트 메일로 한 번 더 확인해 주세요.
+        최근 공개 콘텐츠로 조합한 HTML 이메일 미리보기입니다. 카드 전체를
+        클릭하면 새 탭에서 링크가 열립니다. 실제 발송 전 테스트 메일로 한 번
+        더 확인해 주세요.
       </p>
       <p className="mt-6">
         <Link

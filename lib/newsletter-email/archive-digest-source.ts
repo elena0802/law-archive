@@ -4,6 +4,8 @@ import type { Essay, EssaySeries } from "@/lib/essays";
 import { getAllEssays, getAllSeries } from "@/lib/essays";
 import { getVisibleCurationItems } from "@/lib/curation/queries";
 import { buildAiResearchTracks } from "@/lib/home-ai-research-tracks";
+import { getAiResearchCoverSrc, getEssayCoverSrc } from "@/lib/home-images";
+import { toDigestAbsoluteImageUrl } from "@/lib/newsletter-email/digest-images";
 import type {
   ArchiveDigestAiNote,
   ArchiveDigestCurationItem,
@@ -28,11 +30,28 @@ function extractEssaySlug(url: string) {
   }
 }
 
+function resolveEssayImageUrl(
+  essay: Essay,
+  siteOrigin: string,
+): { imageUrl: string | null; imageAlt: string } {
+  const coverPath = getEssayCoverSrc(essay.slug);
+
+  return {
+    imageUrl: toDigestAbsoluteImageUrl(coverPath, siteOrigin),
+    imageAlt: essay.title,
+  };
+}
+
 function buildEssayCard(essay: Essay, siteOrigin: string): ArchiveDigestEssayCard {
+  const normalizedOrigin = siteOrigin.replace(/\/$/, "");
+  const { imageUrl, imageAlt } = resolveEssayImageUrl(essay, siteOrigin);
+
   return {
     title: essay.title,
     description: essay.description,
-    url: `${siteOrigin.replace(/\/$/, "")}/essays/${essay.slug}`,
+    url: `${normalizedOrigin}/essays/${essay.slug}`,
+    imageUrl,
+    imageAlt,
   };
 }
 
@@ -56,6 +75,8 @@ function resolveFeaturedEssay(
       title: "이번 글",
       description: "",
       url: trimmedUrl,
+      imageUrl: null,
+      imageAlt: "이번 글",
     };
   }
 
@@ -79,12 +100,19 @@ function resolveAiResearchNote(
     }
 
     const latestEssay = series.essays[0];
+    const trackImagePath = getAiResearchCoverSrc(track.imageKey);
+    const essayImagePath = getEssayCoverSrc(latestEssay.slug);
+    const imageUrl =
+      toDigestAbsoluteImageUrl(trackImagePath, siteOrigin) ??
+      toDigestAbsoluteImageUrl(essayImagePath, siteOrigin);
 
     return {
       title: latestEssay.title,
       description:
         latestEssay.description.trim() || track.description.join(" "),
       url: `${normalizedOrigin}/essays/${latestEssay.slug}`,
+      imageUrl,
+      imageAlt: track.title,
     };
   }
 
@@ -109,6 +137,8 @@ export async function loadArchiveDigestSourceData(
       source: item.source,
       professorNote: item.professorNote,
       url: item.url,
+      imageUrl: toDigestAbsoluteImageUrl(item.thumbnailUrl, siteOrigin),
+      imageAlt: item.title,
     })),
     aiResearchNote: resolveAiResearchNote(allSeries, siteOrigin),
   };

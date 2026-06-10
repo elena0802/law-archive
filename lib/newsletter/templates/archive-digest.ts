@@ -2,6 +2,8 @@ import type { CurationType } from "@/lib/content/db-types";
 import type { NewsletterEmailVariant } from "@/lib/newsletter-email/footer";
 import { buildDigestFooterHtml, buildDigestFooterText } from "@/lib/newsletter-email/footer";
 import {
+  buildDigestCardImage,
+  buildDigestClickableCard,
   escapeNewsletterHtml,
   messageToHtmlParagraphs,
 } from "@/lib/newsletter-email/html-utils";
@@ -15,6 +17,8 @@ export type ArchiveDigestEssayCard = {
   title: string;
   description: string;
   url: string;
+  imageUrl?: string | null;
+  imageAlt?: string;
 };
 
 export type ArchiveDigestCurationItem = {
@@ -23,12 +27,16 @@ export type ArchiveDigestCurationItem = {
   source: string;
   professorNote: string;
   url: string;
+  imageUrl?: string | null;
+  imageAlt?: string;
 };
 
 export type ArchiveDigestAiNote = {
   title: string;
   description: string;
   url: string;
+  imageUrl?: string | null;
+  imageAlt?: string;
 };
 
 export type ArchiveDigestEmailInput = {
@@ -46,13 +54,16 @@ function sectionEyebrow(label: string) {
   return `<p style="margin:0 0 0.75rem;font-size:0.6875rem;letter-spacing:0.14em;text-transform:uppercase;color:#68462d;">${escapeNewsletterHtml(label)}</p>`;
 }
 
-function cardWrapper(innerHtml: string) {
-  return `<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 1rem;border-collapse:separate;border:1px solid #d9cbb7;background-color:#efe7d8;"><tr><td style="padding:1.25rem 1.25rem 1.125rem;">${innerHtml}</td></tr></table>`;
-}
+function cardImageHtml(
+  imageUrl: string | null | undefined,
+  imageAlt: string | undefined,
+  fallbackAlt: string,
+) {
+  if (!imageUrl?.trim()) {
+    return undefined;
+  }
 
-function readLink(url: string, label: string) {
-  const safeUrl = escapeNewsletterHtml(url);
-  return `<p style="margin:1rem 0 0;font-size:0.9375rem;line-height:1.6;"><a href="${safeUrl}" style="color:#68462d;font-weight:600;text-decoration:underline;">${escapeNewsletterHtml(label)}</a></p>`;
+  return buildDigestCardImage(imageUrl.trim(), imageAlt?.trim() || fallbackAlt);
 }
 
 function buildFeaturedEssayHtml(essay: ArchiveDigestEssayCard) {
@@ -60,15 +71,19 @@ function buildFeaturedEssayHtml(essay: ArchiveDigestEssayCard) {
     ? `<p style="margin:0.75rem 0 0;font-size:0.9375rem;line-height:1.75;color:#655d52;">${escapeNewsletterHtml(essay.description)}</p>`
     : "";
 
+  const bodyHtml = [
+    `<h3 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:1.25rem;font-weight:400;line-height:1.4;color:#1d1a15;">${escapeNewsletterHtml(essay.title)}</h3>`,
+    description,
+  ].join("");
+
   return [
     sectionEyebrow("이번 글"),
-    cardWrapper(
-      [
-        `<h3 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:1.25rem;font-weight:400;line-height:1.4;color:#1d1a15;">${escapeNewsletterHtml(essay.title)}</h3>`,
-        description,
-        readLink(essay.url, "글 읽기 →"),
-      ].join(""),
-    ),
+    buildDigestClickableCard({
+      url: essay.url,
+      imageHtml: cardImageHtml(essay.imageUrl, essay.imageAlt, essay.title),
+      bodyHtml,
+      ctaLabel: "글 읽기 →",
+    }),
   ].join("");
 }
 
@@ -96,14 +111,18 @@ function buildCurationHtml(items: readonly ArchiveDigestCurationItem[]) {
         ? `<p style="margin:0.75rem 0 0;font-size:0.9375rem;line-height:1.75;color:#655d52;">${escapeNewsletterHtml(item.professorNote.trim())}</p>`
         : "";
 
-      return cardWrapper(
-        [
-          `<p style="margin:0;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:#68462d;">${escapeNewsletterHtml(typeLabel)}${source}</p>`,
-          `<h3 style="margin:0.75rem 0 0;font-family:Georgia,'Times New Roman',serif;font-size:1.0625rem;font-weight:400;line-height:1.45;color:#1d1a15;">${escapeNewsletterHtml(item.title)}</h3>`,
-          note,
-          readLink(item.url, "외부 링크 →"),
-        ].join(""),
-      );
+      const bodyHtml = [
+        `<p style="margin:0;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:#68462d;">${escapeNewsletterHtml(typeLabel)}${source}</p>`,
+        `<h3 style="margin:0.75rem 0 0;font-family:Georgia,'Times New Roman',serif;font-size:1.0625rem;font-weight:400;line-height:1.45;color:#1d1a15;">${escapeNewsletterHtml(item.title)}</h3>`,
+        note,
+      ].join("");
+
+      return buildDigestClickableCard({
+        url: item.url,
+        imageHtml: cardImageHtml(item.imageUrl, item.imageAlt, item.title),
+        bodyHtml,
+        ctaLabel: "외부 링크 →",
+      });
     })
     .join("");
 
@@ -140,15 +159,19 @@ function buildAiNoteHtml(note: ArchiveDigestAiNote) {
     ? `<p style="margin:0.75rem 0 0;font-size:0.9375rem;line-height:1.75;color:#655d52;">${escapeNewsletterHtml(note.description)}</p>`
     : "";
 
+  const bodyHtml = [
+    `<h3 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:1.25rem;font-weight:400;line-height:1.4;color:#1d1a15;">${escapeNewsletterHtml(note.title)}</h3>`,
+    description,
+  ].join("");
+
   return [
     sectionEyebrow("AI 연구 노트"),
-    cardWrapper(
-      [
-        `<h3 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:1.25rem;font-weight:400;line-height:1.4;color:#1d1a15;">${escapeNewsletterHtml(note.title)}</h3>`,
-        description,
-        readLink(note.url, "연구 노트 보기 →"),
-      ].join(""),
-    ),
+    buildDigestClickableCard({
+      url: note.url,
+      imageHtml: cardImageHtml(note.imageUrl, note.imageAlt, note.title),
+      bodyHtml,
+      ctaLabel: "연구 노트 보기 →",
+    }),
   ].join("");
 }
 
