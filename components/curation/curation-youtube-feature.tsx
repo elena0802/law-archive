@@ -28,13 +28,11 @@ export function CurationYoutubeFeature({
   return (
     <>
       <button
-        className={`group flex h-full w-full flex-col overflow-hidden border border-line/80 bg-paper text-left transition-colors hover:border-ink-muted/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
-          isHome ? "" : ""
-        }`}
+        className="group flex h-full w-full cursor-pointer flex-col overflow-hidden border border-line/80 bg-paper text-left transition-colors hover:border-ink-muted/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         onClick={() => setOpen(true)}
         type="button"
       >
-        <div className="relative aspect-video overflow-hidden bg-paper-muted">
+        <div className="relative aspect-video cursor-pointer overflow-hidden bg-paper-muted">
           {item.thumbnailUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- external admin-provided thumbnail URLs
             <img

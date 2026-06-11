@@ -12,19 +12,21 @@ export function HomeHero() {
     >
       <div className="mx-auto grid max-w-wide items-stretch gap-6 px-5 py-[clamp(2rem,5vw,4rem)] sm:px-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-10 lg:px-10 xl:grid-cols-[minmax(0,1.12fr)_minmax(0,1fr)]">
         <figure className="m-0 flex flex-col">
-          <div className="overflow-hidden border border-line bg-paper shadow-[inset_0_0_0_1px_rgba(248,244,234,0.6)]">
-            <div className="relative aspect-[6/5] max-h-[min(52vw,14rem)] w-full sm:max-h-[min(48vw,16rem)] lg:aspect-auto lg:max-h-none lg:min-h-[26rem]">
-              <Image
-                alt={hero.imageAlt}
-                className="h-full w-full object-cover object-[42%_38%] lg:object-[45%_40%]"
-                height={hero.imageHeight}
-                priority
-                quality={90}
-                sizes="(min-width: 1280px) 580px, (min-width: 1024px) 48vw, 100vw"
-                src={hero.image}
-                width={hero.imageWidth}
-              />
-            </div>
+          <div className="relative aspect-[6/5] max-h-[min(52vw,14rem)] w-full overflow-hidden sm:max-h-[min(48vw,16rem)] lg:aspect-auto lg:max-h-none lg:min-h-[26rem]">
+            <Image
+              alt={hero.imageAlt}
+              className="h-full w-full object-cover object-[42%_38%] mix-blend-multiply lg:object-[45%_40%]"
+              height={hero.imageHeight}
+              priority
+              quality={90}
+              sizes="(min-width: 1280px) 580px, (min-width: 1024px) 48vw, 100vw"
+              src={hero.image}
+              width={hero.imageWidth}
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 shadow-[inset_0_0_28px_14px_var(--paper-muted)]"
+            />
           </div>
           <figcaption className="mt-2.5 text-center text-[0.8125rem] tracking-wide text-ink-muted sm:mt-3">
             {hero.imageCaption}

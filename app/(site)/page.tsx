@@ -45,7 +45,7 @@ const RECENT_ESSAY_COUNT = 3;
 const REPRESENTATIVE_RESEARCH_PREVIEW_COUNT = 3;
 
 const HOME_SECTION_CLASS =
-  "border-t border-line !py-[clamp(4.75rem,10vw,9.5rem)]";
+  "border-t border-line !py-[clamp(2.75rem,5.5vw,5rem)]";
 
 export default async function Home() {
   const curationBundle = getFeaturedCuration().then(async (featured) => ({
