@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleCard } from "@/components/article-card";
 import { Section } from "@/components/section";
-import { formatEssayDate, getCategoryBySlug } from "@/lib/essays";
 import { resolveCategorySlugParam } from "@/lib/content/category-slug";
+import { formatEssayDate, getCategoryBySlug } from "@/lib/essays";
 import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
@@ -11,8 +11,7 @@ type CategoryPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 60;
 export const dynamicParams = true;
 
 export async function generateMetadata({

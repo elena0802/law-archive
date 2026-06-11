@@ -5,8 +5,7 @@ import { getVisibleCurationItems } from "@/lib/curation/queries";
 import { curationSectionDescription } from "@/lib/curation/types";
 import { siteConfig } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 60;
 
 const pageDescription = curationSectionDescription;
 

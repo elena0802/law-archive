@@ -21,8 +21,7 @@ import {
   sortByPublicationNumber,
 } from "@/src/lib/research";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 60;
 
 const homeTitle = `${scholarTitle} | ${siteConfig.name}`;
 
@@ -49,13 +48,18 @@ const HOME_SECTION_CLASS =
   "border-t border-line !py-[clamp(4.75rem,10vw,9.5rem)]";
 
 export default async function Home() {
-  const [allSeries, essays, featuredSeries, featuredCuration] = await Promise.all([
-    getAllSeries(),
-    getAllEssays(),
-    getFeaturedSeries(),
-    getFeaturedCuration(),
-  ]);
-  const curationRecent = await getHomeCurationRecent(featuredCuration?.id, 4);
+  const curationBundle = getFeaturedCuration().then(async (featured) => ({
+    featured,
+    recent: await getHomeCurationRecent(featured?.id, 4),
+  }));
+
+  const [allSeries, essays, featuredSeries, { featured: featuredCuration, recent: curationRecent }] =
+    await Promise.all([
+      getAllSeries(),
+      getAllEssays(),
+      getFeaturedSeries(),
+      curationBundle,
+    ]);
 
   const recentEssays = essays.slice(0, RECENT_ESSAY_COUNT);
   const representativeResearchPreview = sortByPublicationNumber(researchItems)

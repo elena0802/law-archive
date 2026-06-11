@@ -96,11 +96,11 @@ function buildCommentThreads(comments: Comment[]): CommentThread[] {
 }
 
 async function listApprovedCommentRowsByEssaySlug(essaySlug: string) {
-  const supabase = await createSupabaseServerClient();
-
-  if (!supabase) {
+  if (!isSupabaseConfigured()) {
     return [];
   }
+
+  const supabase = requireSupabaseServiceRoleClient();
 
   const { data, error } = await supabase
     .from("comments")

@@ -4,8 +4,7 @@ import { Section } from "@/components/section";
 import { getAllSeries } from "@/lib/essays";
 import { siteConfig } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "연재",

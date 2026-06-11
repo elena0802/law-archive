@@ -95,11 +95,11 @@ export function isGuestbookAvailable() {
 }
 
 export async function listApprovedGuestbookEntries(): Promise<GuestbookEntry[]> {
-  const supabase = await createSupabaseServerClient();
-
-  if (!supabase) {
+  if (!isSupabaseConfigured()) {
     return [];
   }
+
+  const supabase = requireSupabaseServiceRoleClient();
 
   const { data, error } = await supabase
     .from("guestbook_entries")

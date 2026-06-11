@@ -9,6 +9,8 @@ import {
 } from "@/lib/guestbook";
 import { siteConfig } from "@/lib/site";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "안부의 글",
   description:
