@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ArticleCard } from "@/components/article-card";
 import { Section } from "@/components/section";
 import { formatEssayDate, getAllEssays } from "@/lib/essays";
+import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 export const revalidate = 60;
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
     url: "/essays",
     locale: "ko_KR",
     siteName: siteConfig.name,
+    images: buildDefaultOpenGraphImages(),
   },
 };
 

@@ -9,7 +9,7 @@ import { ProfileSelectedBooks } from "@/components/profile-selected-books";
 import { Section } from "@/components/section";
 import { scholarProfile } from "@/lib/profile";
 import { researchPagePath } from "@/lib/research-record";
-import { buildPersonJsonLd } from "@/lib/seo";
+import { buildDefaultOpenGraphImages, buildPersonJsonLd } from "@/lib/seo";
 import { scholarTitle, siteConfig } from "@/lib/site";
 
 const profile = scholarProfile;
@@ -29,6 +29,7 @@ export const metadata: Metadata = {
     url: "/about",
     locale: "ko_KR",
     siteName: siteConfig.name,
+    images: buildDefaultOpenGraphImages(),
   },
 };
 

@@ -43,6 +43,10 @@ export const metadata: Metadata = {
     type: "website",
     images: buildDefaultOpenGraphImages(),
   },
+  twitter: {
+    card: "summary_large_image",
+    images: buildDefaultOpenGraphImages(),
+  },
   robots: {
     index: true,
     follow: true,

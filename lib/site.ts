@@ -36,9 +36,9 @@ export const siteConfig = {
   },
   og: {
     default: {
-      path: "/og/default.jpg",
-      width: 1730,
-      height: 909,
+      path: "/og/default-og.jpg",
+      width: 1728,
+      height: 910,
       alt: "형사법 아카이브 — 한 학자의 디지털 서재",
     },
   },

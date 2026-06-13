@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ScholarDnaResultView } from "@/components/scholar-dna-result-view";
 import { Section } from "@/components/section";
+import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { getScholarDnaAnalysisById } from "@/lib/scholar-dna";
 import { getSiteOrigin, siteConfig } from "@/lib/site";
 
@@ -40,6 +41,7 @@ export async function generateMetadata({
         url: `/scholar-dna/${id}`,
         locale: "ko_KR",
         siteName: siteConfig.name,
+        images: buildDefaultOpenGraphImages(),
       },
     };
   } catch {

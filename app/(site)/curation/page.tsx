@@ -3,6 +3,7 @@ import { CurationList } from "@/components/curation/curation-list";
 import { Section } from "@/components/section";
 import { getVisibleCurationItems } from "@/lib/curation/queries";
 import { curationSectionDescription } from "@/lib/curation/types";
+import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 export const revalidate = 60;
@@ -21,6 +22,7 @@ export const metadata: Metadata = {
     url: "/curation",
     locale: "ko_KR",
     siteName: siteConfig.name,
+    images: buildDefaultOpenGraphImages(),
   },
 };
 

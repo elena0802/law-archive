@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ScholarDnaForm } from "@/components/scholar-dna-form";
 import { Section } from "@/components/section";
+import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { isScholarDnaAvailable } from "@/lib/scholar-dna";
 import { siteConfig } from "@/lib/site";
 
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
     url: "/scholar-dna",
     locale: "ko_KR",
     siteName: siteConfig.name,
+    images: buildDefaultOpenGraphImages(),
   },
 };
 

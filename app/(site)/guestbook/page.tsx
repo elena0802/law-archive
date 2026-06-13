@@ -7,6 +7,7 @@ import {
   listApprovedGuestbookEntries,
   type GuestbookEntry,
 } from "@/lib/guestbook";
+import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 export const revalidate = 60;
@@ -25,6 +26,7 @@ export const metadata: Metadata = {
     url: "/guestbook",
     locale: "ko_KR",
     siteName: siteConfig.name,
+    images: buildDefaultOpenGraphImages(),
   },
 };
 

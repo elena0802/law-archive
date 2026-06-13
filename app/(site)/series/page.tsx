@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SeriesVolumeCard } from "@/components/series-volume-card";
 import { Section } from "@/components/section";
 import { getAllSeries } from "@/lib/essays";
+import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 export const revalidate = 60;
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
       url: "/series",
       locale: "ko_KR",
       siteName: siteConfig.name,
+      images: buildDefaultOpenGraphImages(),
     },
 };
 

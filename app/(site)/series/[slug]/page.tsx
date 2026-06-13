@@ -5,6 +5,7 @@ import { Section } from "@/components/section";
 import { SeriesToc } from "@/components/series-toc";
 import { SeriesVolumeStats } from "@/components/series-volume-stats";
 import { getSeriesBySlug } from "@/lib/essays";
+import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 type SeriesPageProps = {
@@ -38,6 +39,7 @@ export async function generateMetadata({
       url: `/series/${series.slug}`,
       locale: "ko_KR",
       siteName: siteConfig.name,
+      images: buildDefaultOpenGraphImages(),
     },
   };
 }
