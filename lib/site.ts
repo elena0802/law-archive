@@ -28,6 +28,7 @@ export const siteConfig = {
     { href: "/essays", label: "글", match: "prefix" as const },
     { href: "/series", label: "연재", match: "prefix" as const },
     { href: "/research", label: "연구", match: "prefix" as const },
+    { href: "/news", label: "소식", match: "prefix" as const },
     { href: "/about", label: "학자 소개", match: "exact" as const },
     { href: "/guestbook", label: "안부의 글", match: "exact" as const },
   ],

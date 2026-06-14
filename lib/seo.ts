@@ -17,6 +17,7 @@ export const publicSitemapStaticPaths = [
   "/about",
   "/scholar-dna",
   "/curation",
+  "/news",
 ] as const;
 
 export function toSitemapAbsoluteUrl(origin: string, path: string) {
