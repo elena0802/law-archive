@@ -14,7 +14,7 @@ import {
   getFeaturedCuration,
   getHomeCurationRecent,
 } from "@/lib/curation/queries";
-import { getRecentNewsItems } from "@/lib/news/queries";
+import { getFeaturedNewsItem, getRecentNewsItems } from "@/lib/news/queries";
 import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { scholarTitle, siteConfig } from "@/lib/site";
 import { researchItems } from "@/src/data/research";
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
 };
 
 const RECENT_ESSAY_COUNT = 3;
-const RECENT_NEWS_COUNT = 3;
+const RECENT_NEWS_COUNT = 4;
 const REPRESENTATIVE_RESEARCH_PREVIEW_COUNT = 3;
 
 const HOME_SECTION_CLASS =
@@ -56,11 +56,12 @@ export default async function Home() {
     recent: await getHomeCurationRecent(featured?.id, 4),
   }));
 
-  const [allSeries, essays, featuredSeries, recentNews, { featured: featuredCuration, recent: curationRecent }] =
+  const [allSeries, essays, featuredSeries, featuredNews, recentNews, { featured: featuredCuration, recent: curationRecent }] =
     await Promise.all([
       getAllSeries(),
       getAllEssays(),
       getFeaturedSeries(),
+      getFeaturedNewsItem(),
       getRecentNewsItems(RECENT_NEWS_COUNT),
       curationBundle,
     ]);
@@ -76,8 +77,8 @@ export default async function Home() {
     <>
       <HomeHero />
 
-      <Section size="reading" className={HOME_SECTION_CLASS}>
-        <HomeRecentActivity items={recentNews} />
+      <Section size="wide" className={HOME_SECTION_CLASS}>
+        <HomeRecentActivity featured={featuredNews} items={recentNews} />
       </Section>
 
       <Section size="wide" className={HOME_SECTION_CLASS}>
