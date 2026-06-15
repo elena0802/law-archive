@@ -31,6 +31,11 @@ export async function getRecentNewsItems(limit = 3): Promise<NewsItem[]> {
   return items.slice(0, limit);
 }
 
+export async function getFeaturedNewsItem(): Promise<NewsItem | null> {
+  const items = await getNewsItems();
+  return items.find((item) => item.featured === true) ?? null;
+}
+
 export async function getNewsItemsGroupedByMonth(): Promise<NewsMonthGroup[]> {
   const items = await getNewsItems();
   const groups = new Map<string, NewsMonthGroup>();

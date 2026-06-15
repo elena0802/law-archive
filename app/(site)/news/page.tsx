@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { NewsActivityLog } from "@/components/news/news-activity-log";
+import { NewsPageContent } from "@/components/news/news-page-content";
 import { Section } from "@/components/section";
-import { getNewsItemsGroupedByMonth } from "@/lib/news/queries";
+import { getFeaturedNewsItem, getNewsItemsGroupedByMonth } from "@/lib/news/queries";
 import { newsPageDescription } from "@/lib/news/types";
 import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
@@ -25,7 +25,10 @@ export const metadata: Metadata = {
 };
 
 export default async function NewsPage() {
-  const groups = await getNewsItemsGroupedByMonth();
+  const [groups, featured] = await Promise.all([
+    getNewsItemsGroupedByMonth(),
+    getFeaturedNewsItem(),
+  ]);
 
   return (
     <>
@@ -41,8 +44,8 @@ export default async function NewsPage() {
         </p>
       </Section>
 
-      <Section size="reading" className="pt-0 pb-section">
-        <NewsActivityLog groups={groups} />
+      <Section size="wide" className="pt-0 pb-section">
+        <NewsPageContent featured={featured} groups={groups} />
       </Section>
     </>
   );

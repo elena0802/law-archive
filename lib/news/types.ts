@@ -18,6 +18,9 @@ export type NewsItem = {
   category: NewsCategory;
   title: string;
   summary: string;
+  featured?: boolean;
+  image?: string;
+  link?: string;
 };
 
 export type NewsMonthGroup = {
