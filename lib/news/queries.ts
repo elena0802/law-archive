@@ -22,6 +22,15 @@ export async function getNewsItems(): Promise<NewsItem[]> {
   );
 }
 
+export async function getRecentNewsItems(limit = 3): Promise<NewsItem[]> {
+  if (limit <= 0) {
+    return [];
+  }
+
+  const items = await getNewsItems();
+  return items.slice(0, limit);
+}
+
 export async function getNewsItemsGroupedByMonth(): Promise<NewsMonthGroup[]> {
   const items = await getNewsItems();
   const groups = new Map<string, NewsMonthGroup>();

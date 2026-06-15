@@ -4,6 +4,7 @@ import { HomeAiNotes } from "@/components/home/home-ai-notes";
 import { HomeCurationPreview } from "@/components/home/home-curation-preview";
 import { HomeFeaturedSeries } from "@/components/home/home-featured-series";
 import { HomeNewsletter } from "@/components/home/home-newsletter";
+import { HomeRecentActivity } from "@/components/home/home-recent-activity";
 import { HomeRecentWriting } from "@/components/home/home-recent-writing";
 import { HomeResearchArchiveSummary } from "@/components/home/home-research-archive-summary";
 import { Section } from "@/components/section";
@@ -13,6 +14,7 @@ import {
   getFeaturedCuration,
   getHomeCurationRecent,
 } from "@/lib/curation/queries";
+import { getRecentNewsItems } from "@/lib/news/queries";
 import { buildDefaultOpenGraphImages } from "@/lib/seo";
 import { scholarTitle, siteConfig } from "@/lib/site";
 import { researchItems } from "@/src/data/research";
@@ -42,6 +44,7 @@ export const metadata: Metadata = {
 };
 
 const RECENT_ESSAY_COUNT = 3;
+const RECENT_NEWS_COUNT = 3;
 const REPRESENTATIVE_RESEARCH_PREVIEW_COUNT = 3;
 
 const HOME_SECTION_CLASS =
@@ -53,11 +56,12 @@ export default async function Home() {
     recent: await getHomeCurationRecent(featured?.id, 4),
   }));
 
-  const [allSeries, essays, featuredSeries, { featured: featuredCuration, recent: curationRecent }] =
+  const [allSeries, essays, featuredSeries, recentNews, { featured: featuredCuration, recent: curationRecent }] =
     await Promise.all([
       getAllSeries(),
       getAllEssays(),
       getFeaturedSeries(),
+      getRecentNewsItems(RECENT_NEWS_COUNT),
       curationBundle,
     ]);
 
@@ -71,6 +75,10 @@ export default async function Home() {
   return (
     <>
       <HomeHero />
+
+      <Section size="reading" className={HOME_SECTION_CLASS}>
+        <HomeRecentActivity items={recentNews} />
+      </Section>
 
       <Section size="wide" className={HOME_SECTION_CLASS}>
         <HomeRecentWriting essays={recentEssays} />
