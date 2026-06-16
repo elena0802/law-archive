@@ -1,6 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
-import { homeSectionLinkClassName } from "@/components/home/home-section-link";
+import { NewsFeaturedActivityCta } from "@/components/news/news-featured-activity-cta";
 import { NewsCategoryLabel } from "@/components/news/news-category-label";
 import type { NewsItem } from "@/lib/news/types";
 import { formatNewsDisplayDate } from "@/lib/news/types";
@@ -61,7 +60,6 @@ export function NewsFeaturedActivityPanel({
   const summary = item.summary.trim();
   const imageSrc = item.image?.trim();
   const actionLink = item.link?.trim();
-  const isExternalLink = actionLink?.startsWith("http") ?? false;
 
   return (
     <article
@@ -145,17 +143,13 @@ export function NewsFeaturedActivityPanel({
               {summary}
             </p>
           ) : null}
-          {showCta && actionLink ? (
-            <p className={compact ? "mt-3 sm:mt-4" : "mt-4 sm:mt-5"}>
-              <Link
-                className={homeSectionLinkClassName}
-                href={actionLink}
-                rel={isExternalLink ? "noopener noreferrer" : undefined}
-                target={isExternalLink ? "_blank" : undefined}
-              >
-                자세히 보기 →
-              </Link>
-            </p>
+          {showCta ? (
+            <NewsFeaturedActivityCta
+              actionLink={actionLink}
+              className={compact ? "mt-3 sm:mt-4" : "mt-4 sm:mt-5"}
+              imageSrc={imageSrc}
+              title={item.title}
+            />
           ) : null}
         </div>
       </div>

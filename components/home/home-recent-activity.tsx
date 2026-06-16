@@ -54,7 +54,6 @@ function HomeFeaturedHighlight({ item }: { item: NewsItem }) {
   return (
     <NewsFeaturedActivityPanel
       item={item}
-      showCta={false}
       snug
       titleId={`home-featured-title-${item.id}`}
       variant="compact"
