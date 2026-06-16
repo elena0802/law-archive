@@ -229,3 +229,40 @@ export type ProfessorCurationItemInsert = {
 };
 
 export type ProfessorCurationItemUpdate = Partial<ProfessorCurationItemInsert>;
+
+export type NewsCategory =
+  | "학회"
+  | "학술제"
+  | "강연"
+  | "연재"
+  | "기고"
+  | "인터뷰"
+  | "사이트"
+  | "프로젝트";
+
+export type NewsItemRow = {
+  id: string;
+  date: string;
+  category: NewsCategory;
+  title: string;
+  summary: string;
+  image_url: string | null;
+  link_url: string | null;
+  featured: boolean;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type NewsItemInsert = {
+  date: string;
+  category: NewsCategory;
+  title: string;
+  summary?: string;
+  image_url?: string | null;
+  link_url?: string | null;
+  featured?: boolean;
+  published?: boolean;
+};
+
+export type NewsItemUpdate = Partial<NewsItemInsert>;

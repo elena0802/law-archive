@@ -1,4 +1,5 @@
 import { newsItems } from "@/lib/news/items";
+import { createSupabaseServerClient } from "@/lib/supabase/server-ssr";
 import type { NewsItem, NewsMonthGroup } from "@/lib/news/types";
 
 function formatMonthLabel(date: string) {
@@ -17,9 +18,43 @@ function getMonthKey(date: string) {
 
 /** Public read path — swap body for Supabase when admin CMS lands. */
 export async function getNewsItems(): Promise<NewsItem[]> {
-  return [...newsItems].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
+  const fallback = [...newsItems]
+    .filter((item) => item.published !== false)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return fallback;
+  }
+
+  const { data, error } = await supabase
+    .from("news_items")
+    .select("*")
+    .order("date", { ascending: false })
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[getNewsItems] supabase read failed", { error });
+    return fallback;
+  }
+
+  if (!data || data.length === 0) {
+    return fallback;
+  }
+
+  return data
+    .filter((row) => row.published)
+    .map((row) => ({
+      id: row.id,
+      date: row.date,
+      category: row.category,
+      title: row.title,
+      summary: row.summary,
+      featured: row.featured,
+      published: row.published,
+      image: row.image_url ?? undefined,
+      link: row.link_url ?? undefined,
+    }));
 }
 
 export async function getRecentNewsItems(limit = 3): Promise<NewsItem[]> {

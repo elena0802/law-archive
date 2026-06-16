@@ -2,7 +2,6 @@ export const NEWS_CATEGORIES = [
   "학회",
   "학술제",
   "강연",
-  "연구",
   "연재",
   "기고",
   "인터뷰",
@@ -19,6 +18,7 @@ export type NewsItem = {
   title: string;
   summary: string;
   featured?: boolean;
+  published?: boolean;
   image?: string;
   link?: string;
 };

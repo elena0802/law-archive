@@ -7,6 +7,9 @@ import type {
   EssayUpdate,
   GuestbookEntryInsert,
   GuestbookEntryRow,
+  NewsItemInsert,
+  NewsItemRow,
+  NewsItemUpdate,
   NewsletterSendInsert,
   NewsletterSendRow,
   NewsletterSubscriberInsert,
@@ -94,6 +97,12 @@ export type Database = {
         Row: ProfessorCurationItemRow;
         Insert: ProfessorCurationItemInsert;
         Update: ProfessorCurationItemUpdate;
+        Relationships: [];
+      };
+      news_items: {
+        Row: NewsItemRow;
+        Insert: NewsItemInsert;
+        Update: NewsItemUpdate;
         Relationships: [];
       };
     };
