@@ -2,6 +2,7 @@ import "server-only";
 
 import type { ProfessorCurationItemRow } from "@/lib/content/db-types";
 import { resolveCurationThumbnail } from "@/lib/curation/youtube";
+import { buildHomeCurationPreview } from "@/lib/curation/home-preview";
 import type { CurationItem } from "@/lib/curation/types";
 import { requireSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
@@ -42,6 +43,11 @@ export async function getVisibleCurationItems(): Promise<CurationItem[]> {
   }
 
   return (data ?? []).map(mapCurationRow);
+}
+
+export async function getHomeCurationPreview() {
+  const items = await getVisibleCurationItems();
+  return buildHomeCurationPreview(items);
 }
 
 export async function getFeaturedCuration(): Promise<CurationItem | null> {

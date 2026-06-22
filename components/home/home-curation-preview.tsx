@@ -1,17 +1,20 @@
-import { CurationCompactItem } from "@/components/curation/curation-compact-item";
-import { CurationFeaturedItem } from "@/components/curation/curation-featured-item";
+import { HomeCurationFeaturedCard } from "@/components/home/home-curation-featured-card";
+import { HomeCurationRecentList } from "@/components/home/home-curation-recent-list";
 import { HomeSectionHeader } from "@/components/home/home-section-header";
 import { HomeSectionLink } from "@/components/home/home-section-link";
-import type { CurationItem } from "@/lib/curation/types";
+import type { HomeCurationPreviewData } from "@/lib/curation/home-preview";
 import { curationPagePath, curationSectionDescription } from "@/lib/curation/types";
 
-type HomeCurationPreviewProps = {
-  featured: CurationItem | null;
-  recent: readonly CurationItem[];
-};
+type HomeCurationPreviewProps = HomeCurationPreviewData;
 
-export function HomeCurationPreview({ featured, recent }: HomeCurationPreviewProps) {
-  const hasContent = featured || recent.length > 0;
+export function HomeCurationPreview({
+  featuredSlots,
+  recent,
+}: HomeCurationPreviewProps) {
+  const featuredItems = featuredSlots.filter(
+    (item): item is NonNullable<typeof item> => item !== null,
+  );
+  const hasContent = featuredItems.length > 0 || recent.length > 0;
 
   return (
     <section aria-labelledby="home-curation-heading">
@@ -22,26 +25,23 @@ export function HomeCurationPreview({ featured, recent }: HomeCurationPreviewPro
       />
 
       {hasContent ? (
-        <div className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-10">
-          <div className="min-w-0">
-            {featured ? (
-              <CurationFeaturedItem item={featured} />
-            ) : (
-              <div className="flex h-full min-h-[18rem] items-center justify-center border border-line/80 bg-paper-muted/40 px-6 py-10 text-center text-base leading-8 text-ink-muted">
-                대표 콘텐츠가 아직 없습니다.
-              </div>
-            )}
-          </div>
+        <div className="mt-12">
+          {featuredItems.length > 0 ? (
+            <div className="grid gap-6 sm:gap-8 lg:grid-cols-2">
+              {featuredItems.map((item) => (
+                <HomeCurationFeaturedCard item={item} key={item.id} />
+              ))}
+            </div>
+          ) : null}
 
-          <div className="flex min-w-0 flex-col gap-3 sm:gap-3.5">
-            {recent.length > 0 ? (
-              recent.map((item) => <CurationCompactItem item={item} key={item.id} />)
-            ) : (
-              <div className="flex flex-1 items-center justify-center border border-line/80 bg-paper px-6 py-10 text-center text-base leading-8 text-ink-muted">
-                최신 추천이 아직 없습니다.
-              </div>
-            )}
-          </div>
+          {recent.length > 0 ? (
+            <div className={featuredItems.length > 0 ? "mt-12" : ""}>
+              <h3 className="text-keep font-serif text-xl text-ink sm:text-[1.35rem]">
+                최근 추천
+              </h3>
+              <HomeCurationRecentList items={recent} />
+            </div>
+          ) : null}
         </div>
       ) : (
         <p className="mt-12 border border-line/80 px-6 py-10 text-base leading-8 text-ink-muted">

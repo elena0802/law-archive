@@ -11,8 +11,7 @@ import { Section } from "@/components/section";
 import { getAllEssays, getAllSeries, getFeaturedSeries } from "@/lib/essays";
 import { buildAiResearchTracks } from "@/lib/home-ai-research-tracks";
 import {
-  getFeaturedCuration,
-  getHomeCurationRecent,
+  getHomeCurationPreview,
 } from "@/lib/curation/queries";
 import { getFeaturedNewsItem, getRecentNewsItems } from "@/lib/news/queries";
 import { buildDefaultOpenGraphImages } from "@/lib/seo";
@@ -51,19 +50,14 @@ const HOME_SECTION_CLASS =
   "border-t border-line !py-[clamp(2.75rem,5.5vw,5rem)]";
 
 export default async function Home() {
-  const curationBundle = getFeaturedCuration().then(async (featured) => ({
-    featured,
-    recent: await getHomeCurationRecent(featured?.id, 4),
-  }));
-
-  const [allSeries, essays, featuredSeries, featuredNews, recentNews, { featured: featuredCuration, recent: curationRecent }] =
+  const [allSeries, essays, featuredSeries, featuredNews, recentNews, curationPreview] =
     await Promise.all([
       getAllSeries(),
       getAllEssays(),
       getFeaturedSeries(),
       getFeaturedNewsItem(),
       getRecentNewsItems(RECENT_NEWS_COUNT),
-      curationBundle,
+      getHomeCurationPreview(),
     ]);
 
   const recentEssays = essays.slice(0, RECENT_ESSAY_COUNT);
@@ -86,7 +80,7 @@ export default async function Home() {
       </Section>
 
       <Section size="wide" className={HOME_SECTION_CLASS}>
-        <HomeCurationPreview featured={featuredCuration} recent={curationRecent} />
+        <HomeCurationPreview {...curationPreview} />
       </Section>
 
       <Section

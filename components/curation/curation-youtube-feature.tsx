@@ -28,11 +28,11 @@ export function CurationYoutubeFeature({
   return (
     <>
       <button
-        className="group flex h-full w-full cursor-pointer flex-col overflow-hidden border border-line/80 bg-paper text-left transition-colors hover:border-ink-muted/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+        className="group flex w-full cursor-pointer flex-col overflow-hidden border border-line/80 bg-paper text-left transition-colors hover:border-ink-muted/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         onClick={() => setOpen(true)}
         type="button"
       >
-        <div className="relative aspect-video cursor-pointer overflow-hidden bg-paper-muted">
+        <div className="relative aspect-video cursor-pointer overflow-hidden bg-paper-muted lg:aspect-[16/7.65]">
           {item.thumbnailUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- external admin-provided thumbnail URLs
             <img
@@ -51,7 +51,7 @@ export function CurationYoutubeFeature({
             </span>
           </span>
         </div>
-        <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <div className={`flex flex-col ${isHome ? "p-4 sm:p-5" : "flex-1 p-5 sm:p-6"}`}>
           <div className="flex flex-wrap items-center gap-2.5">
             <CurationTypeBadge
               type={item.type}
@@ -70,7 +70,11 @@ export function CurationYoutubeFeature({
           >
             {item.title}
           </h3>
-          <CurationProfessorNote className="mt-3" lines={2} note={item.professorNote} />
+          <CurationProfessorNote
+            className={isHome ? "mt-2.5" : "mt-3"}
+            lines={2}
+            note={item.professorNote}
+          />
         </div>
       </button>
 

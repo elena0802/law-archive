@@ -21,15 +21,15 @@ export function CurationLinkCard({
 
   return (
     <a
-      className={`group flex h-full flex-col border border-line/80 bg-paper transition-colors hover:border-ink-muted/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
-        featured ? "overflow-hidden" : "p-5 sm:p-6"
+      className={`group flex flex-col border border-line/80 bg-paper transition-colors hover:border-ink-muted/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
+        featured ? "overflow-hidden" : "h-full p-5 sm:p-6"
       }`}
       href={item.url}
       rel="noopener noreferrer"
       target="_blank"
     >
       {featured && item.thumbnailUrl ? (
-        <div className="relative aspect-[5/3] overflow-hidden bg-paper-muted">
+        <div className="relative aspect-[5/3] overflow-hidden bg-paper-muted lg:aspect-[5/2.55]">
           {/* eslint-disable-next-line @next/next/no-img-element -- external admin-provided thumbnail URLs */}
           <img
             alt=""
@@ -39,7 +39,7 @@ export function CurationLinkCard({
         </div>
       ) : null}
 
-      <div className={`flex flex-1 flex-col ${featured ? "p-5 sm:p-6" : ""}`}>
+      <div className={`flex flex-col ${featured ? "p-4 sm:p-5" : "flex-1"}`}>
         <div className="flex items-start gap-4">
           {item.thumbnailUrl && !compact && !featured ? (
             <div className="relative hidden h-16 w-24 shrink-0 overflow-hidden bg-paper-muted sm:block">
@@ -71,12 +71,14 @@ export function CurationLinkCard({
               {item.title}
             </h3>
             <CurationProfessorNote
-              className="mt-3"
+              className={featured ? "mt-2.5" : "mt-3"}
               lines={featured ? 2 : compact ? 2 : 3}
               note={item.professorNote}
             />
             {!compact ? (
-              <p className="mt-4 text-sm text-accent">외부 링크로 이동 →</p>
+              <p className={`text-sm text-accent ${featured ? "mt-3" : "mt-4"}`}>
+                외부 링크로 이동 →
+              </p>
             ) : null}
           </div>
         </div>
