@@ -3,9 +3,25 @@
 import { redirect } from "next/navigation";
 import { getAdminNewsItemById } from "@/lib/admin/news";
 import type { EssayActionState } from "@/lib/admin/essay-action-state";
+import {
+  type NewsImageUploadResult,
+  uploadNewsImageFile,
+} from "@/lib/admin/news-image-upload";
 import { parseNewsForm, type NewsFormValues } from "@/lib/admin/parse-news-form";
 import { requireEditorSupabase } from "@/lib/admin/require-editor";
 import { revalidatePublicNewsPaths } from "@/lib/content/revalidate-news-paths";
+
+export async function uploadNewsImage(formData: FormData): Promise<NewsImageUploadResult> {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    return { ok: false, message: "업로드할 이미지 파일을 선택해 주세요." };
+  }
+
+  const newsItemId = formData.get("newsItemId");
+  const itemId = typeof newsItemId === "string" && newsItemId.trim() ? newsItemId.trim() : undefined;
+
+  return uploadNewsImageFile(file, itemId);
+}
 
 function mapFormToInsert(values: NewsFormValues) {
   return {

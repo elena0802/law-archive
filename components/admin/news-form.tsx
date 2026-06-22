@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { uploadNewsImage } from "@/app/(admin)/admin/news/actions";
 import {
   adminFieldClassName,
   adminLabelClassName,
@@ -34,7 +35,38 @@ export function NewsForm({
   const [state, formAction, isPending] = useActionState(action, essayActionIdleState);
   const [featured, setFeatured] = useState(initialValues.featured);
   const [published, setPublished] = useState(initialValues.published);
+  const [imageUrl, setImageUrl] = useState(initialValues.image);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const fieldErrors = state.fieldErrors ?? {};
+
+  async function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    setUploadError(null);
+    setIsUploading(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    if (itemId) {
+      formData.append("newsItemId", itemId);
+    }
+
+    const result = await uploadNewsImage(formData);
+    setIsUploading(false);
+
+    if (!result.ok) {
+      setUploadError(result.message);
+      return;
+    }
+
+    setImageUrl(result.url);
+  }
 
   return (
     <form action={formAction} className="mx-auto mt-10 max-w-reading space-y-10">
@@ -115,18 +147,53 @@ export function NewsForm({
         </div>
 
         <div className="sm:col-span-2">
+          <label className={adminLabelClassName} htmlFor="news-image-upload">
+            이미지 업로드
+          </label>
+          <input
+            accept="image/jpeg,image/png,image/webp"
+            className={`${adminFieldClassName} file:mr-4 file:rounded file:border-0 file:bg-paper-muted file:px-3 file:py-2 file:text-sm file:text-ink`}
+            disabled={isUploading}
+            id="news-image-upload"
+            onChange={handleImageUpload}
+            type="file"
+          />
+          <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+            JPEG, PNG, WebP · 최대 5MB. 파일을 선택하면 자동으로 업로드됩니다.
+          </p>
+          {isUploading ? (
+            <p className="mt-2 text-sm text-ink-muted">업로드 중…</p>
+          ) : null}
+          {uploadError ? <p className="mt-2 text-sm text-accent">{uploadError}</p> : null}
+          {imageUrl ? (
+            <div className="mt-4 border border-line bg-paper-muted p-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt="업로드된 소식 이미지 미리보기"
+                className="mx-auto h-auto max-h-64 w-auto max-w-full object-contain"
+                src={imageUrl}
+              />
+            </div>
+          ) : null}
+        </div>
+
+        <div className="sm:col-span-2">
           <label className={adminLabelClassName} htmlFor="image">
-            이미지 URL (선택)
+            이미지 URL
           </label>
           <input
             className={adminFieldClassName}
-            defaultValue={initialValues.image}
             id="image"
             name="image"
+            onChange={(event) => setImageUrl(event.currentTarget.value)}
             placeholder="/images/news/korea-law-ai-symposium-poster.jpg"
             type="text"
+            value={imageUrl}
           />
           {fieldErrors.image ? <p className="mt-2 text-sm text-accent">{fieldErrors.image}</p> : null}
+          <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+            업로드하지 않고 직접 URL을 입력할 수도 있습니다.
+          </p>
         </div>
 
         <div className="sm:col-span-2">
@@ -173,7 +240,7 @@ export function NewsForm({
       </div>
 
       <div className="flex flex-wrap items-center gap-4 border-t border-line pt-8">
-        <button className={adminPrimaryButtonClassName} disabled={isPending} type="submit">
+        <button className={adminPrimaryButtonClassName} disabled={isPending || isUploading} type="submit">
           {isPending ? "저장 중…" : mode === "create" ? "저장" : "변경사항 저장"}
         </button>
 
