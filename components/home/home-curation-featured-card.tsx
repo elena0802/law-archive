@@ -38,8 +38,8 @@ export function HomeCurationFeaturedCard({ item }: HomeCurationFeaturedCardProps
   ) : null;
 
   const body = (
-    <div className="flex flex-1 flex-col p-4 sm:p-5">
-      <CurationTypeBadge type={item.type} variant="featured" />
+    <div className="flex flex-1 flex-col items-start p-4 sm:p-5">
+      <CurationTypeBadge type={item.type} variant="compact" />
       <h3 className="text-keep mt-2.5 line-clamp-2 font-serif text-lg leading-snug text-ink group-hover:text-accent sm:text-xl">
         {item.title}
       </h3>

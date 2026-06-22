@@ -37,7 +37,7 @@ export function HomeCurationPreview({
           {recent.length > 0 ? (
             <div className={featuredItems.length > 0 ? "mt-12" : ""}>
               <h3 className="text-keep font-serif text-xl text-ink sm:text-[1.35rem]">
-                최근 추천
+                함께 읽고 본 자료
               </h3>
               <HomeCurationRecentList items={recent} />
             </div>

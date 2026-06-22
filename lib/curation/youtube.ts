@@ -75,7 +75,7 @@ export function isValidHttpUrl(raw: string) {
 }
 
 export const CURATION_TYPE_LABELS: Record<CurationType, string> = {
-  youtube: "유튜브",
+  youtube: "영상",
   article: "기사",
   blog: "외부글",
   paper: "논문",
