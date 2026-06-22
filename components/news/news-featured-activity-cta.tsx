@@ -3,11 +3,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { homeSectionLinkClassName } from "@/components/home/home-section-link";
+import {
+  resolveFeaturedCtaBehavior,
+  type FeaturedCtaBehavior,
+} from "@/lib/news/types";
 
 type NewsFeaturedActivityCtaProps = {
   title: string;
   imageSrc?: string;
   actionLink?: string;
+  behavior?: FeaturedCtaBehavior;
   className?: string;
 };
 
@@ -15,9 +20,11 @@ export function NewsFeaturedActivityCta({
   title,
   imageSrc,
   actionLink,
+  behavior = "link",
   className,
 }: NewsFeaturedActivityCtaProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const resolvedBehavior = resolveFeaturedCtaBehavior(behavior);
   const hasImage = Boolean(imageSrc);
   const hasLink = Boolean(actionLink);
   const isExternalLink = actionLink?.startsWith("http") ?? false;
@@ -43,7 +50,15 @@ export function NewsFeaturedActivityCta({
     };
   }, [isOpen]);
 
-  if (hasImage) {
+  if (resolvedBehavior === "none") {
+    return null;
+  }
+
+  if (resolvedBehavior === "image") {
+    if (!hasImage) {
+      return null;
+    }
+
     const posterSrc = imageSrc as string;
     return (
       <>
@@ -96,21 +111,21 @@ export function NewsFeaturedActivityCta({
     );
   }
 
-  if (hasLink) {
-    const href = actionLink as string;
-    return (
-      <p className={className}>
-        <Link
-          className={homeSectionLinkClassName}
-          href={href}
-          rel={isExternalLink ? "noopener noreferrer" : undefined}
-          target={isExternalLink ? "_blank" : undefined}
-        >
-          자세히 보기 →
-        </Link>
-      </p>
-    );
+  if (!hasLink) {
+    return null;
   }
 
-  return null;
+  const href = actionLink as string;
+  return (
+    <p className={className}>
+      <Link
+        className={homeSectionLinkClassName}
+        href={href}
+        rel={isExternalLink ? "noopener noreferrer" : undefined}
+        target={isExternalLink ? "_blank" : undefined}
+      >
+        자세히 보기 →
+      </Link>
+    </p>
+  );
 }

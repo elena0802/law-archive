@@ -1,4 +1,4 @@
-import { NEWS_CATEGORIES, type NewsCategory } from "@/lib/news/types";
+import { NEWS_CATEGORIES, FEATURED_CTA_BEHAVIORS, type FeaturedCtaBehavior, type NewsCategory } from "@/lib/news/types";
 
 export type NewsFormValues = {
   date: string;
@@ -9,6 +9,7 @@ export type NewsFormValues = {
   link: string;
   featured: boolean;
   published: boolean;
+  featuredCtaBehavior: FeaturedCtaBehavior;
 };
 
 export type NewsFormFieldErrors = Partial<Record<keyof NewsFormValues, string>>;
@@ -38,6 +39,7 @@ export function parseNewsForm(formData: FormData): ParsedNewsForm {
   const summary = readString(formData, "summary");
   const image = readString(formData, "image");
   const link = readString(formData, "link");
+  const featuredCtaBehavior = readString(formData, "featured_cta_behavior");
   const featured = formData.get("featured") === "on";
   const published = formData.get("published") === "on";
 
@@ -67,6 +69,13 @@ export function parseNewsForm(formData: FormData): ParsedNewsForm {
     errors.link = "링크는 http:// 또는 https:// 주소여야 합니다.";
   }
 
+  if (
+    featuredCtaBehavior &&
+    !FEATURED_CTA_BEHAVIORS.includes(featuredCtaBehavior as FeaturedCtaBehavior)
+  ) {
+    errors.featuredCtaBehavior = "하이라이트 버튼 동작을 선택해 주세요.";
+  }
+
   if (Object.keys(errors).length > 0) {
     return {
       ok: false,
@@ -86,6 +95,7 @@ export function parseNewsForm(formData: FormData): ParsedNewsForm {
       link,
       featured,
       published,
+      featuredCtaBehavior: (featuredCtaBehavior || "link") as FeaturedCtaBehavior,
     },
   };
 }
@@ -102,5 +112,6 @@ export function emptyNewsFormValues(): NewsFormValues {
     link: "",
     featured: false,
     published: true,
+    featuredCtaBehavior: "link",
   };
 }

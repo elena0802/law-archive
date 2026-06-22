@@ -1,6 +1,7 @@
 import { newsItems } from "@/lib/news/items";
 import { createSupabaseServerClient } from "@/lib/supabase/server-ssr";
 import type { NewsItem, NewsMonthGroup } from "@/lib/news/types";
+import { resolveFeaturedCtaBehavior } from "@/lib/news/types";
 
 function formatMonthLabel(date: string) {
   const parsed = new Date(date);
@@ -54,6 +55,7 @@ export async function getNewsItems(): Promise<NewsItem[]> {
       published: row.published,
       image: row.image_url ?? undefined,
       link: row.link_url ?? undefined,
+      featuredCtaBehavior: resolveFeaturedCtaBehavior(row.featured_cta_behavior),
     }));
 }
 

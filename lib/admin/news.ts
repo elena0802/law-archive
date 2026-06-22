@@ -60,5 +60,6 @@ export function newsRowToFormValues(item: NewsItemRow) {
     link: item.link_url ?? "",
     featured: item.featured,
     published: item.published,
+    featuredCtaBehavior: item.featured_cta_behavior,
   };
 }

@@ -240,6 +240,8 @@ export type NewsCategory =
   | "사이트"
   | "프로젝트";
 
+export type FeaturedCtaBehavior = "image" | "link" | "none";
+
 export type NewsItemRow = {
   id: string;
   date: string;
@@ -250,6 +252,7 @@ export type NewsItemRow = {
   link_url: string | null;
   featured: boolean;
   published: boolean;
+  featured_cta_behavior: FeaturedCtaBehavior;
   created_at: string;
   updated_at: string;
 };
@@ -263,6 +266,7 @@ export type NewsItemInsert = {
   link_url?: string | null;
   featured?: boolean;
   published?: boolean;
+  featured_cta_behavior?: FeaturedCtaBehavior;
 };
 
 export type NewsItemUpdate = Partial<NewsItemInsert>;

@@ -11,6 +11,7 @@ export const newsItems: NewsItem[] = [
       "인공지능 시대의 법교육과 연구의 변화를 논의하는 학술제에 참여합니다.",
     featured: true,
     published: true,
+    featuredCtaBehavior: "link",
     image: "/images/news/korea-law-ai-symposium-poster.jpg",
     link: "https://www.lawtimes.co.kr/news/articleView.html?idxno=221845",
   },
@@ -21,6 +22,7 @@ export const newsItems: NewsItem[] = [
     title: "AI와 형사법 연재 시작",
     summary: "AI 기술과 형사법의 접점을 연구노트 형식으로 기록합니다.",
     published: true,
+    featuredCtaBehavior: "link",
   },
   {
     id: "news-2026-06-11-curation",
@@ -29,6 +31,7 @@ export const newsItems: NewsItem[] = [
     title: "요즘의 시선 공개",
     summary: "외부 콘텐츠 큐레이션 섹션을 새롭게 공개했습니다.",
     published: true,
+    featuredCtaBehavior: "link",
   },
   {
     id: "news-2026-05-22-comparative-criminal-law-debate",
@@ -38,6 +41,7 @@ export const newsItems: NewsItem[] = [
     summary:
       "「형법상 고의란 무엇인가?」를 주제로 연세대 법학전문대학원에서 열린 대토론회에 사회자로 참여했습니다.",
     published: true,
+    featuredCtaBehavior: "link",
   },
   {
     id: "news-2026-05-20-series-punishment-society",
@@ -46,6 +50,7 @@ export const newsItems: NewsItem[] = [
     title: "형벌과 사회 연재 시작",
     summary: "국가 형벌권과 공동체의 응답을 형사법의 관점에서 기록합니다.",
     published: true,
+    featuredCtaBehavior: "link",
   },
   {
     id: "news-2026-04-17-spring-conference",
@@ -54,5 +59,6 @@ export const newsItems: NewsItem[] = [
     title: "한국형사법학회 춘계학술대회",
     summary: "제주대 로스쿨에서 열린 춘계공동학술대회에 토론자로 참여했습니다.",
     published: true,
+    featuredCtaBehavior: "link",
   },
 ];

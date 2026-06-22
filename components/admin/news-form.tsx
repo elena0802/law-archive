@@ -210,6 +210,28 @@ export function NewsForm({
           />
           {fieldErrors.link ? <p className="mt-2 text-sm text-accent">{fieldErrors.link}</p> : null}
         </div>
+
+        <div className="sm:col-span-2">
+          <label className={adminLabelClassName} htmlFor="featured_cta_behavior">
+            하이라이트 버튼 동작
+          </label>
+          <select
+            className={adminFieldClassName}
+            defaultValue={initialValues.featuredCtaBehavior}
+            id="featured_cta_behavior"
+            name="featured_cta_behavior"
+          >
+            <option value="link">링크로 이동</option>
+            <option value="image">이미지 크게 보기</option>
+            <option value="none">버튼 숨기기</option>
+          </select>
+          {fieldErrors.featuredCtaBehavior ? (
+            <p className="mt-2 text-sm text-accent">{fieldErrors.featuredCtaBehavior}</p>
+          ) : null}
+          <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+            Featured Activity의 「자세히 보기」 버튼 동작을 선택합니다.
+          </p>
+        </div>
       </div>
 
       <div className="space-y-4 border-t border-line pt-8">

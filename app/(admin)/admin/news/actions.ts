@@ -33,6 +33,7 @@ function mapFormToInsert(values: NewsFormValues) {
     link_url: values.link || null,
     featured: values.featured,
     published: values.published,
+    featured_cta_behavior: values.featuredCtaBehavior,
   };
 }
 

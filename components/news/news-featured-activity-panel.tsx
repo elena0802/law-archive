@@ -146,6 +146,7 @@ export function NewsFeaturedActivityPanel({
           {showCta ? (
             <NewsFeaturedActivityCta
               actionLink={actionLink}
+              behavior={item.featuredCtaBehavior}
               className={compact ? "mt-3 sm:mt-4" : "mt-4 sm:mt-5"}
               imageSrc={imageSrc}
               title={item.title}

@@ -11,6 +11,19 @@ export const NEWS_CATEGORIES = [
 
 export type NewsCategory = (typeof NEWS_CATEGORIES)[number];
 
+export const FEATURED_CTA_BEHAVIORS = ["image", "link", "none"] as const;
+
+export type FeaturedCtaBehavior = (typeof FEATURED_CTA_BEHAVIORS)[number];
+
+export function resolveFeaturedCtaBehavior(
+  value: string | undefined | null,
+): FeaturedCtaBehavior {
+  if (value === "image" || value === "link" || value === "none") {
+    return value;
+  }
+  return "link";
+}
+
 export type NewsItem = {
   id: string;
   date: string;
@@ -21,6 +34,7 @@ export type NewsItem = {
   published?: boolean;
   image?: string;
   link?: string;
+  featuredCtaBehavior?: FeaturedCtaBehavior;
 };
 
 export type NewsMonthGroup = {
