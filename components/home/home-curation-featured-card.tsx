@@ -50,7 +50,11 @@ export function HomeCurationFeaturedCard({ item }: HomeCurationFeaturedCardProps
   if (videoId) {
     return (
       <>
-        <button className={cardClassName} onClick={() => setOpen(true)} type="button">
+        <button
+          className={`${cardClassName} cursor-pointer`}
+          onClick={() => setOpen(true)}
+          type="button"
+        >
           {thumbnail}
           {body}
         </button>
