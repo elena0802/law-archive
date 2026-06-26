@@ -44,7 +44,10 @@ export function mapEssayRowToEssayWithSeries(
   const series = seriesBySlug.get(row.series_slug);
 
   if (!series) {
-    return null;
+    console.warn(
+      `[mapEssayRowToEssayWithSeries] missing series for slug "${row.series_slug}" (essay "${row.slug}")`,
+    );
+    return mapEssayRowToEssay(row, row.series_slug);
   }
 
   return mapEssayRowToEssay(row, series.title);

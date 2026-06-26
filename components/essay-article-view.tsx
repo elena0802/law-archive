@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MDXRemote } from "next-mdx-remote/rsc";
 import { getEssayCoverImage } from "@/lib/essay-cover-image.server";
 import { EssayCommentsSection } from "@/components/essay-comments-section";
+import { EssayMdxContent } from "@/components/essay-mdx-content";
 import { EssayPreviewBanner } from "@/components/essay-preview-banner";
 import { EssayShareButton } from "@/components/essay-share-button";
 import {
@@ -141,7 +141,7 @@ export async function EssayArticleView({
           </header>
 
           <div className="archive-prose mt-12">
-            <MDXRemote source={essay.content} />
+            <EssayMdxContent content={essay.content} />
           </div>
 
           <p className="text-keep mt-6 text-xs font-normal text-ink-muted">
