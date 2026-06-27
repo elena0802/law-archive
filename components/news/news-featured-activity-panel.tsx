@@ -82,7 +82,7 @@ export function NewsFeaturedActivityPanel({
             className={
               compact
                 ? snug
-                  ? "mt-2 max-h-48 overflow-hidden sm:mt-3 sm:max-h-none"
+                  ? "mt-2 w-[72%] max-w-full max-h-48 overflow-hidden sm:mt-3 sm:max-h-none"
                   : "mt-3 max-h-52 overflow-hidden sm:mt-4 sm:max-h-none"
                 : "mt-4 w-full sm:mt-5"
             }
@@ -100,7 +100,9 @@ export function NewsFeaturedActivityPanel({
               priority={compact}
               sizes={
                 compact
-                  ? "(max-width: 1024px) 100vw, 18rem"
+                  ? snug
+                    ? "(max-width: 1024px) 72vw, 13rem"
+                    : "(max-width: 1024px) 100vw, 18rem"
                   : "(max-width: 1024px) 100vw, 40vw"
               }
               src={imageSrc}
