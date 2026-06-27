@@ -16,6 +16,20 @@ function resolveCoverAlt(essay: EssayCoverImageSource) {
 }
 
 /**
+ * CMS cover only — for essay detail hero (no slug filesystem fallback).
+ */
+export function getEssayCmsCoverImage(essay: EssayCoverImageSource): EssayCoverImage {
+  const alt = resolveCoverAlt(essay);
+  const cmsSrc = normalizeEssayCoverImageSrc(essay.coverImageUrl);
+
+  if (cmsSrc) {
+    return { src: cmsSrc, alt };
+  }
+
+  return { src: null, alt };
+}
+
+/**
  * Resolve an essay cover image for cards, detail, newsletter, and OG.
  *
  * Priority: CMS `coverImageUrl` → slug filesystem fallback → null.

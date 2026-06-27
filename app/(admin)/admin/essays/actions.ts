@@ -20,9 +20,28 @@ import type { EssayActionState } from "@/lib/admin/essay-action-state";
 import type { EssayInsert } from "@/lib/content/db-types";
 import { revalidatePublicEssayPaths } from "@/lib/content/revalidate-public";
 import { normalizeEssayCoverImageSrc } from "@/lib/essay-cover-url";
+import {
+  type EssayImageUploadResult,
+  uploadEssayImageFile,
+} from "@/lib/admin/essay-image-upload";
 
 function normalizeStoredCoverImageUrl(raw: string) {
   return normalizeEssayCoverImageSrc(raw);
+}
+
+export async function uploadEssayImage(
+  formData: FormData,
+): Promise<EssayImageUploadResult> {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    return { ok: false, message: "업로드할 이미지 파일을 선택해 주세요." };
+  }
+
+  const essayId = formData.get("essayId");
+  const id =
+    typeof essayId === "string" && essayId.trim() ? essayId.trim() : undefined;
+
+  return uploadEssayImageFile(file, id);
 }
 
 export async function createEssay(

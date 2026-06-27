@@ -130,6 +130,7 @@ export default async function AdminEditEssayPage({
         key={`${essay.id}-${essay.status}-${essay.updated_at}`}
         action={updateWithId}
         currentStatus={essay.status}
+        essayId={essay.id}
         initialValues={essayRowToFormValues(essay)}
         mode="edit"
         noticeMessage={noticeMessage}

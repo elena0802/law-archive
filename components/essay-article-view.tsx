@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getEssayCoverImage } from "@/lib/essay-cover-image.server";
+import { getEssayCmsCoverImage } from "@/lib/essay-cover-image.server";
 import { EssayCommentsSection } from "@/components/essay-comments-section";
 import { EssayMdxContent } from "@/components/essay-mdx-content";
 import { EssayPreviewBanner } from "@/components/essay-preview-banner";
@@ -45,7 +45,7 @@ export async function EssayArticleView({
       : !essay.draft;
   const showComments = !isPreview && isCommentsAvailable();
   const showSeriesSiblings = essaysInSeries.length > 1;
-  const cover = getEssayCoverImage(essay);
+  const cover = getEssayCmsCoverImage(essay);
 
   return (
     <>

@@ -10,6 +10,7 @@ import {
   type FormEvent,
 } from "react";
 import { useRouter } from "next/navigation";
+import { uploadEssayImage } from "@/app/(admin)/admin/essays/actions";
 import { normalizeEssayCoverImageSrc } from "@/lib/essay-cover-url";
 import { AdminCollapsibleSection } from "@/components/admin/admin-collapsible-section";
 import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
@@ -53,6 +54,7 @@ const WRITING_GUIDE = `# 큰 제목
 
 type EssayFormProps = {
   mode: "create" | "edit";
+  essayId?: string;
   initialValues: EssayFormValues;
   currentStatus: EssayStatus;
   series: Pick<SeriesRow, "slug" | "title">[];
@@ -169,6 +171,7 @@ function shouldGuardNavigation(anchor: HTMLAnchorElement) {
 
 export function EssayForm({
   mode,
+  essayId,
   initialValues,
   currentStatus,
   series,
@@ -214,6 +217,8 @@ export function EssayForm({
   const [coverImageAlt, setCoverImageAlt] = useState(
     initialValues.cover_image_alt,
   );
+  const [coverUploadError, setCoverUploadError] = useState<string | null>(null);
+  const [isCoverUploading, setIsCoverUploading] = useState(false);
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
   const [archiveConfirmOpen, setArchiveConfirmOpen] = useState(false);
   const [trashConfirmOpen, setTrashConfirmOpen] = useState(false);
@@ -288,6 +293,34 @@ export function EssayForm({
   );
   const isGuardEnabled = hasUnsavedChanges && !isPending;
   const coverPreviewSrc = normalizeEssayCoverImageSrc(coverImageUrl);
+
+  async function handleCoverImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    setCoverUploadError(null);
+    setIsCoverUploading(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    if (essayId) {
+      formData.append("essayId", essayId);
+    }
+
+    const result = await uploadEssayImage(formData);
+    setIsCoverUploading(false);
+
+    if (!result.ok) {
+      setCoverUploadError(result.message);
+      return;
+    }
+
+    setCoverImageUrl(result.url);
+  }
 
   useEffect(() => {
     if (state.redirectTo) {
@@ -538,6 +571,29 @@ export function EssayForm({
         <p className={metadataHeadingClassName}>대표 이미지</p>
 
         <div>
+          <label className={adminLabelClassName} htmlFor="essay-cover-image-upload">
+            이미지 업로드
+          </label>
+          <input
+            accept="image/jpeg,image/png,image/webp"
+            className={`${adminFieldClassName} file:mr-4 file:rounded file:border-0 file:bg-paper-muted file:px-3 file:py-2 file:text-sm file:text-ink`}
+            disabled={isCoverUploading}
+            id="essay-cover-image-upload"
+            onChange={handleCoverImageUpload}
+            type="file"
+          />
+          <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+            JPEG, PNG, WebP · 최대 5MB. 파일을 선택하면 자동으로 업로드됩니다.
+          </p>
+          {isCoverUploading ? (
+            <p className="mt-2 text-sm text-ink-muted">업로드 중…</p>
+          ) : null}
+          {coverUploadError ? (
+            <p className="mt-2 text-sm text-accent">{coverUploadError}</p>
+          ) : null}
+        </div>
+
+        <div>
           <label className={adminLabelClassName} htmlFor="cover_image_url">
             대표 이미지 URL
           </label>
@@ -551,6 +607,9 @@ export function EssayForm({
             value={coverImageUrl}
           />
           <AdminFieldError message={fieldErrors.cover_image_url} />
+          <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
+            업로드하지 않고 직접 URL을 입력할 수도 있습니다.
+          </p>
           {coverPreviewSrc ? (
             <CoverImagePreview alt={coverImageAlt} src={coverImageUrl} />
           ) : coverImageUrl.trim() ? (
