@@ -11,6 +11,10 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { uploadEssayImage } from "@/app/(admin)/admin/essays/actions";
+import {
+  optimizeClientImageFile,
+  withClientUploadTimeout,
+} from "@/lib/admin/client-image-optimize";
 import { normalizeEssayCoverImageSrc } from "@/lib/essay-cover-url";
 import { AdminCollapsibleSection } from "@/components/admin/admin-collapsible-section";
 import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
@@ -218,7 +222,9 @@ export function EssayForm({
     initialValues.cover_image_alt,
   );
   const [coverUploadError, setCoverUploadError] = useState<string | null>(null);
-  const [isCoverUploading, setIsCoverUploading] = useState(false);
+  const [coverUploadPhase, setCoverUploadPhase] = useState<
+    "idle" | "preparing" | "uploading" | "complete"
+  >("idle");
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
   const [archiveConfirmOpen, setArchiveConfirmOpen] = useState(false);
   const [trashConfirmOpen, setTrashConfirmOpen] = useState(false);
@@ -294,6 +300,17 @@ export function EssayForm({
   const isGuardEnabled = hasUnsavedChanges && !isPending;
   const coverPreviewSrc = normalizeEssayCoverImageSrc(coverImageUrl);
 
+  const isCoverUploadBusy =
+    coverUploadPhase === "preparing" || coverUploadPhase === "uploading";
+  const coverUploadStatusMessage =
+    coverUploadPhase === "preparing"
+      ? "이미지를 준비하는 중..."
+      : coverUploadPhase === "uploading"
+        ? "이미지를 업로드하는 중..."
+        : coverUploadPhase === "complete"
+          ? "업로드 완료"
+          : null;
+
   async function handleCoverImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -303,23 +320,45 @@ export function EssayForm({
     }
 
     setCoverUploadError(null);
-    setIsCoverUploading(true);
+    setCoverUploadPhase("preparing");
+
+    const optimized = await optimizeClientImageFile(file);
+    if (!optimized.ok) {
+      setCoverUploadError(optimized.message);
+      setCoverUploadPhase("idle");
+      return;
+    }
+
+    setCoverUploadPhase("uploading");
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", optimized.file);
     if (essayId) {
       formData.append("essayId", essayId);
     }
 
-    const result = await uploadEssayImage(formData);
-    setIsCoverUploading(false);
+    try {
+      const result = await withClientUploadTimeout(uploadEssayImage(formData));
 
-    if (!result.ok) {
-      setCoverUploadError(result.message);
-      return;
+      if (!result.ok) {
+        setCoverUploadError(result.message);
+        setCoverUploadPhase("idle");
+        return;
+      }
+
+      setCoverImageUrl(result.url);
+      setCoverUploadPhase("complete");
+      window.setTimeout(() => {
+        setCoverUploadPhase((current) => (current === "complete" ? "idle" : current));
+      }, 3000);
+    } catch (error) {
+      setCoverUploadError(
+        error instanceof Error
+          ? error.message
+          : "이미지를 업로드하지 못했습니다. 다시 시도해 주세요.",
+      );
+      setCoverUploadPhase("idle");
     }
-
-    setCoverImageUrl(result.url);
   }
 
   useEffect(() => {
@@ -577,16 +616,16 @@ export function EssayForm({
           <input
             accept="image/jpeg,image/png,image/webp"
             className={`${adminFieldClassName} file:mr-4 file:rounded file:border-0 file:bg-paper-muted file:px-3 file:py-2 file:text-sm file:text-ink`}
-            disabled={isCoverUploading}
+            disabled={isCoverUploadBusy}
             id="essay-cover-image-upload"
             onChange={handleCoverImageUpload}
             type="file"
           />
           <p className="text-keep mt-2 text-sm leading-7 text-ink-muted">
-            JPEG, PNG, WebP · 최대 5MB. 파일을 선택하면 자동으로 업로드됩니다.
+            JPEG, PNG, WebP · 최대 5MB. 업로드 전에 자동으로 압축됩니다.
           </p>
-          {isCoverUploading ? (
-            <p className="mt-2 text-sm text-ink-muted">업로드 중…</p>
+          {coverUploadStatusMessage ? (
+            <p className="mt-2 text-sm text-ink-muted">{coverUploadStatusMessage}</p>
           ) : null}
           {coverUploadError ? (
             <p className="mt-2 text-sm text-accent">{coverUploadError}</p>
